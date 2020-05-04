@@ -1,0 +1,195 @@
+﻿@{
+    ViewBag.Title = "项目统计";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script type="text/javascript" src="/Scripts/wechatab/lib/layer/layer.js"></script>
+<div class="row">
+
+    <div class="col-xs-12">
+
+        <form class="form-inline" id="SearchForm" method="post">
+            <div class="form-group">
+                <div class="form-group">
+                    <select id="Project" class="form-control" name="ProjectGId" data-placeholder="Please Select Group">
+                        <option value="" selected="selected">Please Choose a Project</option>
+                        @foreach (var item in ViewBag.Projects)
+                        {
+                            <option value="@item.Gid">@item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                @*<a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="清除条件">
+                        <i class="fa fa-remove"></i>
+                    </a>*@
+                <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
+                    <i class="fa fa-search"></i>
+                </a>
+            </div>
+            <div class="form-group pull-right" style="margin-left:5px">
+                @*<a href="/plugins/innocellence.wx.tools/content/PollingAcountingTemplate.xlsx" id="downloadTemplateBtn" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="下载得分统计模板">
+                        <i class="fa fa-file-excel-o"></i>
+                    </a>*@
+                @*<a href="Create?appid=@ViewBag.AppId" id="addBtn" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="添加">
+                        <i class="fa fa-plus"></i>
+                    </a>*@
+            </div>
+        </form>
+        <div class="widget-box">
+            <label>项目ID：</label><label>@ViewBag.ProjectInfo.ProjectGid</label><br />
+            <label>项目名称：</label><label>@ViewBag.ProjectInfo.ProjectName</label><br />
+            <label>项目估算总工时：</label><label>-</label><br />
+            <label>项目估算总费用：</label><label>-</label><br />
+            <label>项目花费总工时：</label><label>@ViewBag.ProjectInfo.SpentManHour</label><br />
+            <label>项目花费总费用：</label><label>@ViewBag.ProjectInfo.SpentManHourRate</label><br />
+        </div>
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                            @*<th style="width: 8%; text-align: center;">Id</th>*@
+                            <th style="width: 5%">Id</th>
+                            <th style="width: 15%">Employee</th>
+                            <th style="width: 15%">Role</th>
+                            <th style="width: 15%">Rate</th>
+                            <th style="width: 30%">Total Hours</th>
+                            <th style="width: 30%">Total Hours(Rate)</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList" },
+                "aoColumns": [
+                    {
+                        "mData": "Id",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "EmployeeName",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "EmployeeRole",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "EmployeeRate",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "TotalHours",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "TotalHoursRate",
+                        "bSearchable": false,
+                        "bSortable": false
+                    }
+
+                ],
+                "columnDefs":
+                    jQuery.extend(true, datatableSetting.columnDefs, [
+                    ]),
+                fnDrawCallback:
+                    function () { $('[data-toggle="tooltip"]').tooltip(); }
+            }));
+
+            $('.form_datatime').datetimepicker({
+                format: 'yyyy-mm-dd hh:ii',
+                weekStart: 1,
+                autoclose: true,
+                todayBtn: 'linked',
+                clearBtn: true,
+                language: 'zh-CN',
+                startView: 2,
+                minView: 0,
+                onClose: function () {
+                    this.focus();
+                }
+            });
+
+            $('#clear_condition').click(function () {
+                $('input').val('');
+            });
+
+        });
+
+        function BeforeSearch() {
+            //if ($('#startDate').val() > $('#endDate').val()) {
+            //    artDialog.alert('结束时间不能小于开始时间。');
+            //    return false;
+            //}
+            return true;
+        }
+
+        function mstime(mss) {
+            //var days = parseInt(mss / (1000 * 60 * 60 * 24));
+            var hours = parseInt(mss / (60 * 60));
+            var minutes = parseInt((mss % (60 * 60)) / (60));
+            var seconds = parseInt(mss % 60)
+            var ref = "";
+            if (hours < 10) {
+                ref += "0" + hours + ":"
+            } else {
+                ref += hours + ":"
+            }
+            if (minutes < 10) {
+                ref += "0" + minutes + ":"
+            } else {
+                ref += minutes + ":"
+            }
+            if (seconds < 10) {
+                ref += "0" + seconds
+            } else {
+                ref += seconds
+            }
+
+            return ref;
+        }
+
+        var HtmlUtil = {
+            /*1.用浏览器内部转换器实现html转码*/
+            htmlEncode: function (html) {
+                //1.首先动态创建一个容器标签元素，如DIV
+                var temp = document.createElement("div");
+                //2.然后将要转换的字符串设置为这个元素的innerText(ie支持)或者textContent(火狐，google支持)
+                (temp.textContent != undefined) ? (temp.textContent = html) : (temp.innerText = html);
+                //3.最后返回这个元素的innerHTML，即得到经过HTML编码转换的字符串了
+                var output = temp.innerHTML;
+                temp = null;
+                return output;
+            },
+            /*2.用浏览器内部转换器实现html解码*/
+            htmlDecode: function (text) {
+                //1.首先动态创建一个容器标签元素，如DIV
+                var temp = document.createElement("div");
+                //2.然后将要转换的字符串设置为这个元素的innerHTML(ie，火狐，google都支持)
+                temp.innerHTML = text;
+                //3.最后返回这个元素的innerText(ie支持)或者textContent(火狐，google支持)，即得到经过HTML解码的字符串了。
+                var output = temp.innerText || temp.textContent;
+                temp = null;
+                return output;
+            }
+        };
+
+
+    </script>
+}

@@ -1,0 +1,308 @@
+﻿@model InnoCellence.Lccp.Data.Models.DoctorHistory
+@{
+    ViewBag.Title = "添加/修改";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section easyui_css{
+    <link rel="stylesheet" href="~/plugins/Innocellence.Activity/Content/style.css" />
+}
+
+@{
+    var rd = new Random(int.MaxValue);
+}
+
+<div id="ModalTable" style="margin: 0 auto; width:960px;">
+               <input type="hidden" id="Id" name="Id" value="@Model.Id" />
+        <input type="hidden" id="CreateTime" name="CreateTime" value="@Model.CreateTime" />
+         @*<input type="hidden" id="LastExecutedTime" name="LastExecutedTime" value="@Model.LastExecutedTime" />
+        <input type="hidden" id="LastResult" name="LastResult" value="@Model.LastResult" />
+        <input type="hidden" id="IsEnabled" name="IsEnabled" value="@Model.IsEnabled" />
+        <input type="hidden" id="IsDeleted" name="IsDeleted" value="@Model.IsDeleted" />*@
+
+        <div class="form-group col-lg-12">
+            <label class="col-lg-3 control-label text-right">CaseID :</label>
+            <label class="col-lg-9" style="padding-top: 7px;">@Model.Id</label>
+        </div>
+        <div class="form-group col-lg-12">
+            <label class="col-lg-3 control-label text-right">Case状态 :</label>
+            <label class="col-lg-9" style="padding-top: 7px;">@Model.Status</label>
+        </div>
+        <div class="form-group col-lg-12">
+            <label class="col-lg-3 control-label text-right">记录 :</label>
+            <div id="NotesEdit" class="col-lg-7">
+                <input id="Notes" type="text" name="Notes" class="form-control" placeholder="记录" value="@Model.Notes"/>
+            </div>
+            <label id="NotesNoEdit" class="col-lg-9" style="padding-top: 7px;display:none;">@Model.Notes</label>
+        </div>
+        <div class="form-group col-lg-12">
+            <label class="col-lg-3 control-label text-right">系统记录信息 :</label>
+            <label id="Comment" class="col-lg-9" style="padding-top: 7px;">@Model.Comment</label>
+        </div>
+
+        <div id="divLoser" class="form-group col-lg-12"  style="float:left;width:50%">
+                <div class="form-group pull-left" id="SelectLoserDoctor">
+                    <a href="#" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="选择旧医生">
+                        <i class="fa fa-plus" style="margin-right: 0px;">&nbsp;&nbsp;选择旧医生</i>
+                    </a>
+                </div>
+            <div id="Loser2" class="widget-content nopadding" style="border: 1px solid;margin-top: 50px;display:none;width:100%">
+                <label class="col-sm-12" style="line-height: 2em;">旧医生dctrId:<span id="LoserDctrId">@Model.LoserDctrId</span></label>
+                <label class="col-sm-12" style="line-height: 2em;">旧医生HcpId:<span id="LoserHcpId">@Model.LoserHcpId</span></label>
+                <label class="col-sm-12" style="line-height: 2em;">旧医生OpenId:<span id="LoserOpenId">@Model.LoserOpenId</span></label>
+                @*<label class="col-sm-12" style="line-height: 2em;">旧医生姓名:<span id="lsName"></span></label>
+                <label class="col-sm-12" style="line-height: 2em;">旧医生医院:<span id="lsHospital"></span></label>*@
+                <label id="cardinfo" class="col-sm-12" style="line-height: 2em;">医生卡片信息</label>
+                   <ul id="cardlist">
+                    </ul>
+                <div class="row" style="margin: 0 20px; margin-bottom: 20px;">
+                    <button id="btnDeleteLoser" class="btn btn-success pull-right">删除旧医生并保存</button>
+                </div>
+            </div>
+            </div>
+
+        <div id="divWinner" class="form-group col-lg-12" style="float:right;width:50%">
+            <div class="form-group pull-left" id="SelectWinnerDoctor">
+                <a href="#" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="选择新医生">
+                    <i class="fa fa-plus" style="margin-right: 0px;">&nbsp;&nbsp;选择新医生</i>
+                </a>
+            </div>
+            <div id="Winner2" class="widget-content nopadding" style="border: 1px solid;margin-top: 50px;display:none;width:100%">
+                <label class="col-sm-12" style="line-height: 2em;">新医生dctrId:<span id="WinnerDctrId">@Model.WinnerDctrId</span></label>
+                <label class="col-sm-12" style="line-height: 2em;">新医生HcpId:<span id="WinnerHcpId">@Model.WinnerHcpId</span></label>
+                <label class="col-sm-12" style="line-height: 2em;">新医生OpenId:<span id="WinnerOpenId">@Model.WinnerOpenId</span></label>
+                @*<label class="col-sm-12" style="line-height: 2em;">新医生姓名:<span id="wnName"></span></label>
+                <label class="col-sm-12" style="line-height: 2em;">新医生医院:<span id="wnHospital"></span></label>*@
+                <div class="row" style="margin: 0 20px; margin-bottom: 20px;">
+                    <button id="btnAddWinner" class="btn btn-success pull-right">替换医生信息并保存</button>
+                </div>
+            </div>
+        </div>
+            @*<div class="row" style="margin: 0 35px; margin-top: 15px;">
+                <button data-action="save" id="btnSubmit" class="btn btn-success pull-right">保存</button>
+            </div>*@
+
+</div>
+
+
+<div id="BannerModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 id="modal_title" class="blue bigger"></h4>
+            </div>
+            <div class="modal-body" style="height:300px;">
+
+                    <label class="col-sm-3 control-label" style="line-height: 2em;">根据dctrId搜索:</label>
+                    <div class="col-sm-9">
+                        <input id="DoctorId" name="DoctorId" class="form-control" style="float: left;width:88%;margin-right: 2%;" />
+                        <button class="btn  btn-sm" id="btnSearchDoctor" data-toggle="tooltip" data-placement="top" title="按条件搜索">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                    <div id="DoctorDetail"  class="widget-content nopadding" style="border: 1px solid;margin-top: 50px;display:none;">
+                        <label class="col-sm-9 control-label" style="line-height: 2em;">dctrId:<span id="lsDctrId1"></span></label>
+                        <label class="col-sm-9 control-label" style="line-height: 2em;">HcpId:<span id="lsHcpId1"></span></label>
+                        <label class="col-sm-9 control-label" style="line-height: 2em;">OpenId:<span id="lsOpenId1"></span></label>
+                        <label class="col-sm-9 control-label" style="line-height: 2em;">姓名:<span id="lsName1"></span></label>
+                        <label class="col-sm-9 control-label" style="line-height: 2em;">医院:<span id="lsHospital1"></span></label>
+                        <div class="row" style="margin: 0 20px; margin-bottom: 20px;">
+                            <button data-action="save" id="btnLoserSubmit" class="btn btn-success pull-right">确认</button>
+                            <button data-action="save" id="btnWinnerSubmit" class="btn btn-success pull-right">确认</button>
+                        </div>
+                    </div>
+                    <div id="NoLoser" class="widget-content nopadding" style="display:none;">
+                        <label class="col-sm-9 control-label" style="line-height: 2em;">没找到医生,请重新输入</label>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $('#SelectLoserDoctor').on('click', function () {
+            $("#btnLoserSubmit").show();
+            $("#btnWinnerSubmit").hide();
+            $("#DoctorId").val("");
+            $('#DoctorDetail').hide();
+            $("#BannerModal").modal("show");
+
+        });
+        $('#SelectWinnerDoctor').on('click', function () {
+            $("#btnWinnerSubmit").show();
+            $("#btnLoserSubmit").hide();
+            $("#DoctorId").val("");
+            $('#DoctorDetail').hide();
+            $("#BannerModal").modal("show");
+
+        });
+        $('#btnDeleteLoser').on('click', function () {
+            artDialog.width = 250;
+            artDialog.height = 250;
+            artDialog.confirm("是否确定删除旧医生并保存记录?",
+            function () {
+                $.ajax({
+                    type: 'POST',
+                    url: "/LccpBackendAdmin/DoctorHistory/RemoveLoser",
+                    contentType: "application/json", //必须有
+                    data: JSON.stringify({
+                        //Id: $('#Id').val(),
+                        LoserDctrId: $('#LoserDctrId').text(),
+                        LoserHcpId: $('#LoserHcpId').text(),
+                        LoserOpenId: $('#LoserOpenId').text(),
+                        Notes: $('#Notes').val()
+                    }),
+                    success: function (data) {
+                        artDialog.alert("保存成功！");
+                        //$('#SelectWinnerDoctor').show();
+                        //$('#SelectLoserDoctor').hide();
+                        //$('#btnDeleteLoser').hide();
+                        //$('#SelectLoserDoctor').attr('disabled', true);
+                        //$('#btnDeleteLoser').attr('disabled', true);
+                        window.location.href = "/LccpBackendAdmin/doctorhistory/edithistory?id=" + data.id;
+                    }
+                });
+            });
+        });
+
+        $('#btnAddWinner').on('click', function () {
+            artDialog.width = 250;
+            artDialog.height = 250;
+            artDialog.confirm("是否确定替换医生记录并保存?",
+            function () {
+                $.ajax({
+                    type: 'POST',
+                    url: "/LccpBackendAdmin/DoctorHistory/AddWinner",
+                    contentType: "application/json", //必须有
+                    data: JSON.stringify({
+                        Id: $('#Id').val(),
+                        LoserDctrId: $('#LoserDctrId').text(),
+                        LoserHcpId: $('#LoserHcpId').text(),
+                        LoserOpenId: $('#LoserOpenId').text(),
+                        WinnerDctrId: $('#WinnerDctrId').text(),
+                        WinnerHcpId: $('#WinnerHcpId').text(),
+                        WinnerOpenId: $('#WinnerOpenId').text(),
+                        CreateTime: $('#CreateTime').val(),
+                        Comment: $('#Comment').text(),
+                        Notes: $('#Notes').val()
+                    }),
+                    success: function (data) {
+                        if (data.success == true) {
+                            artDialog.alert("保存成功！");
+                            location.reload();
+                        } esle
+                        {
+                            artDialog.alert("保存失败！");
+                        }
+                    }
+                });
+            });
+        });
+
+        $('#btnLoserSubmit').on('click', function () {
+            $('#LoserDctrId').text($('#lsDctrId1').text());
+            $('#LoserHcpId').text($('#lsHcpId1').text());
+            $('#LoserOpenId').text($('#lsOpenId1').text());
+            $('#lsName').text($('#lsName1').text());
+            $('#lsHospital').text($('#lsHospital1').text());
+            $("#Loser2").show();
+            $("#BannerModal").modal("hide");
+        });
+
+        $('#btnWinnerSubmit').on('click', function () {
+            $('#WinnerDctrId').text($('#lsDctrId1').text());
+            $('#WinnerHcpId').text($('#lsHcpId1').text());
+            $('#WinnerOpenId').text($('#lsOpenId1').text());
+            $('#wnName').text($('#lsName1').text());
+            $('#wnHospital').text($('#lsHospital1').text());
+            $("#Winner2").show();
+            $("#BannerModal").modal("hide");
+        });
+
+        $(function () {
+            $('#btnSearchDoctor').on('click', function () {
+                $.ajax({
+                    type: 'POST',
+                    url: "/LccpBackendAdmin/DoctorHistory/GetDoctor",
+                    contentType: "application/json", //必须有
+                    data:  JSON.stringify({
+                        id: $('#DoctorId').val()
+                    }),
+                    success: function (data) {
+                        if (data.success) {
+                            $('#lsDctrId1').text(data.DctrId);
+                            $('#lsHcpId1').text(data.HcpId);
+                            $('#lsOpenId1').text(data.OpenId);
+                            $('#lsName1').text(data.Name);
+                            $('#lsHospital1').text(data.Hospital);
+                            $('#DoctorDetail').show();
+                        } else {
+                            $('#DoctorDetail').hide();
+                        }
+                    }
+                });
+            });
+        });
+
+
+
+
+
+        $(document).ready(function () {
+            if ("@Model.LoserDctrId" != "") {
+                $("#Loser2").show();
+                $('#SelectWinnerDoctor').show();
+                $('#SelectLoserDoctor').attr('disabled', true);
+                $('#btnDeleteLoser').attr('disabled', true);
+                $('#SelectLoserDoctor').hide();
+                $('#btnDeleteLoser').hide();
+                if ("@Model.WinnerDctrId" != "") {
+                    $("#Winner2").show();
+                    $('#SelectWinnerDoctor').attr('disabled', true);
+                    $('#btnAddWinner').attr('disabled', true);
+                    $('#SelectWinnerDoctor').hide();
+                    $('#btnAddWinner').hide();
+                    $('#NotesEdit').hide();
+                    $('#NotesNoEdit').show();
+
+
+                } else {
+                    $.ajax({
+                        type: 'POST',
+                        url: "/LccpBackendAdmin/DoctorHistory/GetCardsByDoctor",
+                        contentType: "application/json", //必须有
+                        data: JSON.stringify({
+                            HcpId: "@Model.LoserHcpId"
+                        }),
+                        success: function (data) {
+                            if (data.success) {
+                                j = data.DoctorCards.length
+                                var cardinfo = document.getElementById('cardinfo');
+                                cardinfo.innerHTML += '(Card数量为' + j + ')';
+                                var cardlist = document.getElementById('cardlist');
+                                for (i = 0; i < j; i++)
+                                {
+                                    cardlist.innerHTML += '<li>Id:' + data.DoctorCards[i].Id + ' CardNumber:' + data.DoctorCards[i].CardNumber + ' PatientId:' + data.DoctorCards[i].PatientId + '</li>';
+                                }
+                            } else {
+                                $('#DoctorDetail').hide();
+                            }
+                        }
+                    });
+                }
+            } else {
+                $("#Loser2").hide();
+                $('#SelectWinnerDoctor').hide();
+                $('#SelectLoserDoctor').attr('disabled', false);
+                $('#btnDeleteLoser').attr('disabled', false);
+                $('#SelectLoserDoctor').show();
+                $('#btnDeleteLoser').show();
+            }
+
+
+        });
+    </script>
+
+}
