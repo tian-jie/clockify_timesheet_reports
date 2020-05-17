@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Task记录查询";
+    ViewBag.Title = "员工填写Timesheet查询";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <script type="text/javascript" src="/Scripts/wechatab/lib/layer/layer.js"></script>
@@ -17,11 +17,29 @@
                             <option value="@item.Gid">@item.Name</option>
                         }
                     </select>
+                    <select id="Year" class="form-control" name="Year" data-placeholder="Select Year">
+                        <option value="0" selected="selected">Choose Year</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <select id="Week" class="form-control" name="Week" data-placeholder="Select Week">
+                        <option value="0" selected="selected">Choose Year</option>
+                        @for (var i = 1; i < 52; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+
                 </div>
 
                 @*<a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="清除条件">
-                    <i class="fa fa-remove"></i>
-                </a>*@
+                        <i class="fa fa-remove"></i>
+                    </a>*@
                 <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
                     <i class="fa fa-search"></i>
                 </a>
@@ -31,8 +49,8 @@
                         <i class="fa fa-file-excel-o"></i>
                     </a>*@
                 @*<a href="Create?appid=@ViewBag.AppId" id="addBtn" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="添加">
-                    <i class="fa fa-plus"></i>
-                </a>*@
+                        <i class="fa fa-plus"></i>
+                    </a>*@
             </div>
         </form>
 
@@ -64,7 +82,7 @@
 @section scripts_Foot
 {
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
 
             LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
                 "ajax": { "url": "GetTimesheetThisweekByGroup" },
@@ -79,48 +97,90 @@
                         "bSearchable": false,
                         "bSortable": false
                     },
-                     {
-                         "mData": "MondayTotalHours",
-                         "bSearchable": false,
-                         "bSortable": false
-                     },
-                     {
-                         "mData": "TuesdayTotalHours",
+                    {
+                        "mData": "MondayTotalHours",
                         "bSearchable": false,
                         "bSortable": false
-                     },
-                     {
-                         "mData": "WednesdayTotalHours",
-                         "bSearchable": false,
-                         "bSortable": false
-                     },
-                     {
-                         "mData": "ThursdayTotalHours",
-                         "bSearchable": false,
-                         "bSortable": false
-                     },
-                     {
-                         "mData": "FridayTotalHours",
-                         "bSearchable": false,
-                         "bSortable": false
-                     },
-                     {
-                         "mData": "SaturdayTotalHours",
-                         "bSearchable": false,
-                         "bSortable": false
-                     },
-                     {
-                         "mData": "SundayTotalHours",
-                         "bSearchable": false,
-                         "bSortable": false
-                     }
+                    },
+                    {
+                        "mData": "TuesdayTotalHours",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "WednesdayTotalHours",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "ThursdayTotalHours",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "FridayTotalHours",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "SaturdayTotalHours",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": "SundayTotalHours",
+                        "bSearchable": false,
+                        "bSortable": false
+                    }
 
                 ],
                 "columnDefs":
                     jQuery.extend(true, datatableSetting.columnDefs, [
-                        ]),
+                        {
+                            "targets": 2,
+                            "render": function (data, type, full, meta) {
+                                return '' + data >= 8 ? data : ('<span style="color:#FF0000">' + data + '</span>');
+                            }
+                        },
+                        {
+                            "targets": 3,
+                            "render": function (data, type, full, meta) {
+                                return '' + data >= 8 ? data : ('<span style="color:#FF0000">' + data + '</span>');
+                            }
+                        },
+                        {
+                            "targets": 4,
+                            "render": function (data, type, full, meta) {
+                                return '' + data >= 8 ? data : ('<span style="color:#FF0000">' + data + '</span>');
+                            }
+                        },
+                        {
+                            "targets": 5,
+                            "render": function (data, type, full, meta) {
+                                return '' + data >= 8 ? data : ('<span style="color:#FF0000">' + data + '</span>');
+                            }
+                        },
+                        {
+                            "targets": 6,
+                            "render": function (data, type, full, meta) {
+                                return '' + data >= 8 ? data : ('<span style="color:#FF0000">' + data + '</span>');
+                            }
+                        },
+                        {
+                            "targets": 7,
+                            "render": function (data, type, full, meta) {
+                                return '' + data >= 8 ? data : ('<span style="color:#FF0000">' + data + '</span>');
+                            }
+                        },
+                        {
+                            "targets": 8,
+                            "render": function (data, type, full, meta) {
+                                return '' + data >= 8 ? data : ('<span style="color:#FF0000">' + data + '</span>');
+                            }
+                        },
+                    ]),
                 fnDrawCallback:
-                    function() { $('[data-toggle="tooltip"]').tooltip(); }
+                    function () { $('[data-toggle="tooltip"]').tooltip(); }
             }));
 
             $('.form_datatime').datetimepicker({
@@ -137,7 +197,7 @@
                 }
             });
 
-            $('#clear_condition').click(function() {
+            $('#clear_condition').click(function () {
                 $('input').val('');
             });
 
@@ -153,8 +213,8 @@
 
         function mstime(mss) {
             //var days = parseInt(mss / (1000 * 60 * 60 * 24));
-            var hours = parseInt(mss / ( 60 * 60));
-            var minutes = parseInt((mss % ( 60 * 60)) / (60));
+            var hours = parseInt(mss / (60 * 60));
+            var minutes = parseInt((mss % (60 * 60)) / (60));
             var seconds = parseInt(mss % 60)
             var ref = "";
             if (hours < 10) {

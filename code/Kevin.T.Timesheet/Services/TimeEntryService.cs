@@ -12,13 +12,16 @@ namespace Kevin.T.Timesheet.Services
     {
         IUserGroupService _userGroupService;
         IProjectUserService _projectUserService;
+        IProjectService _projectService;
 
-        public TimeEntryService(IUserGroupService userGroupService,
-            IProjectUserService projectUserService)
+        public TimeEntryService(IUserGroupService userGroupService
+            , IProjectUserService projectUserService
+            , IProjectService projectService)
             : base("Timesheet")
         {
             _userGroupService = userGroupService;
             _projectUserService = projectUserService;
+            _projectService = projectService;
         }
 
         /// <summary>
@@ -49,7 +52,8 @@ namespace Kevin.T.Timesheet.Services
         public List<TimeEntriesGroupByEmployeeView> GetTimeEntriesByProjectGroupByEmployee(string projectGid)
         {
             // 获取项目相关的员工
-            var users = _projectUserService.GetUserByProject(projectGid, null);
+            var projectUsers = _projectUserService.GetUserByProject(projectGid, null);
+            var allUsers = _projectUserService.Repository.Entities;
 
             // 再根据每个员工统计timeentry
             var timeEntryByUsers = Repository.Entities.Where(a => a.IsDeleted != true && a.ProjectId == projectGid).GroupBy(a => a.UserId);
@@ -57,20 +61,52 @@ namespace Kevin.T.Timesheet.Services
 
             foreach (var a in timeEntryByUsers)
             {
-                var user = users.FirstOrDefault(b => b.UserGid == a.Key);
-                var t = new TimeEntriesGroupByEmployeeView()
-                {
-                    UserId = a.Key,
-                    TotalHours = a.Sum(b => b.TotalHours),
-                    EmployeeRate = user.Rate,
-                    EmployeeRole = user.UserRoleTitle,
-                    TotalHoursRate = user.Rate * a.Sum(b => b.TotalHours),
-                     EmployeeName = user.EmployeeName
-                };
+                var user = projectUsers.FirstOrDefault(b => b.UserGid == a.Key);
 
-                timeEntriesGroupByEmployeesView.Add(t);
+                if (user == null)
+                {
+                    timeEntriesGroupByEmployeesView.Add(new TimeEntriesGroupByEmployeeView()
+                    {
+                        UserId = a.Key,
+                        TotalHours = a.Sum(b => b.TotalHours),
+                        EmployeeRate = 1,
+                        EmployeeRole = "N/A",
+                        TotalHoursRate = a.Sum(b => b.TotalHours),
+                        EmployeeName = allUsers == null ? "Unknown???" : allUsers.FirstOrDefault(b => b.UserGid == a.Key).EmployeeName
+                    });
+                }
+                else
+                {
+                    timeEntriesGroupByEmployeesView.Add(new TimeEntriesGroupByEmployeeView()
+                    {
+                        UserId = a.Key,
+                        TotalHours = a.Sum(b => b.TotalHours),
+                        EmployeeRate = user.Rate,
+                        EmployeeRole = user.UserRoleTitle,
+                        TotalHoursRate = user.Rate * a.Sum(b => b.TotalHours),
+                        EmployeeName = user.EmployeeName
+                    });
+                }
             }
             return timeEntriesGroupByEmployeesView;
+        }
+
+        public ProjectAccountingView GetTimeEntriesByProject(string projectGid)
+        {
+            var timeEntriesGroupByEmployeesView = GetTimeEntriesByProjectGroupByEmployee(projectGid);
+
+            var projectInfo = _projectService.GetProjectById(projectGid);
+
+            var projectAccountingView = new ProjectAccountingView()
+            {
+                ProjectGid = projectGid,
+                ProjectId = projectInfo.Id,
+                ProjectName = projectInfo.Name,
+                SpentManHour = timeEntriesGroupByEmployeesView.Sum(a => a.TotalHours),
+                SpentManHourRate = timeEntriesGroupByEmployeesView.Sum(a => a.TotalHoursRate)
+            };
+
+            return projectAccountingView;
         }
     }
 }

@@ -308,7 +308,8 @@ namespace Kevin.T.Timesheet.Services
                             IsDeleted = false,
                             UpdatedDate = DateTime.Now,
                             UpdatedUserID = currentUser,
-                            UpdatedUserName = currentUser
+                            UpdatedUserName = currentUser,
+                            ProjectGid = l.projectId
                         });
 
                         taskIdList.Add(l.task.id);

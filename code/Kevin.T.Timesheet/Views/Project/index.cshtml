@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "项目列表";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    td {
+        padding: 5px!important;
+    }
+</style>
+
+<div class="row">
+    <div class="col-xs-12">
+        <form class="form-inline" id="SearchForm" method="post">
+            <div class="form-group">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="ProjectName" placeholder="名称">
+                </div>
+                <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
+                    <i class="fa fa-search"></i>
+                </a>
+            </div>
+        </form>
+
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%">ID</th>
+                            <th style="width: 5%">GId</th>
+                            <th style="width: 15%">项目名称</th>
+                            <th style="width: 5%">Billiable</th>
+                            <th style="width: 5%">Archived</th>
+                            <th style="width: 10%">Duration</th>
+                            <th style="width: 45%">Note</th>
+                            <th style="width: 5%">IsPublic</th>
+                            <th style="width: 5%">操作</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<input value="@ViewBag.AppId" style="display:none;" class="hidden-input"/>
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList" },
+                "aoColumns": [
+                    {
+                        "mData": "Id",
+                        "bSearchable": true,
+                        "bSortable": true
+                        //"sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Gid",
+                        "bSearchable": true,
+                        "bSortable": true
+                        //"sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Name",
+                        "bSearchable": true,
+                        "bSortable": true
+                        //"sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Billiable",
+                        "bSearchable": false,
+                        "bSortable": false
+                        //"sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Archived",
+                        "bSearchable": false,
+                        "bSortable": false
+                        //"sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Duration",
+                        "bSearchable": false,
+                        "bSortable": false
+                        //"sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Note",
+                        "bSearchable": false,
+                        "bSortable": false
+                        //"sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "IsPublic",
+                        "bSearchable": false,
+                        "bSortable": false
+                        //"sClass": "sTdCheckbox"
+                    }
+                ],
+                "columnDefs":
+                    jQuery.extend(true, datatableSetting.columnDefs, [                        
+
+                       {
+                           "targets": 8,
+                           "render": function (data, type, full, meta) {
+                               return '<a href="../ProjectAccounting/index?projectGid=' + full.Gid + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">查看报表</a>';
+                           }
+                       }
+                    ]),
+
+                fnDrawCallback:
+                         function () { $('[data-toggle="tooltip"]').tooltip(); }
+            }));
+
+        });
+
+    </script>
+}

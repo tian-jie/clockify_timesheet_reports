@@ -38,53 +38,44 @@ namespace Kevin.T.Timesheet.Controllers
         [HttpGet]
         public override ActionResult Index()
         {
-            // 获取项目列表
-            var projects = _projectService.GetAllProjects();
-            ViewBag.Projects = projects;
-            var projectAccountingInfo = new ProjectAccountingView()
-            {
-                ProjectGid = "-",
-                ProjectId = -1,
-                ProjectName = "-",
-                SpentManHour = -1,
-                SpentManHourRate = -1
-            };
-
-            ViewBag.ProjectInfo = projectAccountingInfo;
-
             return View();
+        }
+
+        private List<TimeEntriesGroupByEmployeeView> GetProjectEffortByEmployeePrivate(string projectGid)
+        {
+            // 获取项目信息
+            var timeEntriesGroupByEmployeesView = _timeEntryService.GetTimeEntriesByProjectGroupByEmployee(projectGid);
+
+            return timeEntriesGroupByEmployeesView;
         }
 
         [HttpPost]
         public override ActionResult GetList()
         {
-            var projectGid = Request["projectGid"];
             var req = new GridRequest(Request);
 
-            if (string.IsNullOrEmpty(projectGid))
-            {
-                return GetPageResult(new List<TimeEntriesGroupByEmployeeView>(), req);
-            }
-            // 获取项目信息
+            var projectGid = Request["projectGid"];
+            var projectAccountingInfo = GetProjectEffortByEmployeePrivate(projectGid);
+            return GetPageResult(projectAccountingInfo, req);
+        }
+
+        [HttpPost]
+        public ActionResult GetProjectAccountingInfo(string projectGid)
+        {
+            var timeEntriesGroupByEmployeesView = GetProjectEffortByEmployeePrivate(projectGid);
             var projectInfo = _projectService.GetProjectById(projectGid);
+            var projectAccountingInfo = _projectService.GetProjectEstimatedEffortById(projectGid);
 
-            var timeEntriesGroupByEmployeesView = _timeEntryService.GetTimeEntriesByProjectGroupByEmployee(projectGid);
-            var id = 1;
-            var projectAccountingInfo = new ProjectAccountingView()
-            {
-                Id = id++,
-                ProjectGid = projectGid,
-                ProjectId = projectInfo.Id,
-                ProjectName = projectInfo.Name,
-                TimeEntriesGroupByEmployeesView = timeEntriesGroupByEmployeesView,
-                SpentManHour = timeEntriesGroupByEmployeesView.Sum(a => a.TotalHours),
-                SpentManHourRate = timeEntriesGroupByEmployeesView.Sum(a => a.TotalHoursRate)
-            };
-
-            ViewBag.ProjectInfo = projectAccountingInfo;
+            projectAccountingInfo.Id = 1;
+            projectAccountingInfo.ProjectGid = projectGid;
+            projectAccountingInfo.ProjectId = projectInfo.Id;
+            projectAccountingInfo.ProjectName = projectInfo.Name;
+            projectAccountingInfo.TimeEntriesGroupByEmployeesView = timeEntriesGroupByEmployeesView;
+            projectAccountingInfo.SpentManHour = timeEntriesGroupByEmployeesView.Sum(a => a.TotalHours);
+            projectAccountingInfo.SpentManHourRate = timeEntriesGroupByEmployeesView.Sum(a => a.TotalHoursRate);
 
 
-            return GetPageResult(timeEntriesGroupByEmployeesView, req);
+            return Json(projectAccountingInfo, JsonRequestBehavior.AllowGet);
         }
 
     }

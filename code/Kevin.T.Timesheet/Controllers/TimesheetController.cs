@@ -43,11 +43,17 @@ namespace Kevin.T.Timesheet.Controllers
             return View();
         }
 
-        public ActionResult GetTimesheetThisweekByGroup(string groupId)
+        public ActionResult GetTimesheetThisweekByGroup(string groupId, int year = 0, int week = 0)
         {
             var today = DateTime.Today;
-            var thisMonday = today.AddDays(-(int)today.DayOfWeek + 1);
-            var nextMonday = today.AddDays(-(int)today.DayOfWeek + 1).AddDays(7);
+            if (year != 0 && week != 0)
+            {
+                today = new DateTime(year, 1, 1).AddDays(week * 7);
+            }
+
+            var thisMonday = today.AddDays(-(today.DayOfWeek == DayOfWeek.Sunday ? 7 : ((int)today.DayOfWeek)) + 1);
+            var nextMonday = thisMonday.AddDays(7);
+
 
             var timeEntries = _timeEntryService.GetTimeEntriesByGroupAndDuration(groupId, thisMonday, nextMonday);
 

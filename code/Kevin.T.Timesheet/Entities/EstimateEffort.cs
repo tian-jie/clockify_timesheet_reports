@@ -4,9 +4,9 @@ using System;
 namespace Kevin.T.Timesheet.Entities
 {
     /// <summary>
-    /// 项目信息
+    /// 估算
     /// </summary>
-    public class ProjectTask : EntityBase<int>
+    public class EstimateEffort : EntityBase<int>
     {
         /// <summary>
         /// 主键ID
@@ -14,44 +14,46 @@ namespace Kevin.T.Timesheet.Entities
         public override int Id { get; set; }
 
         /// <summary>
-        /// Clockify里的id字符串
+        /// ProjectGid
         /// </summary>
-        public virtual string Gid { get; set; }
+        public string ProjectGid { get; set; }
 
         /// <summary>
-        /// Clockify里的id字符串
+        /// ProjectId
         /// </summary>
-        public virtual string ProjectGid { get; set; }
+        public int ProjectId { get; set; }
 
         /// <summary>
-        /// Task名称
+        /// EmployeeId
         /// </summary>
-        public string Name { get; set; }
+        public int EmployeeId { get; set; }
 
         /// <summary>
-        /// assigneeId
+        /// EmployeeGId
         /// </summary>
-        public string AssigneeId { get; set; }
+        public string EmployeeGId { get; set; }
 
         /// <summary>
-        /// Estimate
+        /// RoleId
         /// </summary>
-        public string Estimate { get; set; }
-
-
+        public int RoleId { get; set; }
 
         /// <summary>
-        /// Task周期信息
+        /// RoleTitle
         /// </summary>
-        public string Duration { get; set; }
+        public int RoleTitle { get; set; }
 
         /// <summary>
-        /// Task状态
+        /// RoleRate，比率，项目上的比率
         /// </summary>
-        public string Status { get; set; }
+        public decimal RoleRate { get; set; }
 
+        /// <summary>
+        /// Effort，比率，项目上的比率
+        /// </summary>
+        public decimal Effort { get; set; }
 
-
+        
         /// <summary>
         /// 创建日期，框架直接调用
         /// </summary>

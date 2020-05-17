@@ -29,6 +29,16 @@ namespace Kevin.T.Timesheet.ModelsView
         public string ProjectName { get; set; }
 
         /// <summary>
+        /// 估算工时
+        /// </summary>
+        public decimal EstimatedSpentManHour { get; set; }
+
+        /// <summary>
+        /// 估算 带rate的工时，rate根据RoleTitle.Rate计算，projectAccountingByWeeks汇总
+        /// </summary>
+        public decimal EstimatedSpentManHourRate { get; set; }
+
+        /// <summary>
         /// 已花费工时
         /// </summary>
         public decimal SpentManHour { get; set; }
@@ -38,7 +48,6 @@ namespace Kevin.T.Timesheet.ModelsView
         /// </summary>
         public decimal SpentManHourRate { get; set; }
 
-        
         // 第一层 by week
         // 第二层 by 员工
         public List<ProjectAccountingByWeek> ProjectAccountingByWeeks { get; set; }

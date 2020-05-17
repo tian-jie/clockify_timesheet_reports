@@ -17,6 +17,18 @@ namespace Kevin.T.Timesheet.Interfaces
         /// <returns></returns>
         List<TimeEntry> GetTimeEntriesByGroupAndDuration(string groupId, DateTime startDate, DateTime endDate);
 
+        /// <summary>
+        /// 统计项目花费信息，by到每一个成员
+        /// </summary>
+        /// <param name="projectGid"></param>
+        /// <returns></returns>
         List<TimeEntriesGroupByEmployeeView> GetTimeEntriesByProjectGroupByEmployee(string projectGid);
+
+        /// <summary>
+        /// 统计项目花费信息
+        /// </summary>
+        /// <param name="projectGid"></param>
+        /// <returns></returns>
+        ProjectAccountingView GetTimeEntriesByProject(string projectGid);
     }
 }

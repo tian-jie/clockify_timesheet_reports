@@ -9,12 +9,12 @@ namespace Kevin.T.Timesheet.Services
 {
     public class ProjectService : BaseService<Project>, IProjectService
     {
-        ITimeEntryService _timeEntryService;
+        IEstimateEffortService _estimateEffortService;
 
-        public ProjectService(ITimeEntryService timeEntryService)
+        public ProjectService(IEstimateEffortService estimateEffortService)
             : base("Timesheet")
         {
-            _timeEntryService = timeEntryService;
+            _estimateEffortService = estimateEffortService;
         }
 
 
@@ -26,6 +26,20 @@ namespace Kevin.T.Timesheet.Services
         public Project GetProjectById(string Gid)
         {
             return Repository.Entities.FirstOrDefault(a => a.IsDeleted != true && a.Gid == Gid);
+        }
+
+        public ProjectAccountingView GetProjectEstimatedEffortById(string Gid)
+        {
+            var efforts = _estimateEffortService.Repository.Entities.Where(a => a.ProjectGid == Gid);
+            var estimatedSpentManHour = efforts.Sum(a => a.Effort);
+            var estimatedSpentManHourRate = efforts.Sum(a => (a.Effort * a.RoleRate));
+
+            return new ProjectAccountingView()
+            {
+                ProjectGid = Gid,
+                EstimatedSpentManHour = estimatedSpentManHour,
+                EstimatedSpentManHourRate = estimatedSpentManHourRate
+            };
         }
 
         public ProjectAccountingView AccountProject(string Gid)

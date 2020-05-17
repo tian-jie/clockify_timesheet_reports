@@ -6,7 +6,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>D:\workspaces\ClockifyReports\Plugins\Kevin.T.Timesheet\bin\Release\Publish</_PublishTargetUrl>
+    <_PublishTargetUrl>D:\workspaces\WeChat Platform\Plugins\Kevin.T.Timesheet\bin\Release\Publish</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/CsvHelper.dll">
@@ -22,7 +22,7 @@
       <publishTime>10/23/2017 13:15:18</publishTime>
     </File>
     <File Include="bin/EntityFramework.MappingAPI.dll">
-      <publishTime>04/01/2018 16:42:52</publishTime>
+      <publishTime>04/01/2018 16:24:44</publishTime>
     </File>
     <File Include="bin/EntityFramework.SqlServer.dll">
       <publishTime>10/23/2017 13:15:20</publishTime>
@@ -30,11 +30,23 @@
     <File Include="bin/Infrastructure.Core.Data.dll">
       <publishTime>10/17/2018 20:37:38</publishTime>
     </File>
+    <File Include="bin/Infrastructure.Core.dll">
+      <publishTime>03/04/2020 18:47:34</publishTime>
+    </File>
+    <File Include="bin/Infrastructure.Utility.dll">
+      <publishTime>10/17/2018 20:37:38</publishTime>
+    </File>
+    <File Include="bin/Infrastructure.Web.dll">
+      <publishTime>03/04/2020 18:47:34</publishTime>
+    </File>
     <File Include="bin/Kevin.T.Timesheet.dll">
-      <publishTime>04/21/2020 07:37:47</publishTime>
+      <publishTime>05/17/2020 21:59:19</publishTime>
     </File>
     <File Include="bin/Kevin.T.Timesheet.pdb">
-      <publishTime>04/21/2020 07:37:47</publishTime>
+      <publishTime>05/17/2020 21:59:19</publishTime>
+    </File>
+    <File Include="bin/System.Web.Mvc.dll">
+      <publishTime>01/28/2015 04:02:18</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>10/23/2017 13:15:34</publishTime>
@@ -42,11 +54,14 @@
     <File Include="bin/zh-Hans/EntityFramework.SqlServer.resources.dll">
       <publishTime>10/23/2017 13:15:34</publishTime>
     </File>
+    <File Include="bin/zh-Hans/System.Web.Mvc.resources.dll">
+      <publishTime>01/28/2015 04:02:22</publishTime>
+    </File>
     <File Include="Description.txt">
       <publishTime>04/19/2020 21:06:36</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>04/20/2020 22:34:11</publishTime>
+      <publishTime>04/29/2020 22:47:57</publishTime>
     </File>
     <File Include="Views/CDSDoctor/index.cshtml">
       <publishTime>10/17/2018 20:38:43</publishTime>
@@ -73,10 +88,16 @@
       <publishTime>10/17/2018 20:38:43</publishTime>
     </File>
     <File Include="Views/Home/Index.cshtml">
-      <publishTime>04/20/2020 23:01:53</publishTime>
+      <publishTime>04/22/2020 07:30:46</publishTime>
     </File>
     <File Include="Views/Home/PatientManagement.cshtml">
       <publishTime>10/17/2018 20:38:43</publishTime>
+    </File>
+    <File Include="Views/Project/index.cshtml">
+      <publishTime>05/17/2020 09:20:19</publishTime>
+    </File>
+    <File Include="Views/ProjectAccounting/index.cshtml">
+      <publishTime>05/17/2020 20:44:45</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
       <publishTime>10/17/2018 20:38:43</publishTime>
@@ -87,6 +108,12 @@
     <File Include="Views/Task/index.cshtml">
       <publishTime>10/17/2018 20:38:43</publishTime>
     </File>
+    <File Include="Views/Timesheet/index.cshtml">
+      <publishTime>05/17/2020 09:07:43</publishTime>
+    </File>
+    <File Include="Views/Timesheet/ProjectAccounting.cshtml">
+      <publishTime>05/03/2020 09:30:48</publishTime>
+    </File>
     <File Include="Views/Web.config">
       <publishTime>10/17/2018 20:38:43</publishTime>
     </File>
@@ -94,7 +121,7 @@
       <publishTime>10/17/2018 20:38:43</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>04/21/2020 07:37:47</publishTime>
+      <publishTime>05/17/2020 21:05:33</publishTime>
     </File>
   </ItemGroup>
 </Project>

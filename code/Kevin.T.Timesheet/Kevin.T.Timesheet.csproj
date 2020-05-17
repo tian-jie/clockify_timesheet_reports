@@ -45,31 +45,39 @@
   <ItemGroup>
     <Reference Include="CsvHelper, Version=7.0.0.0, Culture=neutral, PublicKeyToken=8c4959082be5c823, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CsvHelper.7.1.1\lib\net45\CsvHelper.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="EntityFramework.BulkInsert, Version=6.0.2.8, Culture=neutral, PublicKeyToken=630a17433349cb76, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.BulkInsert-ef6.6.0.2.8\lib\Net45\EntityFramework.BulkInsert.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="EntityFramework.MappingAPI, Version=6.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\WeChat Platform\packages\EntityFramework.MappingAPI.6.2.0\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Infrastructure.Core">
       <HintPath>..\..\..\LillyChinaBoostME\source\Dotnet\Library\Infrastructure.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Infrastructure.Core.Data">
       <HintPath>..\..\Library\Infrastructure.Core.Data.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Infrastructure.Utility">
       <HintPath>..\..\..\WeChat Platform\Library\Infrastructure.Utility.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Infrastructure.Web">
       <HintPath>..\..\..\LillyChinaBoostME\source\Dotnet\Library\Infrastructure.Web.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -91,6 +99,7 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\..\WeChat Platform\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -100,8 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="Views\DoctorHistory\EditHistory.cshtml" />
-    <Content Include="Views\DoctorHistory\index.cshtml" />
+    <Content Include="Views\Project\index.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -125,12 +133,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClockifyModels\TagModel.cs" />
+    <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Controllers\ProjectAccountingController.cs" />
     <Compile Include="Controllers\TimesheetController.cs" />
+    <Compile Include="Entities\EstimateEffort.cs" />
     <Compile Include="Entities\ProjectTask.cs" />
     <Compile Include="Entities\ProjectUser.cs" />
     <Compile Include="Entities\RoleTitle.cs" />
     <Compile Include="Entities\UserGroup.cs" />
+    <Compile Include="Interfaces\IEstimateEffortService.cs" />
     <Compile Include="Interfaces\IProjectUserService.cs" />
     <Compile Include="Interfaces\IProjectTaskService.cs" />
     <Compile Include="Interfaces\IUserGroupService.cs" />
@@ -143,6 +154,7 @@
     <Compile Include="Interfaces\ITimeService.cs" />
     <Compile Include="Interfaces\IClockifyService.cs" />
     <Compile Include="Entities\Group.cs" />
+    <Compile Include="Services\EstimateEffortService.cs" />
     <Compile Include="Services\ProjectUserService.cs" />
     <Compile Include="Services\ProjectTaskService.cs" />
     <Compile Include="Services\UserGroupService.cs" />
@@ -171,6 +183,7 @@
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Services\TimesheetService.cs" />
+    <Compile Include="ViewModels\ProjectView.cs" />
     <Compile Include="ViewModels\ProjectAccountingView.cs" />
     <Compile Include="ViewModels\TimeEntriesGroupByEmployee.cs" />
     <Compile Include="ViewModels\TimesheetByWeekView.cs" />

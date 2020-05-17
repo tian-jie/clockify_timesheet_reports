@@ -12,5 +12,7 @@ namespace Kevin.T.Timesheet.Interfaces
         Project GetProjectById(string Gid);
 
         ProjectAccountingView AccountProject(string Gid);
+
+        ProjectAccountingView GetProjectEstimatedEffortById(string Gid);
     }
 }
