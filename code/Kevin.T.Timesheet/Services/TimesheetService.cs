@@ -291,7 +291,7 @@ namespace Kevin.T.Timesheet.Services
                         projectIdList.Add(l.project.id);
                     }
 
-                    if (!taskIdList.Contains(l.task.id))
+                    if (l.task!= null && !taskIdList.Contains(l.task.id))
                     {
                         // 插入project信息
                         await _projectTaskService.Repository.InsertAsync(new ProjectTask()

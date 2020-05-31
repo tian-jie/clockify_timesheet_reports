@@ -14,7 +14,7 @@ namespace Kevin.T.Timesheet.Controllers
     {
         private readonly IProjectService _projectService;
 
-        public ProjectController(IProjectService projectService)
+        public ProjectController(IProjectService projectService, ITaskToProjectMappingService taskToProjectMappingService)
             : base(projectService)
         {
             _projectService = projectService;
@@ -25,6 +25,7 @@ namespace Kevin.T.Timesheet.Controllers
         {
             var req = new GridRequest(Request);
 
+            // 普通项目
             var projects = _projectService.GetAllProjects();
 
             return GetPageResult(projects, req);

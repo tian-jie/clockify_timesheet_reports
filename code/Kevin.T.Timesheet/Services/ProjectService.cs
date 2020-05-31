@@ -10,22 +10,51 @@ namespace Kevin.T.Timesheet.Services
     public class ProjectService : BaseService<Project>, IProjectService
     {
         IEstimateEffortService _estimateEffortService;
+        ITaskToProjectMappingService _taskToProjectMappingService;
 
-        public ProjectService(IEstimateEffortService estimateEffortService)
+        public ProjectService(IEstimateEffortService estimateEffortService, ITaskToProjectMappingService taskToProjectMappingService)
             : base("Timesheet")
         {
             _estimateEffortService = estimateEffortService;
+            _taskToProjectMappingService = taskToProjectMappingService;
         }
 
 
         public List<Project> GetAllProjects()
         {
-            return Repository.Entities.Where(a => a.IsDeleted != true).ToList();
+            var projects = Repository.Entities.Where(a => a.IsDeleted != true).ToList();
+
+            // 再加上其他以task为项目的项目
+            var taskAsProjects = _taskToProjectMappingService.All();
+            foreach (var taskAsProject in taskAsProjects)
+            {
+                projects.Add(new Project()
+                {
+                    Id = 0,
+                    Name = taskAsProject.ProjectName,
+                    Gid = taskAsProject.TaskGid
+                });
+            }
+
+            return projects;
         }
 
         public Project GetProjectById(string Gid)
         {
-            return Repository.Entities.FirstOrDefault(a => a.IsDeleted != true && a.Gid == Gid);
+            var project = Repository.Entities.FirstOrDefault(a => a.IsDeleted != true && a.Gid == Gid);
+
+            if(project == null)
+            {
+                var taskAsProject = _taskToProjectMappingService.Repository.Entities.FirstOrDefault(a => a.IsDeleted != true && a.TaskGid == Gid);
+                project = new Project()
+                {
+                    Id = 0,
+                    Name = taskAsProject.ProjectName,
+                    Gid = taskAsProject.TaskGid
+                };
+            }
+
+            return project;
         }
 
         public ProjectAccountingView GetProjectEstimatedEffortById(string Gid)

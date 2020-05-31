@@ -9,11 +9,16 @@
         <input type="button" onclick="syncUser()" value="Sync User" />
         <input type="button" onclick="syncGroup()" value="Sync Group" />
         <input type="button" onclick="syncClient()" value="Sync Client" />
+        <br />
+        <input type="text" id="startDate" name="startDate">
+        <input type="text" id="endDate" name="endDate">
         <input type="button" onclick="syncTimeEntry()" value="Sync Time Entries" />
     </div>
 </div>
-
+<script src="/Scripts/history/lib/layer/layer.js"></script>
 <script language="javascript">
+    
+
     function syncProject() {
         $.ajax({
             type: "POST",
@@ -59,8 +64,8 @@
             type: "POST",
             url: "syncTimeEntry",
             data: {
-                startTime: '2020-04-02',
-                endTime: '2020-10-01'
+                startTime: document.getElementById("startDate").value,
+                endTime: document.getElementById('endDate').value
             },
             success: function (result) {
                 layer.msg(result.Message);

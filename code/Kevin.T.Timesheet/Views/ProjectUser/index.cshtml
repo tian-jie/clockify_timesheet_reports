@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Task列表";
+    ViewBag.Title = "ProjectUsers";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <style>
@@ -13,16 +13,7 @@
         <form class="form-inline" id="SearchForm" method="post">
             <div class="form-group">
                 <div class="form-group">
-                    <input class="form-control" type="text" name="Name" placeholder="名称">
-                </div>
-                <div class="form-group">
-                    <select id="ProjectId" class="form-control" name="ProjectId" data-placeholder="请选择一个项目">
-                        <option value="0" selected="selected">请选择一个项目</option>
-                        @foreach (var item in ViewBag.TaskProjects)
-                        {
-                            <option value="@item.Id">@item.TaskProjectName</option>
-                        }
-                    </select>
+                    <input class="form-control" type="text" name="ProjectName" placeholder="项目名称">
                 </div>
                 <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
                     <i class="fa fa-search"></i>
@@ -43,12 +34,12 @@
                 <table class="table table-bordered data-table">
                     <thead>
                         <tr>
-                            <th style="width: 10%">名称</th>
-                            <th style="width: 60%">详情</th>
-                            <th style="width: 2%">Status</th>
-                            <th style="width:7%">警告类型</th>
-                            <th style="width: 10%">警告人的lillyid</th>
-
+                            <th style="width: 15%">项目Gid</th>
+                            <th style="width: 10%">项目名称</th>
+                            <th style="width: 15%">员工Gid</th>
+                            <th style="width: 10%">员工名称</th>
+                            <th style="width: 10%">员工角色</th>
+                            <th style="width: 10%">比率</th>
                             <th style="width: 11%">操作</th>
                             @*<th style="width: 1%">有效否</th>
                                 <th style="width: 1%">修改</th>
@@ -62,6 +53,54 @@
     </div>
 
 </div>
+
+<div id="ModalTable" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="blue bigger">Please fill the followings</h4>
+            </div>
+
+            <div class="modal-body">
+                <form action="Post" id="ff" method="get" class="form-horizontal" datasource="Get">
+                    <input type="hidden" id="ID" name="ID" value="0" />
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Title:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="FriendlyName" class="form-control" placeholder="Role Title" data-bind="value: FriendlyName"
+                                   validate="{required:true}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Title:</label>
+                        <div class="col-sm-9">
+                            <textarea name="FriendlyName1" class="form-control" placeholder="Role Title" data-bind="value: FriendlyName"
+                                      validate="{required:true}"></textarea>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times"></i>
+                    Cancel
+                </button>
+
+                <button class="btn btn-sm btn-primary" id="btnSave" data-action="save">
+                    <i class="ace-icon fa fa-check"></i>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <input value="@ViewBag.AppId" style="display:none;" class="hidden-input" />
 @section scripts_Foot
 {
@@ -121,7 +160,7 @@
                                      }
                                  }
 
-                                 
+
 
                                  var lrst = HtmlUtil.htmlEncode(full.LastResult);
                                  if (lrst.length > 200)
@@ -196,8 +235,8 @@
                                  }
                                  ref+= "<span class=\"btn btn-success btn-xs pull-left\" onclick=\"javascript:ExecutedStatus('" + full.Id + "',this, '/LccpBackendAdmin/task/Execute')\" data-toggle=\"tooltip\" style=\"margin: 2px;\" data-placement=\"top\" title=\"\">执行</span>";
                                  ref+= '<a href="/LccpBackendAdmin/Task/EditTask?id=' + full.Id + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="">修改</a>';
-                                 
-                                 
+
+
                                  ref+= "<span class=\"btn btn-danger btn-xs pull-left\" onclick=\"javascript:DeleteStatus('" + full.Id + "',this, '/LccpBackendAdmin/task/DeleteId')\" data-toggle=\"tooltip\" style=\"margin: 2px;\" data-placement=\"top\" title=\"\">删除</span>";
                                  ref+= '<a href="/LccpBackendAdmin/ExecutedTask/?Task=' + full.Id + '" id="addBtn" class="btn btn-success  btn-xs" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="">执行记录</a>';
                                  return ref;
@@ -242,7 +281,7 @@
 
         }
 
-        
+
         function ExecutedStatus(id, obj, url) {
             artDialog.width = 250;
             artDialog.height = 250;

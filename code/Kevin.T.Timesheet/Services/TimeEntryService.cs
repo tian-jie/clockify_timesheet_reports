@@ -13,15 +13,18 @@ namespace Kevin.T.Timesheet.Services
         IUserGroupService _userGroupService;
         IProjectUserService _projectUserService;
         IProjectService _projectService;
+        IProjectTaskService _projectTaskService;
 
         public TimeEntryService(IUserGroupService userGroupService
             , IProjectUserService projectUserService
-            , IProjectService projectService)
+            , IProjectService projectService
+            , IProjectTaskService projectTaskService)
             : base("Timesheet")
         {
             _userGroupService = userGroupService;
             _projectUserService = projectUserService;
             _projectService = projectService;
+            _projectTaskService = projectTaskService;
         }
 
         /// <summary>
@@ -55,8 +58,22 @@ namespace Kevin.T.Timesheet.Services
             var projectUsers = _projectUserService.GetUserByProject(projectGid, null);
             var allUsers = _projectUserService.Repository.Entities;
 
+            // 看这个projectGid，如果属于taskgid，就从taskgid过滤
+            var task = _projectTaskService.GetProjectTaskById(projectGid);
+
             // 再根据每个员工统计timeentry
-            var timeEntryByUsers = Repository.Entities.Where(a => a.IsDeleted != true && a.ProjectId == projectGid).GroupBy(a => a.UserId);
+            var timeEntry = Repository.Entities.Where(a => a.IsDeleted != true);
+            if (task != null)
+            {
+                timeEntry = timeEntry.Where(a => a.TaskId == projectGid);
+            }
+            else
+            {
+                timeEntry = timeEntry.Where(a => a.ProjectId == projectGid);
+            }
+
+            var timeEntryByUsers = timeEntry.GroupBy(a => a.UserId);
+
             var timeEntriesGroupByEmployeesView = new List<TimeEntriesGroupByEmployeeView>();
 
             foreach (var a in timeEntryByUsers)
