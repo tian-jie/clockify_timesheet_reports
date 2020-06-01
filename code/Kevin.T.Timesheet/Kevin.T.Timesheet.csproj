@@ -132,6 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClockifyModels\TagModel.cs" />
+    <Compile Include="Controllers\EstimateEffortController.cs" />
     <Compile Include="Controllers\ProjectUserController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Controllers\ProjectAccountingController.cs" />
@@ -188,6 +189,7 @@
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Services\TimesheetService.cs" />
+    <Compile Include="ViewModels\EstimateEffortView.cs" />
     <Compile Include="ViewModels\ProjectUserView.cs" />
     <Compile Include="ViewModels\ProjectView.cs" />
     <Compile Include="ViewModels\ProjectAccountingView.cs" />

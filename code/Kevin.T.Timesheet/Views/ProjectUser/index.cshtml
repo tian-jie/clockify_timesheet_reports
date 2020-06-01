@@ -8,22 +8,27 @@
     }
 </style>
 
+
+
 <div class="row">
     <div class="col-xs-12">
         <form class="form-inline" id="SearchForm" method="post">
             <div class="form-group">
                 <div class="form-group">
-                    <input class="form-control" type="text" name="ProjectName" placeholder="项目名称">
+                    <select class="form-control" name="ProjectName" placeholder="项目名称">
+                        @foreach (var project in ViewBag.Projects)
+                        {
+                            <option value="@project.Gid">@project.Name</option>
+                        }
+                    </select>
                 </div>
                 <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
                     <i class="fa fa-search"></i>
                 </a>
             </div>
             <div class="form-group pull-right" style="margin-left:5px">
-                @*<a href="/plugins/innocellence.wx.tools/content/PollingAcountingTemplate.xlsx" id="downloadTemplateBtn" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="下载得分统计模板">
-                        <i class="fa fa-file-excel-o"></i>
-                    </a>*@
-                <a href="/LccpBackendAdmin/Task/EditTask" id="addBtn" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="添加">
+
+                <a href="#" class="btn btn-success btn-sm" id="btnAdd" data-toggle="tooltip" data-placement="top" title="增加">
                     <i class="fa fa-plus"></i>
                 </a>
             </div>
@@ -67,21 +72,38 @@
                     <input type="hidden" id="ID" name="ID" value="0" />
 
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Title:</label>
+                        <label class="col-sm-3 control-label">Project:</label>
                         <div class="col-sm-9">
-                            <input type="text" name="FriendlyName" class="form-control" placeholder="Role Title" data-bind="value: FriendlyName"
-                                   validate="{required:true}" />
+                            <select class="form-control" name="ProjectName" placeholder="选择项目">
+                                @foreach (var project in ViewBag.Projects)
+                                {
+                                    <option value="@project.Gid">@project.Name</option>
+                                }
+                            </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="col-sm-3 control-label">Title:</label>
+                        <label class="col-sm-3 control-label">Employee:</label>
                         <div class="col-sm-9">
-                            <textarea name="FriendlyName1" class="form-control" placeholder="Role Title" data-bind="value: FriendlyName"
-                                      validate="{required:true}"></textarea>
+                            <select class="form-control" name="EmployeeName" placeholder="选择员工"  data-bind="value: EmployeeName">
+                                @foreach (var employee in ViewBag.Employees)
+                                {
+                                    <option value="@employee.Gid">@employee.Name</option>
+                                }
+                            </select>
                         </div>
                     </div>
-
-
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Role:</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" name="RoleTitle" placeholder="选择角色">
+                                @foreach (var role in ViewBag.RoleTitle)
+                                {
+                                    <option value="@role.Id">@role.Title</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
                 </form>
             </div>
 
@@ -104,13 +126,14 @@
 <input value="@ViewBag.AppId" style="display:none;" class="hidden-input" />
 @section scripts_Foot
 {
+    <script src="/scripts/ace-extra.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
 
             var taskproject = @Html.Raw(Json.Encode(ViewBag.TaskProjects));
 
             LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
-                "ajax": { "url": "/Task/GetList" },
+                "ajax": { "url": "GetList" },
                 "aoColumns": [
                     {
                     "mData": "Name",
