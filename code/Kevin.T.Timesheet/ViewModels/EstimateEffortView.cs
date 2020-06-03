@@ -1,4 +1,5 @@
 using Infrastructure.Core;
+using Kevin.T.Timesheet.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -22,12 +23,12 @@ namespace Kevin.T.Timesheet.ModelsView
         /// <summary>
         /// ProjectId
         /// </summary>
-        public int ProjectId { get; set; }
+        public int? ProjectId { get; set; }
 
         /// <summary>
         /// EmployeeId
         /// </summary>
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
 
         /// <summary>
         /// EmployeeGId
@@ -37,12 +38,12 @@ namespace Kevin.T.Timesheet.ModelsView
         /// <summary>
         /// RoleId
         /// </summary>
-        public int RoleId { get; set; }
+        public int? RoleId { get; set; }
 
         /// <summary>
         /// RoleTitle
         /// </summary>
-        public int RoleTitle { get; set; }
+        public string RoleTitle { get; set; }
 
         /// <summary>
         /// RoleRate，比率，项目上的比率
@@ -50,13 +51,30 @@ namespace Kevin.T.Timesheet.ModelsView
         public decimal RoleRate { get; set; }
 
         /// <summary>
+        /// RateEffort
+        /// </summary>
+        public decimal RateEffort { get; set; }
+
+        /// <summary>
         /// Effort，比率，项目上的比率
         /// </summary>
         public decimal Effort { get; set; }
 
-        public IViewModel ConvertAPIModel(object model)
+        public IViewModel ConvertAPIModel(object obj)
         {
-            throw new NotImplementedException();
+            var entity = (EstimateEffort)obj;
+            Id = entity.Id;
+            ProjectGid = entity.ProjectGid;
+            ProjectId = entity.ProjectId;
+            EmployeeId = entity.EmployeeId;
+            EmployeeGId = entity.EmployeeGId;
+            RoleId = entity.RoleId;
+            RoleTitle = entity.RoleTitle;
+            RoleRate = entity.RoleRate;
+            Effort = entity.Effort;
+
+            RateEffort = entity.Effort * entity.RoleRate;
+            return this;
         }
     }
 }

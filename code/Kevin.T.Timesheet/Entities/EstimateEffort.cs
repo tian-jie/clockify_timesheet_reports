@@ -21,12 +21,12 @@ namespace Kevin.T.Timesheet.Entities
         /// <summary>
         /// ProjectId
         /// </summary>
-        public int ProjectId { get; set; }
+        public int? ProjectId { get; set; }
 
         /// <summary>
         /// EmployeeId
         /// </summary>
-        public int EmployeeId { get; set; }
+        public int? EmployeeId { get; set; }
 
         /// <summary>
         /// EmployeeGId
@@ -36,12 +36,12 @@ namespace Kevin.T.Timesheet.Entities
         /// <summary>
         /// RoleId
         /// </summary>
-        public int RoleId { get; set; }
+        public int? RoleId { get; set; }
 
         /// <summary>
         /// RoleTitle
         /// </summary>
-        public int RoleTitle { get; set; }
+        public string RoleTitle { get; set; }
 
         /// <summary>
         /// RoleRate，比率，项目上的比率

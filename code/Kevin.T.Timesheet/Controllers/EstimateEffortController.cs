@@ -7,6 +7,10 @@ using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Linq;
+using System.Collections.Generic;
+using Infrastructure.Utility.Data;
+using System.Linq.Expressions;
+using Infrastructure.Web.UI;
 
 namespace Kevin.T.Timesheet.Controllers
 {
@@ -25,8 +29,35 @@ namespace Kevin.T.Timesheet.Controllers
 
         public override ActionResult Index()
         {
-            return View();
+            ViewBag.RoleTitles = _roleTitleService.All().ToList();
+            return base.Index();
         }
 
+        public override List<EstimateEffortView> GetListEx(Expression<Func<EstimateEffort, bool>> predicate, PageCondition ConPage)
+        {
+            string strProjectGid = Request["ProjectGid"];
+
+            if (!string.IsNullOrEmpty(strProjectGid))
+            {
+                predicate = predicate.AndAlso(x => x.ProjectGid == strProjectGid);
+            }
+
+            var q = _objService.GetList<EstimateEffortView>(predicate.AndAlso(x => x.IsDeleted != true), ConPage);
+
+            // 添加一个汇总
+            var summary = new EstimateEffortView()
+            {
+                Id = 999,
+                ProjectGid = strProjectGid,
+                ProjectId = 0,
+                Effort = q.Sum(a => a.Effort),
+                RoleTitle = "汇总",
+                RateEffort = q.Sum(a => a.Effort * a.RoleRate)
+            };
+
+            q.Add(summary);
+
+            return q.ToList();
+        }
     }
 }

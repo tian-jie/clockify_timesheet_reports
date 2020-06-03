@@ -109,7 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="Views\Project\index.cshtml" />
+    <Content Include="Views\EstimateEffort\index.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Web.config" />
     <Content Include="Views\Shared\_Layout.cshtml" />
@@ -119,6 +119,7 @@
     <Content Include="Views\ProjectAccounting\index.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <Content Include="Views\Timesheet\ProjectAccounting.cshtml" />
+    <Content Include="Views\Project\index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

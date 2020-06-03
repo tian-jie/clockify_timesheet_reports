@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Core.Data;
-using Kevin.T.Timesheet.Interfaces;
 using Kevin.T.Timesheet.Entities;
+using Kevin.T.Timesheet.Interfaces;
+using System.Linq;
 
 namespace Kevin.T.Timesheet.Services
 {
@@ -10,6 +11,11 @@ namespace Kevin.T.Timesheet.Services
             : base("Timesheet")
         {
 
+        }
+
+        public IQueryable<RoleTitle> All()
+        {
+            return Repository.Entities.Where(a => a.IsDeleted != true);
         }
     }
 }

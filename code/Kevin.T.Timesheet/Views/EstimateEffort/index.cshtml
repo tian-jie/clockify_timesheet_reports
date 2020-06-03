@@ -1,10 +1,10 @@
 ﻿@{
-    ViewBag.Title = "项目列表";
+    ViewBag.Title = "项目估算列表";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <style>
     td {
-        padding: 5px!important;
+        padding: 5px !important;
     }
 </style>
 
@@ -27,13 +27,10 @@
                     <thead>
                         <tr>
                             <th style="width: 5%">ID</th>
-                            <th style="width: 5%">GId</th>
-                            <th style="width: 15%">项目名称</th>
-                            <th style="width: 5%">Billable</th>
-                            <th style="width: 5%">Archived</th>
-                            <th style="width: 10%">Duration</th>
-                            <th style="width: 45%">Note</th>
-                            <th style="width: 5%">IsPublic</th>
+                            <th style="width: 15%">Role</th>
+                            <th style="width: 15%">Rate</th>
+                            <th style="width: 15%">Effort</th>
+                            <th style="width: 15%">Rate Effort</th>
                             <th style="width: 5%">操作</th>
                         </tr>
                     </thead>
@@ -44,11 +41,11 @@
     </div>
 
 </div>
-<input value="@ViewBag.AppId" style="display:none;" class="hidden-input"/>
+<input value="@ViewBag.AppId" style="display:none;" class="hidden-input" />
 @section scripts_Foot
 {
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
 
             LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
                 "ajax": { "url": "GetList" },
@@ -60,62 +57,44 @@
                         //"sClass": "sTdCheckbox"
                     },
                     {
-                        "mData": "Gid",
+                        "mData": "RoleTitle",
                         "bSearchable": true,
                         "bSortable": true
                         //"sClass": "sTdCheckbox"
                     },
                     {
-                        "mData": "Name",
+                        "mData": "RoleRate",
                         "bSearchable": true,
                         "bSortable": true
                         //"sClass": "sTdCheckbox"
                     },
                     {
-                        "mData": "Billable",
+                        "mData": "Effort",
                         "bSearchable": false,
                         "bSortable": false
                         //"sClass": "sTdCheckbox"
                     },
                     {
-                        "mData": "Archived",
-                        "bSearchable": false,
-                        "bSortable": false
-                        //"sClass": "sTdCheckbox"
-                    },
-                    {
-                        "mData": "Duration",
-                        "bSearchable": false,
-                        "bSortable": false
-                        //"sClass": "sTdCheckbox"
-                    },
-                    {
-                        "mData": "Note",
-                        "bSearchable": false,
-                        "bSortable": false
-                        //"sClass": "sTdCheckbox"
-                    },
-                    {
-                        "mData": "IsPublic",
+                        "mData": "RateEffort",
                         "bSearchable": false,
                         "bSortable": false
                         //"sClass": "sTdCheckbox"
                     }
                 ],
                 "columnDefs":
-                    jQuery.extend(true, datatableSetting.columnDefs, [                        
+                    jQuery.extend(true, datatableSetting.columnDefs, [
+                        {
+                            "targets": 5,
+                            "render": function (data, type, full, meta) {
+                                return '<a href="delete?sIds=' + full.Id + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">delete</a>'+
+                                '<a href="edit?id=' + full.Id + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">edit</a>';
+                            }
+                        }
 
-                       {
-                           "targets": 8,
-                           "render": function (data, type, full, meta) {
-                               return '<a href="../EffortEstimate/index?projectGid=' + full.Gid + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">Budget</a>'
-                               + '<a href="../ProjectAccounting/index?projectGid=' + full.Gid + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">查看报表</a>';
-                           }
-                       }
                     ]),
 
                 fnDrawCallback:
-                         function () { $('[data-toggle="tooltip"]').tooltip(); }
+                    function () { $('[data-toggle="tooltip"]').tooltip(); }
             }));
 
         });
