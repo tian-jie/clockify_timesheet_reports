@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Title = "项目列表";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "../Shared/_Layout.cshtml";
 }
 <style>
     td {
@@ -51,7 +51,7 @@
         $(document).ready(function() {
 
             LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
-                "ajax": { "url": "GetList" },
+                "ajax": { "url": "GetList", "method": "post" },
                 "aoColumns": [
                     {
                         "mData": "Id",
@@ -108,8 +108,8 @@
                        {
                            "targets": 8,
                            "render": function (data, type, full, meta) {
-                               return '<a href="../EffortEstimate/index?projectGid=' + full.Gid + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">Budget</a>'
-                               + '<a href="../ProjectAccounting/index?projectGid=' + full.Gid + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">查看报表</a>';
+                        return '<a href="../EstimateEffort/index?projectGid='+ full.Gid +'" class="artDailog btn btn-info  btn-xs" style="margin-right:10px;" data-toggle="tooltip" data-placement="top" title="项目预算" target="_blank"><i class="fa fa-pencil"></i> Budget</a>'+
+                               '<a href="../ProjectAccounting/index?projectGid='+ full.Gid +'" class="btn btn-warning btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="项目成本详情" target="_blank"><i class="fa fa-newspaper-o"></i> Accounting</a>';
                            }
                        }
                     ]),

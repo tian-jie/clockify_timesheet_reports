@@ -1,7 +1,5 @@
 using Infrastructure.Core;
 using Kevin.T.Timesheet.Entities;
-using System;
-using System.Collections.Generic;
 
 namespace Kevin.T.Timesheet.ModelsView
 {

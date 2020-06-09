@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Core.Logging;
+using Infrastructure.Utility.Data;
 using Infrastructure.Web.UI;
 using Innocellence.Web.Controllers;
 using Kevin.T.Timesheet.Entities;
@@ -7,6 +8,7 @@ using Kevin.T.Timesheet.ModelsView;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web.Mvc;
 
 namespace Kevin.T.Timesheet.Controllers
@@ -41,6 +43,26 @@ namespace Kevin.T.Timesheet.Controllers
             var groups = _groupService.Repository.Entities.Where(a => a.IsDeleted != true).OrderBy(a => a.Name);
             ViewBag.Groups = groups;
             return View();
+        }
+
+        public override List<TimeEntryView> GetListEx(Expression<Func<TimeEntry, bool>> predicate, PageCondition con)
+        {
+            // TODO: 应该获取当前的项目id，员工，查询这个员工所有的当周的录入情况，group by day，分别放到MON, TUE....中
+            var employeeId = "";
+            var year = 0;
+            var week = 0;
+            var today = DateTime.Today;
+            if (year != 0 && week != 0)
+            {
+                today = new DateTime(year, 1, 1).AddDays(week * 7);
+            }
+            var thisMonday = today.AddDays(-(today.DayOfWeek == DayOfWeek.Sunday ? 7 : ((int)today.DayOfWeek)) + 1);
+            var nextMonday = thisMonday.AddDays(7);
+
+            var timeEntries = _timeEntryService.
+
+
+            throw new NotImplementedException();
         }
 
         public ActionResult GetTimesheetThisweekByGroup(string groupId, int year = 0, int week = 0)

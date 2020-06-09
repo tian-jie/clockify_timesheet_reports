@@ -33,6 +33,17 @@ namespace Kevin.T.Timesheet.Controllers
             return base.Index();
         }
 
+        public override ActionResult GetList()
+        {
+            Expression<Func<EstimateEffort, bool>> predicate = m => true;
+            PageCondition pageCondition = new PageCondition(1, 10);
+
+            var list = GetListEx(predicate, pageCondition);
+
+            var result = new { total = list.Count, rows = list };
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
         public override List<EstimateEffortView> GetListEx(Expression<Func<EstimateEffort, bool>> predicate, PageCondition ConPage)
         {
             string strProjectGid = Request["ProjectGid"];

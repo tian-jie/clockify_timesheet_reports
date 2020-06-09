@@ -2,102 +2,154 @@
     ViewBag.Title = "项目估算列表";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<style>
-    td {
-        padding: 5px !important;
-    }
-</style>
 
-<div class="row">
-    <div class="col-xs-12">
-        <form class="form-inline" id="SearchForm" method="post">
-            <div class="form-group">
-                <div class="form-group">
-                    <input class="form-control" type="text" name="ProjectName" placeholder="名称">
+<div class="panel-body" style="padding-bottom:0px;">
+    <div class="panel panel-default">
+        <div class="panel-heading">查询条件</div>
+        <div class="panel-body">
+            <form id="formSearch" class="form-horizontal">
+                <div class="form-group" style="margin-top:15px">
+                    <label class="control-label col-sm-1" for="txt_search_departmentname">部门名称</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="txt_search_departmentname">
+                    </div>
+                    <label class="control-label col-sm-1" for="txt_search_statu">状态</label>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" id="txt_search_statu">
+                    </div>
+                    <div class="col-sm-4" style="text-align:left;">
+                        <button type="button" style="margin-left:50px" id="btn_query" class="btn btn-primary">查询</button>
+                    </div>
                 </div>
-                <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
-                    <i class="fa fa-search"></i>
-                </a>
-            </div>
-        </form>
+            </form>
+        </div>
+    </div>
 
+    <div id="toolbar" class="btn-group">
+        <button id="btn_add" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+        </button>
+        <button id="btn_edit" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+        </button>
+        <button id="btn_delete" type="button" class="btn btn-default">
+            <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+        </button>
+    </div>
+
+    <body>
         <div class="widget-box">
             <div class="widget-content nopadding">
-                <table class="table table-bordered data-table">
+                <table class="table table-bordered data-table" id="table">
                     <thead>
                         <tr>
-                            <th style="width: 5%">ID</th>
-                            <th style="width: 15%">Role</th>
-                            <th style="width: 15%">Rate</th>
-                            <th style="width: 15%">Effort</th>
-                            <th style="width: 15%">Rate Effort</th>
-                            <th style="width: 5%">操作</th>
+                            @*<th style="width: 8%; text-align: center;">Id</th>*@
+                            <th style="width: 5%">Id</th>
+                            <th style="width: 30%">ProjectGid</th>
+                            <th style="width: 10%">RoleTitle</th>
+                            <th style="width: 10%">RoleRate</th>
+                            <th style="width: 10%">Effort</th>
+                            <th style="width: 10%">RateEffort</th>
+
                         </tr>
                     </thead>
                 </table>
             </div>
         </div>
 
-    </div>
 
-</div>
-<input value="@ViewBag.AppId" style="display:none;" class="hidden-input" />
-@section scripts_Foot
+    </body>
+
+    @section scripts_Foot
 {
-    <script type="text/javascript">
-        $(document).ready(function () {
+        <script language="javascript">
+            $(document).ready(function () {
+                initTable();
+            });
 
-            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
-                "ajax": { "url": "GetList" },
-                "aoColumns": [
-                    {
-                        "mData": "Id",
-                        "bSearchable": true,
-                        "bSortable": true
-                        //"sClass": "sTdCheckbox"
-                    },
-                    {
-                        "mData": "RoleTitle",
-                        "bSearchable": true,
-                        "bSortable": true
-                        //"sClass": "sTdCheckbox"
-                    },
-                    {
-                        "mData": "RoleRate",
-                        "bSearchable": true,
-                        "bSortable": true
-                        //"sClass": "sTdCheckbox"
-                    },
-                    {
-                        "mData": "Effort",
-                        "bSearchable": false,
-                        "bSortable": false
-                        //"sClass": "sTdCheckbox"
-                    },
-                    {
-                        "mData": "RateEffort",
-                        "bSearchable": false,
-                        "bSortable": false
-                        //"sClass": "sTdCheckbox"
+            function initTable() {
+                $('#table').bootstrapTable({
+                    url: 'GetList',        // 表格数据来源
+                    method: "post",
+                    toolbar: "#toolbar",
+                    striped: true,                      //是否显示行间隔色
+                    cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                    pagination: true,                   //是否显示分页（*）
+                    sortable: true,                     //是否启用排序
+                    sortOrder: "asc",                   //排序方式
+                    sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+                    pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+                    pageSize: 10,                       //每页的记录行数（*）
+                    pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+                    search: false,                      //是否显示表格搜索
+                    strictSearch: true,
+                    showColumns: true,                  //是否显示所有的列（选择显示的列）
+                    showRefresh: true,                  //是否显示刷新按钮
+                    minimumCountColumns: 2,             //最少允许的列数
+                    clickToSelect: true,                //是否启用点击选中行
+                    //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                    uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+                    showToggle: false,                   //是否显示详细视图和列表视图的切换按钮
+                    cardView: false,                    //是否显示详细视图
+                    detailView: true,                  //是否显示父子表
+                    columns: [{
+                        checkbox: true
+                    }, {
+                        field: 'Id',
+                    }, {
+                        field: 'ProjectGid',
+                    }, {
+                        field: 'RoleTitle',
+                    }, {
+                        field: 'RoleRate',
+                    }, {
+                        field: 'Effort',
+                    }, {
+                        field: 'RateEffort',
+                    }],
+                    //注册加载子表的事件。注意下这里的三个参数！
+                    onExpandRow: function (index, row, $detail) {
+                        initSubTable(index, row, $detail);
                     }
-                ],
-                "columnDefs":
-                    jQuery.extend(true, datatableSetting.columnDefs, [
-                        {
-                            "targets": 5,
-                            "render": function (data, type, full, meta) {
-                                return '<a href="delete?sIds=' + full.Id + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">delete</a>'+
-                                '<a href="edit?id=' + full.Id + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="" target="_blank">edit</a>';
-                            }
+                });
+
+
+                //初始化子表格(无线循环)
+                initSubTable = function (index, row, $detail) {
+                    var parentid = row.MENU_ID;
+                    var cur_table = $detail.html('<table></table>').find('table');
+                    $(cur_table).bootstrapTable({
+                        url: '/api/MenuApi/GetChildrenMenu',
+                        method: 'get',
+                        queryParams: { strParentID: parentid },
+                        ajaxOptions: { strParentID: parentid },
+                        clickToSelect: true,
+                        detailView: true,//父子表
+                        uniqueId: "MENU_ID",
+                        pageSize: 10,
+                        pageList: [10, 25],
+                        columns: [{
+                            checkbox: true
+                        }, {
+                            field: 'MENU_NAME',
+                            title: '菜单名称'
+                        }, {
+                            field: 'MENU_URL',
+                            title: '菜单URL'
+                        }, {
+                            field: 'PARENT_ID',
+                            title: '父级菜单'
+                        }, {
+                            field: 'MENU_LEVEL',
+                            title: '菜单级别'
+                        },],
+                        //无线循环取子表，直到子表里面没有记录
+                        onExpandRow: function (index, row, $Subdetail) {
+                            oInit.InitSubTable(index, row, $Subdetail);
                         }
+                    });
+                };
+            }
+        </script>
 
-                    ]),
-
-                fnDrawCallback:
-                    function () { $('[data-toggle="tooltip"]').tooltip(); }
-            }));
-
-        });
-
-    </script>
-}
+    }

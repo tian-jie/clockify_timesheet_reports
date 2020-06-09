@@ -14,17 +14,20 @@ namespace Kevin.T.Timesheet.Services
         IProjectUserService _projectUserService;
         IProjectService _projectService;
         IProjectTaskService _projectTaskService;
+        IEmployeeService _employeeService;
 
         public TimeEntryService(IUserGroupService userGroupService
             , IProjectUserService projectUserService
             , IProjectService projectService
-            , IProjectTaskService projectTaskService)
+            , IProjectTaskService projectTaskService
+            , IEmployeeService employeeService)
             : base("Timesheet")
         {
             _userGroupService = userGroupService;
             _projectUserService = projectUserService;
             _projectService = projectService;
             _projectTaskService = projectTaskService;
+            _employeeService = employeeService;
         }
 
         /// <summary>
@@ -56,14 +59,14 @@ namespace Kevin.T.Timesheet.Services
         {
             // 获取项目相关的员工
             var projectUsers = _projectUserService.GetUserByProject(projectGid, null);
-            var allUsers = _projectUserService.Repository.Entities;
+            var allUsers = _employeeService.Repository.Entities.Where(a=>a.IsDeleted != true).ToList();
 
             // 看这个projectGid，如果属于taskgid，就从taskgid过滤
             var task = _projectTaskService.GetProjectTaskById(projectGid);
 
             // 再根据每个员工统计timeentry
             var timeEntry = Repository.Entities.Where(a => a.IsDeleted != true);
-            if (task != null)
+            if (task != null && task.Count > 0)
             {
                 timeEntry = timeEntry.Where(a => a.TaskId == projectGid);
             }
@@ -82,6 +85,8 @@ namespace Kevin.T.Timesheet.Services
 
                 if (user == null)
                 {
+                    var employeeName = allUsers == null ? "Unknown???" : allUsers.FirstOrDefault(b => b.Gid == a.Key).Name;
+
                     timeEntriesGroupByEmployeesView.Add(new TimeEntriesGroupByEmployeeView()
                     {
                         UserId = a.Key,
@@ -89,7 +94,7 @@ namespace Kevin.T.Timesheet.Services
                         EmployeeRate = 1,
                         EmployeeRole = "N/A",
                         TotalHoursRate = a.Sum(b => b.TotalHours),
-                        EmployeeName = allUsers == null ? "Unknown???" : allUsers.FirstOrDefault(b => b.UserGid == a.Key).EmployeeName
+                        EmployeeName = employeeName
                     });
                 }
                 else
