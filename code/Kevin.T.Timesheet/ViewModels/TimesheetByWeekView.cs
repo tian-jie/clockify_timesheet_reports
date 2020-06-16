@@ -10,6 +10,14 @@ namespace Kevin.T.Timesheet.ModelsView
 
         public string EmployeeName { get; set; }
 
+        public string ProjectGid { get; set; }
+
+        public string TaskGid { get; set; }
+
+        public string ProjectName { get; set; }
+
+        public string TaskName { get; set; }
+
         public virtual decimal MondayTotalHours { get; set; }
         public virtual decimal TuesdayTotalHours { get; set; }
         public virtual decimal WednesdayTotalHours { get; set; }

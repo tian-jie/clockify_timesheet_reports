@@ -59,7 +59,7 @@ namespace Kevin.T.Timesheet.Services
         {
             // 获取项目相关的员工
             var projectUsers = _projectUserService.GetUserByProject(projectGid, null);
-            var allUsers = _employeeService.Repository.Entities.Where(a=>a.IsDeleted != true).ToList();
+            var allUsers = _employeeService.Repository.Entities.Where(a => a.IsDeleted != true).ToList();
 
             // 看这个projectGid，如果属于taskgid，就从taskgid过滤
             var task = _projectTaskService.GetProjectTaskById(projectGid);
@@ -129,6 +129,65 @@ namespace Kevin.T.Timesheet.Services
             };
 
             return projectAccountingView;
+        }
+
+        public List<TimesheetByWeekView> GetTimeEntriesByEmployeeGroupByProject(string employeeId, DateTime startDate, DateTime endDate)
+        {
+            var timeEntries = Repository.Entities.Where(a => a.IsDeleted != true && a.Date >= startDate && a.Date < endDate && a.UserId == employeeId).ToList();
+            var userTimeEntriesByUser = timeEntries.GroupBy(a => new { a.ProjectId, a.TaskId });
+
+            var projects = _projectService.GetAllProjects();
+            var tasks = _projectTaskService.GetAllProjectTasks();
+
+            var timesheetByWeekViews = new List<TimesheetByWeekView>();
+            // 把上面整理好的每个人每天的信息，整理到按周几放到的TimesheetByWeekView里。
+            foreach (var ud in userTimeEntriesByUser)
+            {
+                var project = projects.FirstOrDefault(a => a.Gid == ud.Key.ProjectId);
+                var task = tasks.FirstOrDefault(a => a.Gid == ud.Key.TaskId);
+                var tv = new TimesheetByWeekView()
+                {
+                    ProjectName = project == null ? "N/A Project" : project.Name,
+                    TaskName = task == null ? "/-" : " / " + task.Name,
+                    ProjectGid = ud.Key.ProjectId,
+                    TaskGid = ud.Key.TaskId
+                };
+
+                foreach (var udd in ud.GroupBy(a => a.Date))
+                {
+                    var totalHoursByDate = udd.Sum(a => a.TotalHours);
+
+                    var weekOfDay = udd.Key.DayOfWeek;
+                    switch (weekOfDay)
+                    {
+                        case DayOfWeek.Monday:
+                            tv.MondayTotalHours = totalHoursByDate;
+                            break;
+                        case DayOfWeek.Tuesday:
+                            tv.TuesdayTotalHours = totalHoursByDate;
+                            break;
+                        case DayOfWeek.Wednesday:
+                            tv.WednesdayTotalHours = totalHoursByDate;
+                            break;
+                        case DayOfWeek.Thursday:
+                            tv.ThursdayTotalHours = totalHoursByDate;
+                            break;
+                        case DayOfWeek.Friday:
+                            tv.FridayTotalHours = totalHoursByDate;
+                            break;
+                        case DayOfWeek.Saturday:
+                            tv.SaturdayTotalHours = totalHoursByDate;
+                            break;
+                        case DayOfWeek.Sunday:
+                            tv.SundayTotalHours = totalHoursByDate;
+                            break;
+                    }
+
+                }
+                timesheetByWeekViews.Add(tv);
+            }
+
+            return timesheetByWeekViews;
         }
     }
 }

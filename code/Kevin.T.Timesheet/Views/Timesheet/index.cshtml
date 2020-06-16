@@ -17,7 +17,7 @@
                             <option value="@item.Gid">@item.Name</option>
                         }
                     </select>
-                    <select id="Year" class="form-control" name="Year" data-placeholder="Select Year">
+                    <select id="Year" class="form-control" name="Year1" data-placeholder="Select Year">
                         <option value="0" selected="selected">Choose Year</option>
                         <option value="2019">2019</option>
                         <option value="2020">2020</option>
@@ -27,7 +27,7 @@
                         <option value="2024">2024</option>
                         <option value="2025">2025</option>
                     </select>
-                    <select id="Week" class="form-control" name="Week" data-placeholder="Select Week">
+                    <select id="Week" class="form-control" name="Week1" data-placeholder="Select Week">
                         <option value="0" selected="selected">Choose Year</option>
                         @for (var i = 1; i < 52; i++)
                         {
@@ -40,7 +40,7 @@
                 @*<a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="清除条件">
                         <i class="fa fa-remove"></i>
                     </a>*@
-                <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
+                <a href="javascript:initTable();" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
                     <i class="fa fa-search"></i>
                 </a>
             </div>
@@ -59,7 +59,7 @@
                 <table class="table table-bordered data-table" id="table">
                     <thead>
                         <tr>
-                            @*<th style="width: 8%; text-align: center;">Id</th>*@
+                            <th style="width: 8%; text-align: center;">Employee Id</th>
                             <th style="width: 30%">Employee</th>
                             <th style="width: 10%">MON</th>
                             <th style="width: 10%">TUE</th>
@@ -85,10 +85,18 @@
             initTable();
         });
 
-        function initTable(){
+        function initTable() {
+
+            $('#table').bootstrapTable('destroy');
+
             $('#table').bootstrapTable({
                 url: "GetTimesheetThisweekByGroup",
                 method: "post",
+                queryParams: {
+                    groupId: $('#Group').val(),
+                    year: $('#Year').val(),
+                    week: $('#Week').val()
+                },
                 toolbar: "#toolbar",
                 striped: true,                      //是否显示行间隔色
                 cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
@@ -106,11 +114,13 @@
                 minimumCountColumns: 2,             //最少允许的列数
                 clickToSelect: true,                //是否启用点击选中行
                 //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-                uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+                //uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
                 showToggle: false,                   //是否显示详细视图和列表视图的切换按钮
                 cardView: false,                    //是否显示详细视图
                 detailView: true,                  //是否显示父子表
                 "columns": [{
+                    field: 'UserId',
+                }, {
                     field: 'EmployeeName',
                 }, {
                     field: 'MondayTotalHours',
@@ -135,39 +145,42 @@
             });
         }
 
-        //初始化子表格(无线循环)
+        //初始化子表格(无限循环)
         initSubTable = function (index, row, $detail) {
             var parentid = row.MENU_ID;
             var cur_table = $detail.html('<table></table>').find('table');
             $(cur_table).bootstrapTable({
-                url: '/api/MenuApi/GetChildrenMenu',
+                url: 'GetTimesheetThisweekByEmployee',
                 method: 'get',
-                queryParams: { strParentID: parentid },
-                ajaxOptions: { strParentID: parentid },
+                queryParams: {
+                    employeeId: row.UserId,
+                    year: $('#Year').val(),
+                    week: $('#Week').val()
+                },
                 clickToSelect: true,
-                detailView: true,//父子表
-                uniqueId: "MENU_ID",
-                pageSize: 10,
-                pageList: [10, 25],
-                columns: [{
-                    checkbox: true
+                detailView: false, //父子表
+                pageSize: 100,
+                //pageList: [10, 25],
+                "columns": [{
+                    field: 'ProjectName',
+                },{
+                    field: 'TaskName',
                 }, {
-                    field: 'MENU_NAME',
-                    title: '菜单名称'
+                    field: 'MondayTotalHours',
                 }, {
-                    field: 'MENU_URL',
-                    title: '菜单URL'
+                    field: 'TuesdayTotalHours',
                 }, {
-                    field: 'PARENT_ID',
-                    title: '父级菜单'
+                    field: 'WednesdayTotalHours',
                 }, {
-                    field: 'MENU_LEVEL',
-                    title: '菜单级别'
-                },],
-                //无线循环取子表，直到子表里面没有记录
-                onExpandRow: function (index, row, $Subdetail) {
-                    oInit.InitSubTable(index, row, $Subdetail);
+                    field: 'ThursdayTotalHours',
+                }, {
+                    field: 'FridayTotalHours',
+                }, {
+                    field: 'SaturdayTotalHours',
+                }, {
+                    field: 'SundayTotalHours',
                 }
+                ]
             });
         };
 

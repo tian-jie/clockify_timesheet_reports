@@ -45,12 +45,9 @@ namespace Kevin.T.Timesheet.Controllers
             return View();
         }
 
-        public override List<TimeEntryView> GetListEx(Expression<Func<TimeEntry, bool>> predicate, PageCondition con)
+        public ActionResult GetTimesheetThisweekByEmployee(string employeeId, int year = 0, int week = 0)
         {
             // TODO: 应该获取当前的项目id，员工，查询这个员工所有的当周的录入情况，group by day，分别放到MON, TUE....中
-            var employeeId = "";
-            var year = 0;
-            var week = 0;
             var today = DateTime.Today;
             if (year != 0 && week != 0)
             {
@@ -59,10 +56,11 @@ namespace Kevin.T.Timesheet.Controllers
             var thisMonday = today.AddDays(-(today.DayOfWeek == DayOfWeek.Sunday ? 7 : ((int)today.DayOfWeek)) + 1);
             var nextMonday = thisMonday.AddDays(7);
 
-            var timeEntries = _timeEntryService.
+            var timeEntries = _timeEntryService.GetTimeEntriesByEmployeeGroupByProject(employeeId, thisMonday, nextMonday);
 
 
-            throw new NotImplementedException();
+            var result = new { total = timeEntries.Count, rows = timeEntries };
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetTimesheetThisweekByGroup(string groupId, int year = 0, int week = 0)
@@ -89,9 +87,11 @@ namespace Kevin.T.Timesheet.Controllers
             // 把上面整理好的每个人每天的信息，整理到按周几放到的TimesheetByWeekView里。
             foreach (var ud in userTimeEntriesByUser)
             {
+                var user = users.FirstOrDefault(a => a.Gid == ud.Key);
                 var tv = new TimesheetByWeekView()
                 {
-                    UserId = ud.Key
+                    UserId = ud.Key,
+                    EmployeeName = user == null ? "" : user.Name,
                 };
 
                 foreach (var udd in ud.GroupBy(a => a.Date))
@@ -147,7 +147,10 @@ namespace Kevin.T.Timesheet.Controllers
             }
             GridRequest req = new GridRequest(Request);
 
-            return GetPageResult(timesheetByWeekViews, req);
+            var result = new { total = timesheetByWeekViews.Count, rows = timesheetByWeekViews };
+            return Json(result, JsonRequestBehavior.AllowGet);
+
+            //return GetPageResult(timesheetByWeekViews, req);
         }
 
     }

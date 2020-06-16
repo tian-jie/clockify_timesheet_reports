@@ -3,6 +3,7 @@ using Kevin.T.Timesheet.Entities;
 using Kevin.T.Timesheet.ModelsView;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Kevin.T.Timesheet.Interfaces
 {
@@ -30,5 +31,14 @@ namespace Kevin.T.Timesheet.Interfaces
         /// <param name="projectGid"></param>
         /// <returns></returns>
         ProjectAccountingView GetTimeEntriesByProject(string projectGid);
+
+        /// <summary>
+        /// 获取员工在这段时间内的每个项目的花费时间
+        /// </summary>
+        /// <param name="employeeId"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
+        /// <returns></returns>
+        List<TimesheetByWeekView> GetTimeEntriesByEmployeeGroupByProject(string employeeId, DateTime startDate, DateTime endDate);
     }
 }

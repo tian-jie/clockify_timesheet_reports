@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClockifyModels\TagModel.cs" />
+    <Compile Include="Controllers\EstimateEffortApiController.cs" />
     <Compile Include="Controllers\EstimateEffortController.cs" />
     <Compile Include="Controllers\ProjectUserController.cs" />
     <Compile Include="Controllers\ProjectController.cs" />
