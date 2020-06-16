@@ -4,7 +4,7 @@ using Infrastructure.Core.Plugins;
 using Infrastructure.Core;
 using Infrastructure.Core.Events;
 
-namespace Innocellence.Lccp.Backend
+namespace Kevin.T.Timesheet
 {
     public partial class Starter : BasePlugin, IPlugin
     {
@@ -13,7 +13,10 @@ namespace Innocellence.Lccp.Backend
         public override void Initialize()
         {
             GlobalApplicationObject.Current.EventsManager.OnApplication_InitializeComplete += EventsManager_OnApplication_InitializeComplete;
-           // GlobalConfigurationManager.ODataBuilder.EntitySet<SiteAdminNavigation>("SiteAdminNavigations");
+            // GlobalConfigurationManager.ODataBuilder.EntitySet<SiteAdminNavigation>("SiteAdminNavigations");
+
+            ModelMappers.MapperRegister();
+
         }
         void EventsManager_OnApplication_InitializeComplete(object sender, ApplicationArgs e)
         {

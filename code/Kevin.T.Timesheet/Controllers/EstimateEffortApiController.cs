@@ -1,17 +1,15 @@
 ﻿using Infrastructure.Core.Logging;
+using Infrastructure.Utility.Data;
+using Infrastructure.Web.UI;
 using Innocellence.Web.Controllers;
 using Kevin.T.Timesheet.Entities;
 using Kevin.T.Timesheet.Interfaces;
 using Kevin.T.Timesheet.ModelsView;
 using System;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using System.Linq;
 using System.Collections.Generic;
-using Infrastructure.Utility.Data;
+using System.Linq;
 using System.Linq.Expressions;
-using Infrastructure.Web.UI;
-using Newtonsoft.Json;
+using System.Web.Mvc;
 
 namespace Kevin.T.Timesheet.Controllers
 {

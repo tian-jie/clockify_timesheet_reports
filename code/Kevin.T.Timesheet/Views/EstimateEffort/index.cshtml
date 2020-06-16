@@ -99,12 +99,29 @@
             Handsontable.dom.addEvent(save, 'click', function () {
                 // save all cell's data
                 var data1 = hot.getData();
+                // 组合数据给后台传
+                var dataList = [];
+                data1.forEach(function (currentValue, index, arr) {
+                    if (currentValue[0] == 2147483647) {
+                        return;
+                    }
+                    var d = {
+                        Id: currentValue[0],
+                        RoleId: currentValue[1],
+                        RoleTitle: currentValue[2],
+                        RoleRate: currentValue[3],
+                        Effort: currentValue[4],
+                        RateEffort: currentValue[5]
+                    };
+                    dataList.push(d);
+                });
+
                 $.ajax({
                     url: '../EstimateEffortApi/SaveData',
                     method: 'POST',
                     dataType: "json",
                     data: {
-                        estimateEffortViews: data1
+                        estimateEffortViews: dataList
                     },
                     success: function (res) {
                         alert(JSON.stringify(res));
