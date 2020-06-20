@@ -1,0 +1,111 @@
+﻿<!--Action boxes-->
+  <div class="row">
+      <div class="col-sm-12">
+          <div>
+              <h3 class="header smaller lighter blue"></h3>
+          </div>
+          <div>
+              <form class="form-inline" id="SearchForm">
+                  <input type="hidden" name="DeptId" id="DeptId" />
+                  <div class="form-group">
+                      <div class="form-group">
+                          <input class="input" type="text" name="txtRoleName" placeholder="角色名称">
+                      </div>
+                      <div class="form-group">
+                          
+                      </div>
+                      <a href="#" class="btn  btn-sm" id="btnSearch">Search</a>
+                  </div>
+                  <div class="form-group" style="float: right;">
+                      <a href="#" class="btn btn-success btn-sm" id="btnAdd">Add</a>
+                      <a href="#" class="btn btn-info btn-sm" id="btnDelete">Delete</a>
+                  </div>
+              </form>
+
+          </div>
+          <div class="widget-box">
+              <div class="widget-content nopadding">
+                  <table class="table table-bordered table-hover data-table">
+                      <thead>
+                          <tr>
+                              <th style="width:5%;text-align:center"><input type="checkbox" id="title-table-checkbox" name="title-table-checkbox" /></th>
+                              <th style="width:15%;">@T("角色ID")</th>
+                              <th>@T("角色名称")</th>
+                              <th style="width:15%;"></th>
+                          </tr>
+                      </thead>
+                  </table>
+              </div>
+          </div>
+
+          <div style="display:none;" class="">
+            <div class="row" id="SurveyEdit">
+                <div class="widget-box" style="width:500px">
+                    <div class="widget-header">
+                        <span class="icon"> <i class="icon-align-justify"></i> </span>
+                        <h5>Survey-info</h5>
+                    </div>
+                    <div class="widget-body">
+                        <form action="RoleEdit" id="ff" method="get" class="form-horizontal" datasource="RoleGet">
+                            <input type="hidden" id="ID" name="ID" data-bind="value: Id" />
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Role Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="Name" class="form-control" placeholder="Role Name" data-bind="value:Name"
+                                           validate="{required:true,messages:{required:'请填写调查标题!'}}" />
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success pull-right">Save</button>
+                                <div class="clearfix"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><!--/End surveyEdit-->
+      </div>
+ </div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": {
+                    "url": "RoleList"
+                },
+                "aoColumns": [
+                   {
+                       "mData": 'Id',
+                       "bSortable": false,
+                       "sClass": "sTdCheckbox"
+                   },
+                   {
+                       "mData": 'Id',
+                       "bSortable": false
+                   },
+                   {
+                       "mData": "Name",
+                       "bSearchable": false,
+                       "bSortable": false //自定义列的样式
+                   },
+                   {
+                       "mData": "Name",
+                       "bSearchable": false,
+                       "bSortable": false //自定义列的样式
+                   }
+                ],"columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [{
+                    "targets": 3,
+                    "render": function (data, type, full, meta) {
+                        //return '<a href="#" onclick="LEAP.Common.MainPop.ShowUpdateInfo(\'' + full.Id + '\');return false;" class="artDailog">设置权限</a>';
+                        return "<span class=\"btn btn-danger btn-xs\" onclick=\"javascript:ChangeStatus('" + full.Id + "',this,'/NewsInfo/ChangeStatus')\">设置权限</span>"
+                    }
+                }])
+            }));
+
+        });
+
+    </script>
+}
+

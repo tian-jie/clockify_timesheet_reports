@@ -1,0 +1,95 @@
+﻿<div class="row" id="ModalTable">
+    <div class="col-sm-12">
+        <form class="form-inline" action="JobImplement" id="ff">
+            <input type="hidden" id="jobNameList" name="jobNameList" value="">
+            <button type="submit" class="btn btn-sm btnSearch" id="btnSubmit" data-toggle="tooltip" data-placement="top">Execute Job</button>
+        </form>
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+
+                <table class="table table-bordered data-table" id="MenuReport">
+                    <thead>
+                        <tr>
+                            <th style="width:10%; text-align: center;"><input type="checkbox" />@*<button id="checkall" type="button">checkall</button>*@</th>
+                            <th style="width:40%;text-align:center;">@T("JOB")</th>
+                            <th style="width:20%">@T("Date")</th>
+
+                        </tr>
+                    </thead>
+
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts_Foot
+{<script>
+    $(document).ready(function () {
+        $("#checkall").click(function () {
+            $('input[name="subBox"]').prop("checked",true); 
+        });
+
+        $(".btnSubmit").on("click", function () {
+            
+            //$("#ff").submit();
+        });
+
+        $('#ff').submit(function () {
+            var strs = [];
+            var $subBox = $("input[name='subBox']:checked");
+            $subBox.length = $("input[name='subBox']:checked").length;
+            if ($subBox.length == 0) {
+                artDialog.alert("请至少选择一个job!");
+            }
+            for (var i = 0; i <= $subBox.length - 1; i++) {
+                strs.push($subBox[i].value);
+            }
+
+            $('#jobNameList').val(strs.join(','));
+          
+        });
+        LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+            "ajax": { "url": "GetList" },
+            "aoColumns": [
+                {
+                    "mData": "Id",
+                    "bSortable": true
+                },
+              { "mData": "JobName" },
+              { "mData": "DateTo" }
+            ],
+            "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+            {
+                "targets": 0,
+                "render": function (data, type, full, meta) {
+                    return '<input type="checkbox" value="' + full.JobName + '" name="subBox" />'
+                    ;
+                }
+            },
+
+            ]),
+            fnDrawCallback: function () { }
+        }));
+        
+        
+        $('#MenuReport_wrapper > .row').hide();
+
+        LEAP.Common.MainPop.options.beforeShowModal = function () {
+
+        };
+
+        LEAP.Common.MainPop.options.afterShowModal = function () {
+
+        };
+
+        LEAP.Common.MainPop.options.fnAfterSuccess = function() {
+            $('#btnSubmit').attr('disabled', false);
+            artDialog.alert("操作执行完毕!");
+            LEAP.Common.MainPop.options.dataTable.fnDraw();
+          
+        };
+       
+    })
+    
+</script>
+}

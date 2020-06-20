@@ -1,0 +1,74 @@
+﻿@using Innocellence.WeChatMeeting.Domain.ViewModel;
+@model Innocellence.WeChatMeeting.Domain.ViewModel.MeetingView
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Meeting</title>
+    @{
+        Layout = null;
+    }
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/weui.min.css">
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/font-awesome.min.css">
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/meeting.css">
+</head>
+<body>
+    <input type="hidden" value="@ViewBag.WechatId" id="wechatId" />
+    <input type="hidden" value="@ViewBag.MeetList" id="hid_ml" />
+    <div class="meeting_wrapper">
+        <div class="select_box clearfix">
+            <a class="select_time fr" href="javascript:;"><i class="fa fa-exchange" aria-hidden="true"></i>&nbsp;<span id="times"></span></a>
+        </div>
+
+        @foreach (MeetingView item in ViewBag.MeetList)
+        {
+            <div class="weui-panel">
+                <div class="weui-panel__bd">
+                    <div class="weui-media-box weui-media-box_text">
+                        <a href="InvitationDetail?MeetId=@item.Id&wechatid=@ViewBag.WechatId&AppID=@ViewBag.WechatId"><h4>@item.Title</h4></a>
+                    </div>
+                    <div class="weui-panel__hd">@item.Location</div>
+                    <div class="weui-cell weui-cell_access">
+                        <div class="weui-cell__hd">
+                            会议：
+                        </div>
+                        <div class="weui-cell__bd weui-cell_primary">
+                            @item.STime→@item.ETime
+                        </div>
+                    </div>
+                    <div class="weui-cell weui-cell_access">
+                        <div class="weui-cell__hd">
+                            签到：
+                        </div>
+                        <div class="weui-cell__bd weui-cell_primary">
+                            @item.SsTime→@item.SeTime
+                        </div>
+                    </div>
+                    <div class="weui-cell weui-cell_access">
+                        <a class="weui-cell__hd flex_1 font_black" href="SignUp?wechatid=@ViewBag.WechatId&AppID=@ViewBag.WechatId">
+                            报名信息：<span>
+                                @item.IsPerInfo
+                            </span><i class="fa fa-pencil-square-o mar_l" aria-hidden="true"></i>
+                        </a>
+                        <a class="weui-cell__bd font_black weui-cell_primary " href="Travel?meetingid=@item.Id&wechatid=@ViewBag.WechatId&AppID=@ViewBag.WechatId" style="margin-left: 10px;">
+                            行程信息：<span>@item.IsTravel</span><i class="fa fa-pencil-square-o mar_l" aria-hidden="true"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+        <div id="mdata"></div>
+    </div>
+    <div class="btn_group weui-btn-area" id="lm">
+        <a onclick="LoadMore()" class="weui-btn add_item">加载更多</a>
+    </div>
+    <script src="/Plugins/Innocellence.WeChatMeeting/Content/js/weui.min.js"></script>
+    <script src="/Scripts/jquery-1.11.1.min.js"></script>
+    <script src="/Scripts/wechatab/lib/layer/layer.js"></script>
+    <script src="/Plugins/Innocellence.WeChatMeeting/Content/js/MyMeeting.js"></script>
+
+</body>
+</html>

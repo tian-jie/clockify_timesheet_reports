@@ -1,0 +1,170 @@
+﻿@model Innocellence.Activity.Contracts.ViewModel.BarrageSummaryView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-sm-12">
+
+        <form class="form-inline" id="SearchForm" method="post">
+            <input type="hidden" id="AppId" name="AppId" value="@ViewBag.appid" />
+            <input type="hidden" id="SummaryType" name="SummaryType" value="Barrage" />
+            <input type="hidden" id="Id" name="Id" />
+            <input class="form-control" type="text" id="Title1" name="Title1" style="display: none" />
+            <div class="form-group">
+                <div class="form-group">
+                    <input class="form-control" type="text" id="Title" name="Title" placeholder="标题/关键字">
+                </div>
+
+                <a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="清除条件">
+                    <i class="fa fa-remove"></i>
+                </a>
+                <a href="javascript:void(0);" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索"><i class="fa fa-search"></i></a>
+            </div>
+            <div class="form-group pull-right">
+                <a href="javascript:void(0);" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="导出CSV" id="btnExport">
+                    <i class="fa fa-download"></i>导出
+                </a>
+                <a href="Edit?appId=@ViewBag.appid" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="添加" id="btnAdd1">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+        </form>
+
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 6%; text-align: center;">@T("ID")</th>
+                            <th style="width: 38%">@T("标题")</th>
+                            <th style="width: 8%">@T("关键字")</th>
+                            <th style="width: 12%">@T("启用关键字")</th>
+                            <th style="width: 6%">@T("链接")</th>
+                            <th style="width: 10%">@T("操作")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts_Foot
+{
+    <script>
+        var uploader;
+        var saveclip = new Array();
+
+        $(document).ready(function () {
+            $('#clear_condition').click(function () {
+                $('input[name=Title]').val('');
+                $('#btnSearch').trigger('click');
+            });
+
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList?appid=@ViewBag.appid&type=Barrage" },
+
+                "aoColumns": [
+                    {
+                        "mData": "Id",
+                        "bSortable": false,
+                        "sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Title",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    { "mData": "Keyword" },
+                    { "mData": "IsEnabled" },
+                    { "mData": "RollUrl" },
+                    { "mDate": "Opreation" }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                    {
+                        "targets": 0,
+                        "render": function (data, type, full, meta) {
+                            return full.Id;
+                        }
+                    },
+                    {
+                        "targets": 3,
+                        "render": function(data, type, full, meta) {
+                            if (full.IsEnabled !=null && full.IsEnabled) {
+                                return "<span class=\"col-md-8\">已启用</span><span class=\"btn btn-danger btn-xs pull-right\" onclick=\"javascript:ChangeBarrageStatus('" + full.Id + "','" + @ViewBag.AppId + "',this, '/Activity/barragesummary/ChangeBarrageStatus')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"禁用关键字\"><i class=\"fa fa-cloud-download\"></span>";
+                            } else if (full.IsEnabled == null || !full.IsEnabled) {
+                                return "<span class=\"col-md-8\">已禁用</span><span class=\"btn btn-success btn-xs pull-right\" onclick=\"javascript:ChangeBarrageStatus('" + full.Id + "','" + @ViewBag.AppId + "',this, '/Activity/barragesummary/ChangeBarrageStatus')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"启用关键字\"><i class=\"fa fa-cloud-upload\"></i></span>";
+                            }
+                        }
+                    },
+                    {
+                        "targets": 4,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="/Activity/BarrageExt/DisplayQuestion?appId=' + $("#AppId").val() + '&SummaryId=' + full.Id + '" class="artDailog btn btn-primary btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="弹幕链接" target="_blank">弹幕链接</a>';
+                            //'<a href="/Activity/BarrageExt/RaiseQuestion?appId=' + $("#AppId").val() + '&SummaryId=' + full.Id + '&Type=' + 0 + '" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="匿名屏幕" target="_blank">匿名屏幕</a>' +
+                            //'<a href="/Activity/BarrageExt/RaiseQuestion?appId=' + $("#AppId").val() + '&SummaryId=' + full.Id + '&Type=' + 1 + '" class="artDailog btn btn-success  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="实名屏幕" target="_blank">实名屏幕</a>';
+                        }
+                    },
+
+                    {
+                        "targets": 5,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="Edit?appId=' + $("#AppId").val() + '&Id=' + full.Id + '" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="编辑">' +
+                                '<i class="fa fa-pencil"></i></a>' +
+                                '<a href="/Activity/Barrage/Check?appId=' + $("#AppId").val() + '&SummaryId=' + full.Id + '&SummaryType='+full.SummaryType+'" class="btn btn-warning btn-xs" id="btnCheck"  data-toggle="tooltip" data-placement="top" title="审批">' +
+                                '<i class="fa fa-check-square"></i></a>' +
+                                '<a href="#" onclick="LEAP.Common.MainPop.RowClick(\'' + full.Id + '\',2)" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">' +
+                                    '<i class="fa fa-trash-o"></i></a>';
+                        }
+                    }
+                ]),
+                fnDrawCallback: function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                }
+            }));
+
+        });
+
+        function ChangeBarrageStatus(id, appid, obj, url) {
+            $.ajax({
+                type: 'Get',
+                url: url + '?Id=' + id + '&appid=' + appid,
+                cache: false
+            }).done(function(data) {
+                if (data.Status) {
+                    switch (data.Status) {
+                        case 200:
+                            artDialog.alert("成功.");
+                            HandlerPages($(obj));
+                            break;
+                        default:
+                            artDialog.alert(data.Message);
+                    }
+                } else {
+                    artDialog.alert(data.Message.Text);
+                    HandlerPages($(obj));
+                }
+            });
+        }
+
+        function HandlerPages($obj) {
+            $obj.toggleClass('btn-success');
+            $obj.toggleClass('btn-danger');
+
+            if ($obj.html() == '<i class="fa fa-cloud-download"></i>') {
+                $obj.html('<i class="fa fa-cloud-upload"></i>');
+                $obj.prev().html('已禁用');
+            } else {
+                $obj.html('<i class="fa fa-cloud-download"></i>');
+                $obj.prev().html('已启用');
+            }
+            if (LEAP.Common.MainPop && LEAP.Common.MainPop.options.dataTable) {
+                LEAP.Common.MainPop.options.dataTable.fnDraw(true);
+            }
+        }
+    </script>
+}

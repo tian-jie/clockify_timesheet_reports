@@ -1,0 +1,193 @@
+﻿@model Innocellence.Activity.Contracts.ViewModel.PollingView
+@{
+    ViewBag.Title = "有奖问答/投票";
+    Layout = null;
+}
+@*@section Header{
+        <link rel="stylesheet" href="~/Plugins/Innocellence.CA/Content/style.css" />
+
+    }*@
+<style>
+    .optionSize {
+        width: 15px;
+        height: 15px;
+    }
+</style>
+<form id="VotePreview" method="POST" class="form-horizontal">
+
+    <div id="Vote">
+
+        @if (Model.PollingQuestions == null || Model.PollingQuestions.Count == 0)
+        {
+            <div class="panel panel-default" style="border:1px solid #e7e7eb">
+                <div class="panel-heading" style="font-size:20px">@Model.Name</div>
+
+                <div class="panel-body" style="text-align:center;font-size:18px;padding-top:25px;padding-bottom:25px">
+                   此投票不存在或者已删除
+                </div>
+                @*<div class="panel-body polling_grey_submit">
+                    提交
+                </div>*@
+            </div>
+        }
+
+        else
+        {
+            <div class="panel panel-default" style="border:1px solid #e7e7eb">
+                <div class="panel-heading" style="font-size:20px">@Model.Name</div>
+                <div class="panel-body">
+                    @for (int i = 0; i <= Model.PollingQuestions.Count - 1; i++)
+                    {
+                        var pollingquestion = Model.PollingQuestions[i];
+                        <div class="question">
+                            <input type="hidden" class="QuestionId" value="@pollingquestion.Id" questionname="@pollingquestion.Title" questionrequired="@pollingquestion.IsRequired.ToString()" />
+
+                            @if (pollingquestion.IsRequired == true)
+                            {
+                                <div class="polling-item-hd">
+                                    <h4 class="polling-title">@(i + 1). @pollingquestion.Title @pollingquestion.optionName<span style="color:red">*</span></h4>
+                                </div>
+
+                                if (pollingquestion.Type == 99)
+                                {
+                                    <div class="polling-item-bd option ">
+                                        <div class="col-sm-12 answertext questionrequired">
+                                            <textarea name="AnswerText" id="AnswerText_@i" class="form-control" placeholder="AnswerText"
+                                                      style="min-height: 45px;"></textarea>
+                                        </div>
+                                    </div>
+                                }
+
+                            }
+                            else
+                            {
+                                <div class="polling-item-hd">
+                                    <h4 class="polling-title">@(i + 1). @pollingquestion.Title @pollingquestion.optionName</h4>
+                                </div>
+
+
+                                if (pollingquestion.Type == 99)
+                                {
+                                    <div class="polling-item-bd option">
+                                        <div class="col-sm-12 answertext">
+                                            <textarea name="AnswerText" id="AnswerText_@i" class="form-control" placeholder="AnswerText"
+                                                      style="min-height: 45px;"></textarea>
+                                        </div>
+                                    </div>
+                                }
+
+                            }
+                            @if (pollingquestion.PollingOptionEntities != null && pollingquestion.PollingOptionEntities.Count > 0)
+                            {
+                                <div class="polling-item-bd option">
+                                    @for (int j = 0; j <= pollingquestion.PollingOptionEntities.Count - 1; j++)
+                                    {
+                                        var optionview = pollingquestion.PollingOptionEntities[j];
+                                        <div class="row">
+
+                                            @if (pollingquestion.Type == 1 && optionview.optiontype.type == "0")
+                                            {
+                                                <div class="col-xs-2">
+                                                    <input type="radio" name="Box_@i" class="optionBox optionSize"
+                                                           boxvalue="@optionview.Id"
+                                                           typevalue="@pollingquestion.Type"
+                                                           answervalue="@optionview.OptionName"
+                                                           hasinput="0" />
+                                                </div>
+
+                                            }
+                                            else if (pollingquestion.Type == 1 && optionview.optiontype.type == "1"
+                                           )
+                                            {
+                                                <div class="col-xs-2">
+                                                    <input type="radio" name="Box_@i" class="optionBox optionSize"
+                                                           boxvalue="@optionview.Id"
+                                                           typevalue="@pollingquestion.Type"
+                                                           answervalue="@optionview.OptionName"
+                                                           hasinput="1" />
+
+                                                </div>
+                                            }
+                                            else if (pollingquestion.Type != 1 && pollingquestion.Type != 99 && optionview.optiontype.type == "0")
+                                            {
+
+                                                <div class="col-xs-2">
+                                                    <input type="checkbox" name="Box_@i" class="optionBox optionSize"
+                                                           boxvalue="@optionview.Id"
+                                                           typevalue="@pollingquestion.Type"
+                                                           answervalue="@optionview.OptionName"
+                                                           hasinput="0" />
+                                                </div>
+
+                                            }
+                                            else if (pollingquestion.Type != 1 && pollingquestion.Type != 99
+                                            && optionview.optiontype.type == "1")
+                                            {
+
+                                                <div class="col-xs-2">
+                                                    <input type="checkbox" name="Box_@i" class="optionBox optionSize"
+                                                           boxvalue="@optionview.Id"
+                                                           typevalue="@pollingquestion.Type"
+                                                           answervalue="@optionview.OptionName"
+                                                           hasinput="1" />
+                                                </div>
+
+                                            }
+                                            @if (!String.IsNullOrEmpty(optionview.Picture))
+                                            {
+                                                <div class="col-xs-10" style="max-width:70%;">
+                                                    <img class="img-responsive" src="@optionview.Picture" />
+                                                </div>
+                                                <div class="col-xs-12" optionname="@optionview.OptionName" style="margin-left:16.67%;max-width:70%">
+                                                    @optionview.OptionName
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-xs-10" optionname="@optionview.OptionName" style="max-width:70%">
+                                                    @optionview.OptionName
+                                                </div>
+                                            }
+
+                                            @if (optionview.optiontype.type == "1"
+                                                && optionview.optiontype.isRequired == "1")
+                                            {
+                                                <div class="col-xs-10 optionanswertext answertextrequired hidden" style="margin-top:20px;margin-left:16.67%;max-width:70%">
+
+                                                    <textarea name="OptionAnswerText" class="form-control" placeholder="必填项"
+                                                              style="min-height: 15px;text-align:left;"></textarea>
+                                                </div>
+
+                                            }
+                                            else if (optionview.optiontype.type == "1"
+                                                && optionview.optiontype.isRequired == "0")
+                                            {
+                                                <div class="col-xs-10 optionanswertext  hidden" style="margin-top:20px;margin-left:16.67%;max-width:70%">
+                                                    <textarea name="OptionAnswerText" class="form-control" placeholder="非必填项"
+                                                              style="min-height: 15px;"></textarea>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+
+
+                        </div>
+                    }
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 sendButtonArea" style="text-align: center">
+                        <button type="button" class="btn" disabled="disabled" style="width:100%;height:60px;background-color:#bbb">
+                            <span aria-hidden="true"></span> @Model.StatusName
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            
+        }
+
+    </div>
+</form>

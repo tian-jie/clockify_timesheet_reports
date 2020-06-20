@@ -1,0 +1,73 @@
+﻿@{
+    ViewBag.Title = "多人聊天";
+    Layout = null;
+}
+@model Innocellence.WeChatTalk.Domain.ViewModel.WeChatInfo
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+    <title>@ViewBag.Title</title>
+    @{ 
+        <link href="~/Plugins/Innocellence.WechatTalk/Styles/talk.css" rel="stylesheet">
+        <link href="~/Plugins/Innocellence.WechatTalk/Styles/dropload.css" rel="stylesheet">
+        <script src="~/Scripts/jquery-1.11.1.min.js"></script>
+        <script src="~/Plugins/Innocellence.WechatTalk/Scripts/jquery.signalR-2.2.1.min.js"></script>
+        <script src="~/signalr/hubs"></script>
+        <script src="~/Plugins/Innocellence.WechatTalk/Scripts/dropload.min.js"></script>
+        <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>       
+        <script>
+            $(function () {
+                wx.config({
+                    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                    appId: '@Model.SdkAppId', // 必填，公众号的唯一标识
+                    timestamp: '@Model.Timestamp', // 必填，生成签名的时间戳
+                    nonceStr: '@Model.NonceStr', // 必填，生成签名的随机串
+                    signature: '@Model.Signature',// 必填，签名，见附录1
+                    jsApiList: [
+                        'onMenuShareTimeline',
+                        'onMenuShareAppMessage',
+                        'onMenuShareQQ',
+                        'onMenuShareWeibo',
+                        'chooseImage',
+                        'previewImage',
+                        'uploadImage'
+
+                    ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                });
+            })
+        </script>
+        <script src="~/Plugins/Innocellence.WechatTalk/Scripts/main.js"></script>
+
+    }
+</head>
+<body>
+<input type="text" id="currentUserId" value="@Model.WechatUserId" hidden="true" />
+<input type="text" id="currentUserName" value="@Model.ClientName" hidden="true" />
+<input type="text" id="enterTime" value="@Model.EnterRoomDate" hidden="true">
+<input type="text" value="@Model.ImgHeadUrl" hidden="true" id="headerImg">
+<div class="site-chat clearfix">
+    <div class="site-chat__body clearfix">
+        <ul id="messages" class="site-chat__list">   
+            <div class="history" id="wrapper">             
+            </div>       
+        </ul>
+    </div><!-- /end .site-chat__body -->
+    <div class="site-chat__footer clearfix">
+        <div class="site-chat__footer--inside">
+            <div class="site-chat__input--block">
+                <div class="site-chat__input--border"></div>
+                <input id="msg" type="text" class="site-chat__input--element">          
+            </div>           
+            <div class="site-chat__plus--block">
+                    <span class="site-chat__plus--button">+</span>
+            </div>
+            <div class="site-chat__send--block">
+                <span id="broadcast" class="site-chat__send--button">发送</span>
+            </div>
+        </div>
+    </div><!-- /edn .site-chat__footer -->
+</div>
+</body>
+</html>

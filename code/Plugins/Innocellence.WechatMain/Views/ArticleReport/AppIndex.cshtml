@@ -1,0 +1,154 @@
+﻿@{
+    ViewBag.Title = "Aritcle Report";
+}
+
+<div class="row">
+    <div class="col-sm-12">
+        
+        <form class="form-inline" id="SearchForm" method="post">
+            <div class="form-group">
+                <div data-date-format="yyyy-mm-dd" class="input-daterange input-group">
+                    <input type="datetime" name="startDate" id="startDate" class="form-control" placeholder="开始日期" />
+                    <span class="input-group-addon">
+                        <i class="fa fa-exchange"></i>
+                    </span>
+                    <input type="datetime" name="endDate" id="endDate" class="form-control" placeholder="结束日期" />
+                </div>                
+                <a href="javascript:void(0)" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+            </div>
+            <div class="form-group pull-right">
+                <button type="button" class="btn btn-sm btn-success" id="btnExport">
+                    <i class="fa fa-download"></i>输出
+                </button>
+            </div>
+            <input type="hidden" name="appCate" id="appCate" value="@ViewBag.AppId" />
+        </form>
+        
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                            @*<th style="width: 5%; text-align: center;">@T("ID")</th>*@
+                            <th style="width: 10%; text-align: center;">@T("日期")</th>
+                            <th style="width: 15%">@T("AppName")</th>
+                            <th style="width: 5%">@T("ArticleID")</th>
+                            <th style="width: 25%">@T("图文标题")</th>
+                            @*<th style="width: 10%">@T("菜单key")</th>*@
+                            <th style="width: 10%">@T("菜单名称")</th>
+                            <th style="width: 10%">@T("访问人数")</th>
+                            <th style="width: 10%">@T("访问次数")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts_Foot
+{
+    <script>
+        var uploader;
+        $(document).ready(function () {
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList" },
+                "deferLoading": 0,
+                "aoColumns": [
+                    { "mData": "AccessDate" },
+                    { "mData": "AppName" },
+                    { "mData": "ArticleId" },
+                    { "mData": "ArticleTitle" },
+                    //{ "mData": "MenuKey" },
+                    { "mData": "MenuName" },
+                    { "mData": "VisitorCount" },
+                    { "mData": "VisitTimes" }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                    {
+                        "targets": 0,
+                        "render": function (data, type, full, meta) {
+                            return data;
+                        }
+                    }
+                ]),
+                fnDrawCallback: function () {
+                    $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    $('ul.pagination').append("<li class='paginate_button'><input type='text' style='width:30px;float:left' id='go_page'></li><li class='paginate_button'><a class='gotopage'>Go</a></li>")
+                    $('.gotopage').click(function () {
+                        var gopage = (/^[0-9]+$/).test($('#go_page').val()) ? $('#go_page').val() : "1";
+                        $('.data-table').dataTable().api().page(parseInt(gopage) - 1).draw(false)
+                    })
+                }
+            }));
+
+            ////导出csv
+            //$('#btnExportCsv').click(function () {
+
+            //    var startTime = $('#startDate').val();
+            //    var endTime = $('#endDate').val();
+
+            //    var params = "startTime=" + startTime + "&endTime=" + endTime;
+            //    $.ajax({
+            //        type: 'Get',
+            //        url: 'Exportcsv',
+            //        data: { "startTime": startTime, "endTime": endTime},
+            //        cache: false,
+            //        success: function (data) {
+            //            $.download("Exportcsv", params);
+            //            artDialog.alert("Export Successful");
+            //        }
+            //    });
+
+            //});
+
+            //datepicker plugin
+            $('.input-daterange').datepicker({
+                autoclose: true,
+                todayHighlight: true,
+                dateFormat: 'yyyy-mm-dd',
+                minDate: -10,
+                maxDate: "+1M +10D",
+                todayBtn: "linked",
+                clearBtn: true
+            });
+
+        });
+
+        function checkdate() {
+            var start = $("#startDate").val();
+            var end = $("#endDate").val();
+            if (start == null || start.length == 0) {
+                artDialog.alert("起始日期不能为空");
+                return false;
+            }
+            if (end == null || end.length == 0) {
+                artDialog.alert("截止日期不能为空");
+                return false;
+            }
+
+            var startime = new Date(start);
+            var endtime = new Date(end);
+            if (startime.getTime() > endtime.getTime()) {
+                artDialog.alert("截止日期不能早于起始日期。");
+                return false;
+                //Math.floor(date3 / (24 * 3600 * 1000))
+            } else if (Math.floor((endtime.getTime() - startime.getTime()) / (24 * 3600 * 1000)) > 60) {
+                artDialog.alert("间隔时间不能超过两个月。");
+                return false;
+            }
+            return true;
+        }
+
+        function BeforeExport() {
+            return checkdate();
+        }
+
+        function BeforeSearch() {
+            return checkdate();
+        }
+
+    </script>
+}

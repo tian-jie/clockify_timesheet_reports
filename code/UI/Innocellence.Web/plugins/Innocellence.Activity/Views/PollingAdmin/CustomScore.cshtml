@@ -1,0 +1,105 @@
+﻿@model Innocellence.Activity.ModelsView.PollingResultScoreView
+@{
+    ViewBag.Title = "有奖问答/投票";
+}
+<div class="row">
+
+    <div class="col-xs-12">
+        <form class="form-inline" id="SearchForm" method="post">
+
+            <input type="hidden" id="Id" name="Id" value="@ViewBag.pollingId" />
+            <input class="form-control" type="text" id="TestEmpty" name="TestEmpty" placeholder="TestEmpty" style="display: none">
+            <div class="form-group" style="width:100%;margin-bottom: 20px;">
+                <ul class=" nav nav-tabs" role="tablist">
+                    <li role="presentation"><a href="/activity/pollingadmin/customAnswer?Id=@ViewBag.pollingId&appid=@ViewBag.AppId">用户答卷</a></li>
+                    <li role="presentation"><a href="/activity/pollingadmin/Result?Id=@ViewBag.pollingId&appid=@ViewBag.AppId">答题结果</a></li>
+                    <li role="presentation" class="active"><a href="/activity/pollingadmin/customScore?Id=@ViewBag.pollingId&appid=@ViewBag.AppId">得分情况</a></li>
+                </ul>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="text" name="txtSearch" placeholder="礼来ID / 姓名" />
+                <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
+                    <i class="fa fa-search"></i>
+                </a>
+            </div>
+            <div class="form-group pull-right">
+                <a href="javascript:void(0);" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="导出CSV" id="btnScoreExport">
+                    <i class="fa fa-download"></i> 导出
+                </a>
+            </div>
+        </form>
+
+        <div class="widget-box" style="margin-top:20px">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 12%">@T("礼来ID")</th>
+                            <th style="width: 20%">@T("姓名")</th>
+                            <th style="width: 25%">@T("一级部门")</th>
+                            <th style="width: 15%">@T("二级部门")</th>
+                            <th style="width: 15%">@T("三级部门")</th>
+                            <th style="width: 13%">@T("得分")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList?type=Score&id=@ViewBag.pollingId" },
+                "aoColumns": [
+
+                    {
+                        "mData": "UserId",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    { "mData": "UserName" },
+                    { "mData": "UserDeptLv1" },
+                    { "mData": "UserDeptLv2" },
+                    { "mData": "UserDeptLv3" },
+                    { "mData": "CustomScore" }
+                ],
+                "columnDefs":
+                    jQuery.extend(true, datatableSetting.columnDefs, [
+                        {
+
+                            "targets": 0,
+                            "render": function (data, type, full, meta) {
+                                return data;
+                            }
+
+                        },
+                    ]),
+                fnDrawCallback:
+                    function () { $('[data-toggle="tooltip"]').tooltip(); }
+            }));
+        });
+        $('#btnScoreExport').on('click', function () {
+
+            var para = '';
+            var dSearch = $("#SearchForm").serializeArray();
+            if (!BeforeExport(dSearch)) {
+                return false;
+            }
+
+            $.each(dSearch, function (key, val) {
+                para += val.name + '=' + val.value + '&';
+            });
+
+            // $.download("ExportAnswer", para + "t=" + (new Date()).getTime());
+            $.download("ExportToExcel", para + "t=" + (new Date()).getTime());
+            return true;
+        });
+    </script>
+}

@@ -1,0 +1,11 @@
+Group: Discount requirements
+FriendlyName: WeChatMP
+SystemName: Innocellence.WeChatMP
+Version: 1.0.20160107
+SupportedVersions: 2.00
+Author: ying.he
+DisplayOrder: 1
+FileName: Innocellence.WeChatMP.dll
+Dependences: Innocellence.WeChat
+Controllers: Innocellence.WeChatMP.Controllers
+Install: 1

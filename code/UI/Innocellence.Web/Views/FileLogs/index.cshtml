@@ -1,0 +1,128 @@
+﻿
+<!--Action boxes-->
+  <div class="row">
+      <div class="col-sm-12">
+            <form class="form-inline" id="SearchForm">
+                <input type="hidden" name="DeptId" id="DeptId" />
+                <div class="form-group">
+                    <div data-date-format="yyyy-mm-dd" class="input-append date date-picker" style="display:inline-block;">
+                        <div class="input-group">
+                            <input type="datetime" name="txtDate" class="form-control" placeholder="Created Date"/>
+                            <span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+                        </div>
+                   </div>
+                    <input type="text" name="txtDate" class="form-control BasePath" placeholder="Path" />
+                    <a href="#" class="btn  btn-sm" id="btnSearch1" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+                </div>
+            </form>
+
+              <div class="widget-box">
+                  <div class="widget-content nopadding">
+                     
+                          <div class="col-sm-3" style="overflow:auto;">
+                              <div class=" widget-box" style="height: 400px">
+                                  <div class="widget-content nopadding">
+                                      <table id="DepartmentTree"></table>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="col-sm-9">
+                              <div class=" widget-box">
+                                  <div class="widget-content nopadding">
+                                      <div class="Content"></div>
+                                  </div>
+                              </div>
+
+                          </div>
+                      
+                  </div>
+              </div>
+          </div>
+   </div>
+<div id="mm" class="easyui-menu" style="width: 120px; display:none">
+    <div onclick="DownloadFile()" data-options="iconCls:'icon-add'">Download</div>
+    <div onclick="DeleteFile()" data-options="iconCls:'icon-add'">Delete</div>
+    <div onclick="ClearAll()" data-options="iconCls:'icon-add'">ClearAll</div>
+</div>
+@section scripts_Foot
+{
+
+<link rel="stylesheet" href="~/styles/EasyUI/easyui.css" />
+<script src="~/Scripts/EasyUI/jquery.easyui.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+          var tree=  $('#DepartmentTree').tree({
+                url: 'GetListTree?t=' + (new Date()).getTime(),
+                method: 'get',
+                animate: true,
+                queryParams: { strPath: $('.BasePath').val() },
+                onClick: function (node) {
+                   
+                    //LEAP.Common.MainPop.options.dataTable.fnDraw();
+                    if (node.attributes == 'file') {
+                        OpenFile(node.id);
+                    }
+                   
+                },
+                onContextMenu: function (e, node) {
+                    e.preventDefault();
+                    $(this).tree('select', node.target);
+                    $('#mm').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                }
+            });
+
+        });
+
+        $('#btnSearch1').on('click', function () { $('#DepartmentTree').tree('reload');   return false; });
+
+        function OpenFile(strPath) {
+            $.get("open", { "strPath": strPath }, function (data) {
+
+                $('.Content').html(data.replace(/\n/g, '<br/>'));
+
+            });
+        }
+
+        //datepicker plugin
+        $('.date-picker').datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'yyyy-mm-dd',
+            minDate: -10,
+            maxDate: "+1M +10D",
+        })
+        //.next().on(ace.click_event, function () {
+        //    $(this).prev().focus();
+        //});
+        function DownloadFile() {
+            var t = $('#DepartmentTree');
+            var node = t.tree('getSelected');
+            $.download("Download", { "strPath": node.id }, "get");
+        }
+
+        function DeleteFile() {
+            var t = $('#DepartmentTree');
+            var node = t.tree('getSelected');
+
+            $.get("DeleteFile", { "strPath": node.id }, function (data) {
+                $('#DepartmentTree').tree('reload');
+            });
+           
+        }
+
+        function ClearAll() {
+           // var t = $('#DepartmentTree');
+            // var node = t.tree('getSelected');
+
+            $.get("ClearAll", {  }, function (data) {
+                $('#DepartmentTree').tree('reload');
+            });
+
+        
+        }
+    </script>
+}

@@ -1,0 +1,131 @@
+﻿@using Innocellence.WeChatMeeting.Domain.Entity;
+@model Innocellence.WeChatMeeting.Domain.Entity.MeetingPerInfo
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>SignUp Information</title>
+    @{
+        Layout = null;
+    }
+    <script src="/Plugins/Innocellence.WeChatMeeting/Content/js/weui.min.js"></script>
+    <script src="/Scripts/jquery-1.11.1.min.js"></script>
+    <script src="/Scripts/wechatab/lib/layer/layer.js"></script>
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/font-awesome.min.css">
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/weui.min.css">
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/main.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="info-cells">
+            <div class="info-cell">
+                <div class="info-title">姓名</div>
+                <input class="info-content weui-input" type="text" name="txtName" value="@Model.Name" placeholder="请输入您的姓名"/>
+            </div>
+            <div class="info-cell">
+                <div class="info-title">联系电话</div>
+                <input class="info-content weui-input" type="number" name="txtContactPhone" value="@Model.ContactPhone" placeholder="请输入您的电话"/>
+            </div>
+            <div class="info-cell">
+                <div class="info-title">联系邮箱</div>
+                <input class="info-content weui-input" type="text" name="txtMailbox" value="@Model.Mailbox" placeholder="请输入您的邮箱"/>
+            </div>
+            <div class="info-cell">
+                <div class="info-title">助理姓名（选填）</div>
+                <input class="info-content weui-input" type="text" name="txtAssistantName" value="@Model.AssistantName" placeholder="请输入您助理的姓名"/>
+            </div>
+            <div class="info-cell">
+                <div class="info-title">助理电话（选填）</div>
+                <input class="info-content weui-input" type="number" name="txtAssistantPhone" value="@Model.AssistantPhone" placeholder="请输入您助理的电话"/>
+            </div>
+            <div class="info-cell">
+                <div class="info-title">紧急联系人</div>
+                <input class="info-content weui-input" type="text" name="txtEmergencyContact" value="@Model.EmergencyContact" placeholder="请输入您的紧急联系人"/>
+            </div>
+            <div class="info-cell">
+                <div class="info-title">紧急联系人电话</div>
+                <input class="info-content weui-input" type="number" name="txtEmergencyConPhone" value="@Model.EmergencyConPhone" placeholder="请输入您紧急联系人的电话"/>
+            </div>
+        </div>
+        <div class="common-btn" id="submit-info">确认并提交</div>
+    </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+
+    $(function () {
+
+    });
+    function isEmail(str) {
+        var reg = /^([a-zA-Z0-9_-])+@@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+        return reg.test(str);
+    }
+    //确认并提交
+    $("#submit-info").on("click", function () {
+        var txtName = $("input[name='txtName']").val();
+        var txtContactPhone = $("input[name='txtContactPhone']").val();
+        var txtMailbox = $("input[name='txtMailbox']").val();
+        var txtAssistantName = $("input[name='txtAssistantName']").val();
+        var txtAssistantPhone = $("input[name='txtAssistantPhone']").val();
+        var txtEmergencyContact = $("input[name='txtEmergencyContact']").val();
+        var txtEmergencyConPhone = $("input[name='txtEmergencyConPhone']").val();
+
+        var para;
+        
+
+        if (txtName == "") {
+            layer.msg("请填写您的姓名！");
+        }
+        else if (txtContactPhone == "") {
+            layer.msg("请填写您的联系电话！");
+        }
+        else if (txtMailbox == "") {
+            layer.msg("请填写您的联系邮箱！");
+        }
+        else if (!isEmail(txtMailbox)) {
+            layer.msg("请填写正确的联系邮箱！");
+        }
+        else if (txtEmergencyContact == "") {
+            layer.msg("请填写您的紧急联系人！");
+        }
+        else if (txtEmergencyConPhone == "") {
+            layer.msg("请填写您的紧急联系人电话！");
+        }
+        else {
+            para = "" + txtName + "," + txtContactPhone + "," + txtMailbox + "," + txtAssistantName + "," + txtAssistantPhone + "," + txtEmergencyContact + "," + txtEmergencyConPhone + "";
+
+            $.ajax({
+                url: "/WeChatMeeting/MeetingInvitation/AddSignUpInfo?wechatid=@ViewBag.AppId",
+                type: "post",
+                data: { "per": para },
+                success: function success(data) {
+                    weui.alert('点击确定返回上一页', {
+                        title: '补充报名信息成功',
+                        buttons: [{
+                            label: '确定',
+                            type: 'primary',
+                            onClick: function () { window.location.href = document.referrer }
+                        }]
+                    });
+                    
+                        //layer.msg("补充报名信息提交成功！");
+                    //window.location.href = "SignUp?AppID=@ViewBag.AppId&wechatid=@ViewBag.AppId";
+                    
+                },
+                complete: function complete(data) {
+
+                }
+            });
+        }
+
+
+    });
+
+</script>

@@ -1,0 +1,298 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>插入ivote链接</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link href="/styles/bootstrap.css" rel="stylesheet" />
+    <script type="text/javascript" src="../internal.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="/Scripts/bootstrap.min.js"></script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            color: #838383;
+        }
+
+        table {
+            font-size: 12px;
+            margin: 10px;
+            line-height: 30px;
+        }
+
+        .txt {
+            width: 400px;
+            height: 30px;
+            line-height: 21px;
+            border: 1px solid #d7d7d7;
+        }
+
+        label {
+            font-weight: normal !important;
+        }
+
+        table#vote > tbody > tr {
+            margin-bottom: 8px !important;
+            height: 35px;
+        }
+
+        #vote_modal .modal-body {
+            padding: 0;
+        }
+
+        table#survey_table {
+            margin: 0;
+        }
+
+            table#survey_table input[type=radio] {
+                margin-top: 0;
+            }
+
+            table#survey_table > tbody > tr > td:nth-child(2) {
+                text-overflow: ellipsis;
+                overflow: hidden;
+            }
+    </style>
+</head>
+<body>
+    <table id="vote">
+        <tr>
+            <td>
+                <label for="text">Text </label>
+            </td>
+            <td>
+                <input class="txt" id="text" type="text" disabled="true" /></td>
+        </tr>
+        <tr>
+            <td>
+                <label for="href">Url </label>
+            </td>
+            <td>
+                <div class="input-group">
+                    <input class="txt" id="href" type="text" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-sm btn-info" data-toggle="modal" data-target="#vote_modal">Pick</button></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label for="title">Title </label>
+            </td>
+            <td>
+                <input class="txt" id="title" type="text" /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <label for="target">Open in the new window ?</label>
+                <input id="target" type="checkbox" />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" id="msg"></td>
+        </tr>
+    </table>
+
+
+    <!-- Modal Begain-->
+    <div class="modal fade" id="vote_modal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal-title">Suvey List</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="vote-list" style="overflow-y: auto; max-height: 300px;">
+                        <table id="survey_table" class="table table-hover table-striped">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Survey Name</th>
+                                    <th>Type</th>
+                                    <th>State</th>
+                                    <th>Create Date</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnConfirm">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var range = editor.selection.getRange(),
+            link = range.collapsed ? editor.queryCommandValue("link") : editor.selection.getStart(),
+            url,
+            text = $G('text'),
+            rangeLink = domUtils.findParentByTagName(range.getCommonAncestor(), 'a', true),
+            orgText;
+        link = domUtils.findParentByTagName(link, "a", true);
+        if (link) {
+            url = utils.html(link.getAttribute('_href') || link.getAttribute('href', 2));
+
+            if (rangeLink === link && !link.getElementsByTagName('img').length) {
+                text.removeAttribute('disabled');
+                orgText = text.value = link[browser.ie ? 'innerText' : 'textContent'];
+            } else {
+                text.setAttribute('disabled', 'true');
+                text.value = "Supports only effective when a link is selected";
+            }
+             
+        } else {
+            if (range.collapsed) {
+                text.removeAttribute('disabled');
+                text.value = '';
+            } else {
+                text.setAttribute('disabled', 'true');
+                text.value = "Supports only effective when a link is selected";
+            }
+
+        }
+
+        $G("title").value = url ? link.title : "";
+        $G("href").value = url ? url : '';
+        $G("target").checked = url && link.target == "_blank" ? true : false;
+        $focus($G("href"));
+
+        function handleDialogOk() {
+            var href = $G('href').value.replace(/^\s+|\s+$/g, '');
+            if (href) {
+                if (!hrefStartWith(href, ["http", "/", "ftp://", '#'])) {
+                    href = "http://" + href;
+                }
+                var obj = {
+                    'href': href,
+                    'target': $G("target").checked ? "_blank" : '_self',
+                    'title': $G("title").value.replace(/^\s+|\s+$/g, ''),
+                    '_href': href
+                };
+                //修改链接内容的情况太特殊了，所以先做到这里了
+                //todo:情况多的时候，做到command里
+                if (orgText && text.value != orgText) {
+                    link[browser.ie ? 'innerText' : 'textContent'] = obj.textValue = text.value;
+                    range.selectNode(link).select();
+                }
+                if (range.collapsed) {
+                    obj.textValue = text.value;
+                }
+                editor.execCommand('link', utils.clearEmptyAttrs(obj));
+                dialog.close();
+            }
+        }
+        dialog.onok = handleDialogOk;
+
+        $G('href').onkeydown = $G('title').onkeydown = function (evt) {
+            evt = evt || window.event;
+            if (evt.keyCode == 13) {
+                handleDialogOk();
+                return false;
+            }
+        };
+
+        $G('href').onblur = function () {
+            if (!hrefStartWith(this.value, ["http", "/", "ftp://", '#'])) {
+                $G("msg").innerHTML = "<span style='color: red'>The hyperlink you enter should start with 'http|https|ftp://'!</span>";
+            } else {
+                $G("msg").innerHTML = "";
+            }
+        };
+
+        $G('href').onchange = function () {
+            if (!hrefStartWith(this.value, ["http", "/", "ftp://", '#'])) {
+                $G("msg").innerHTML = "<span style='color: red'>The hyperlink you enter should start with 'http|https|ftp://'!</span>";
+            } else {
+                $G("msg").innerHTML = "";
+            }
+        };
+
+
+        function hrefStartWith(href, arr) {
+            href = href.replace(/^\s+|\s+$/g, '');
+            for (var i = 0, ai; ai = arr[i++];) {
+                if (href.indexOf(ai) == 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        $('#vote_modal').on("shown.bs.modal", function () {
+            //请求前清除一次
+            $('#survey_table > tbody').html("");
+            $.support.cors = true;
+            $.ajax({
+                type: 'GET',
+                url: 'http://orchard.vm-online.com:8080/survey/home/GetVoteList',//?callback=?
+                xhrFields: {
+                    withCredentials: true
+                },
+                //crossDomain:true,
+                //dataType: "jsonp",
+                success: function (result) {
+                    if (result.data != null && !result.data.IsTemplate) {
+                        var surveyType = "";
+                        var createdDate;
+                        //轮循列表
+                        for (var x = 0; x < result.data.Entities.length; x++) {
+                            surveyType = result.data.Entities[x].SurveyType == 0 ? "Vote" : "Survey";
+                            createdDate=ChangeDateFormat(result.data.Entities[x].CreatedLocal);
+                            $('#survey_table > tbody').append('<tr>' +
+                                '<td>' +
+                                '<input type="radio" name="survey" value=' + result.data.Entities[x].Qrcode + '/></td>' +
+                                '<td>' + result.data.Entities[x].Name + '</td>' +
+                                '<td>' + surveyType + '</td>' +
+                                '<td>' + result.data.Entities[x].StateText + '</td>' +
+                                '<td>' + createdDate + '</td>' +
+                                '</tr>'
+                             );
+                        }
+                        //当前url反选
+                        var radioNode = $('input[name="survey"]');
+                        if ($('#href').val() != "" && $('#href').val() != null) {
+
+                            for (var i = 0; i < radioNode.length; i++) {
+                                if ($('#href').val() == radioNode.eq(i).val()) {
+                                    radioNode.eq(i).prop("checked", "checked");
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+
+        $('#btnConfirm').click(function () {
+            //反选中survey
+            var radioNode = $('input[name="survey"]');
+            if (radioNode.is(":checked")) {
+                $('#href').val($('input[name="survey"]:checked').val());
+            } 
+            //close modal
+            $('#vote_modal').modal('hide');
+            //清除所选
+            $('input[type="radio"]').attr("checked", false);
+            $('#survey_table > tbody').html("");
+        });
+
+        //将/Date(...)格式转换为yyyy-MM-dd型日期格式
+        function ChangeDateFormat(time) {
+            if (time != null) {
+                var date = new Date(parseInt(time.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                return date.getFullYear() + "-" + month + "-" + currentDate;
+            }
+            return "";
+        }
+    </script>
+
+</body>
+</html>

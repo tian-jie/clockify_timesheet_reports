@@ -1,0 +1,721 @@
+﻿@using System.Web.WebPages.Html
+@using Innocellence.WeChat.Domain.ModelsView;
+@using Innocellence.WeChat.Domain.Entity;
+@using Innocellence.WeChat.Domain.Common;
+@using Infrastructure.Web.Domain.Service;
+
+@model Innocellence.WeChat.Domain.ModelsView.ArticleInfoView
+@section easyui_css
+{
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" type="text/css" />
+}
+<!-- 配置文件 -->
+<script type="text/javascript" src="/Scripts/ueditor/ueditor.config.js"></script>
+<!-- 编辑器源码文件 -->
+<script type="text/javascript" src="/Scripts/ueditor/ueditor.all.js"></script>
+<script type="text/javascript" src="/Scripts/wechatab/lib/layer/layer.js"></script>
+<script type="text/javascript" src="/Scripts/wechatab/dist/wechatab.js"></script>
+
+<div id="ModalTable">
+
+    <form action="Post" id="ff" method="get" class="form-horizontal">
+
+        <input type="hidden" id="ID" name="ID" value="@Model.Id" />
+        <input type="hidden" id="AppId" name="AppId" value="@ViewBag.AppId" />
+        <input type="hidden" id="IsCorp" name="IsCorp" value="@ViewBag.IsCorp" />
+        <input type="hidden" id="WeChatID" name="WeChatID" value="@ViewBag.WeChatID" />
+        <div class="row" style="margin: 0;">
+            <div class="form-group col-md-6">
+                <label class="col-sm-2 control-label">标题:</label>
+                <div class="col-sm-10">
+                    <input type="text" name="ArticleTitle" class="form-control" maxlength="64" placeholder="标题" value="@Model.ArticleTitle"
+                           validate="{required:true,maxlength:150,messages:{required:'Please set a title for this article.', maxlength:'This title is too long.'}}" />
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <label class="col-sm-3 control-label">原文链接:</label>
+                <div class="col-sm-9">
+                    <input type="text" name="ArticleURL" class="form-control" placeholder="External Link http://" value="@Model.ArticleURL"
+                           validate="{required:false,url:true,maxlength:512,messages:{url:'Please enter the correct format url.', maxlength:'This link is too long.'}}" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin: 0;">
+            <div class="form-group col-md-6">
+                <label class="col-sm-2 control-label">类别:</label>
+                <div class="col-sm-10">
+                    <div class="col-sm-10 " style="margin-left: -15px;">
+                        @{
+
+                            if (ViewBag.AppId == null)
+                            {
+                                <input id="CategoryId" name="CategoryId" value="@ViewBag.cateId" class="easyui-combotree " style="width:100%; height: 34px;"
+                                       data-placeholder="Please Select Category" data-options="url:'GetTreeData',method:'get'" />
+                            }
+                            else
+                            {
+                                <input id="CategoryId" name="CategoryId" value="@ViewBag.cateId" class="easyui-combotree " style="width:100%;height: 34px;"
+                                       data-placeholder="Please Select Category" data-options="url:'GetTreeData?wechatid=@ViewBag.WeChatID&appid=@ViewBag.AppId',method:'get'" />
+                            }
+                        }
+                    </div>
+
+                    <div class="col-sm-2">
+                        <a href="javascript:void(0)" type="button" id="clear_category" class="btn btn-sm " title="Clear Category">
+                            <i class="fa fa-remove"></i>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            
+            <div class="form-group col-md-6">
+                @if (ViewBag.IsCorp == 1)
+                {
+                    <div class="col-sm-6">
+                        <label class="col-sm-5 control-label">评论:</label>
+                        <div class="col-sm-7">
+                            <input type="hidden" name="ShowComment" id="ShowComment" value="@Model.ShowComment.ToString()" />
+                            @if (Model.ShowComment.HasValue && Model.ShowComment.Value == true)
+                            {
+                                <input type="checkbox" name="ShowCommentBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                            }
+                            else if (Model.ShowComment.HasValue && Model.ShowComment.Value == false)
+                            {
+                                <input type="checkbox" name="ShowCommentBox" class="ace ace-switch ace-switch-2 form-control" />
+                            }
+                            else
+                            {
+                                <script type="text/javascript">
+                            $(function () {
+                                $('#ShowComment').val("false");
+                            })
+                                </script>
+                                <input type="checkbox" name="ShowCommentBox" class="ace ace-switch ace-switch-2 form-control" />
+                            }
+                            <span class="lbl mt10"></span>
+                        </div>
+
+                    </div>
+                }               
+                <div class="col-sm-6">
+                    <label class="col-sm-5 control-label">阅读数:</label>
+                    <div class="col-sm-7">
+                        <input type="hidden" name="ShowReadCount" id="ShowReadCount" value="@Model.ShowReadCount.ToString()" />
+                        @if (Model.ShowReadCount.HasValue && Model.ShowReadCount.Value == true)
+                        {
+                            <input type="checkbox" name="ShowReadCountBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                        }
+                        else if (Model.ShowReadCount.HasValue && Model.ShowReadCount.Value == false)
+                        {
+                            <input type="checkbox" name="ShowReadCountBox" class="ace ace-switch ace-switch-2 form-control" />
+                        }
+                        else
+                        {
+                            <script type="text/javascript">
+                            $(function () {
+                                $('#ShowReadCount').val("True");
+                            })
+                            </script>
+                            <input type="checkbox" name="ShowReadCountBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                        }
+                        <span class="lbl mt10"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin: 0;">
+            <div class="form-group col-md-6">
+                <label class="col-sm-2 control-label">描述:</label>
+                <div class="col-sm-10">
+                    <textarea name="ArticleComment" id="ArticleComment" class="form-control" placeholder="描述" style="min-height: 45px;" validate="{required:true,maxlength:120,messages:{required:'Please enter short description.',maxlength:'This description is too long.'}}">@Model.ArticleComment</textarea>
+                </div>
+            </div>
+            <div class="form-group col-md-6">
+                <div class="col-sm-6">
+                    <label class="col-sm-5 control-label">点赞:</label>
+                    <div class="col-sm-7">
+                        <input type="hidden" name="IsLike" id="IsLike" value="@Model.IsLike.ToString()" />
+                        @if (Model.IsLike.HasValue && Model.IsLike.Value == true)
+                        {
+                            <input type="checkbox" name="IsLikeBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                        }
+                        else if (Model.IsLike.HasValue && Model.IsLike.Value == false)
+                        {
+                            <input type="checkbox" name="IsLikeBox" class="ace ace-switch ace-switch-2 form-control" />
+                        }
+                        else
+                        {
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#IsLike').val("True");
+                                })
+                            </script>
+                            <input type="checkbox" name="IsLikeBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                        }
+                        <span class="lbl mt10"></span>
+                       @*<p>(PS: 微信页面是否支持点赞 ?)</p>*@
+                    </div>
+                </div>
+                @if (ViewBag.IsCorp == 1)
+                {
+                    <div class="col-sm-6">
+                        <label class="col-sm-5 control-label">水印:</label>
+                        <div class="col-sm-7">
+                            <input type="hidden" name="IsWatermark" id="IsWatermark" value="@Model.IsWatermark.ToString()" />
+                            @if (Model.IsWatermark.HasValue && Model.IsWatermark.Value == true)
+                            {
+                                <input type="checkbox" name="IsWatermarkBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                            }
+                            else if (Model.IsWatermark.HasValue && Model.IsWatermark.Value == false)
+                            {
+                                <input type="checkbox" name="IsWatermarkBox" class="ace ace-switch ace-switch-2 form-control" />
+                            }
+                            else
+                            {
+                                <script type="text/javascript">
+                            $(function () {
+                                $('#IsWatermark').val("True");
+                            })
+                                </script>
+                                <input type="checkbox" name="IsWatermarkBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                            }
+                            <span class="lbl mt10"></span>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-6">
+                        <label class="col-sm-5 control-label">分享:</label>
+                        <div class="col-sm-7">
+                            <input type="hidden" name="NoShare" id="NoShare" value="@Model.NoShare.ToString()" />
+                            @if (Model.NoShare.HasValue && Model.NoShare.Value == true)
+                            {
+                                <input type="checkbox" name="NoShareBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                            }
+                            else if (Model.NoShare.HasValue && Model.NoShare.Value == false)
+                            {
+                                <input type="checkbox" name="NoShareBox" class="ace ace-switch ace-switch-2 form-control" />
+                            }
+                            else
+                            {
+                                <script type="text/javascript">
+                            $(function () {
+                                $('#NoShare').val("True");
+                            })
+                                </script>
+                                <input type="checkbox" name="NoShareBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                            }
+                            <span class="lbl mt10"></span>
+                        </div>
+
+                    </div>
+                }
+
+              
+            </div>
+        </div>
+
+
+        <div class="row" style="margin: 0;">
+            <!--<div class="form-group col-md-6">
+                <label class="col-sm-2 control-label">内容:</label>
+                <div class="col-sm-10">
+                    <input id="ImageCoverUrl" name="ImageCoverUrl" value="@Model.ImageCoverUrl" class="form-control"
+                           data-placeholder="Please Input ImageCoverUrl" />
+                </div>
+            </div>-->
+            <div class="form-group col-md-6">
+                <label class="col-sm-2 control-label"></label>
+
+                <div class="col-sm-10">
+
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin: 0;">
+            <div class="form-group col-md-6">
+                <label class="col-sm-2 control-label">图片 :</label>
+                <div class="col-sm-10">
+                    <div id="uploader" class="wu-example">
+                        <div class="queueList" style="margin: 0px; margin-bottom: 5px;">
+                            <div id="dndArea" class="placeholder" style="min-height: 130px; padding-top: 110px; background-position: center 24px;">
+                                <div id="filePicker" class="webuploader-container"></div>
+                                <p style="padding-bottom: 10px;">或拖动你的照片在这里  </p>
+                            </div>
+                            <ul class="filelist"></ul>
+                        </div>
+
+                        @*<div class="statusBar" style="display: none;">
+                                <div class="progress" style="display: none;">
+                                    <span class="text">0%</span>
+                                    <span class="percentage" style="width: 0%;"></span>
+                                </div>
+                                <div class="btns">
+                                    <div class="uploadBtn state-pedding">开始上传</div>
+                                </div>
+                            </div>
+                        *@
+                    </div>
+                    <p>(建议封面图片尺寸: 900x500)</p>
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-md-offset-2">
+                <!--<input type="hidden" id="ThumbImageId" name="ThumbImageId" value="@Model.ThumbImageId" />-->
+                <input type="hidden" id="ImageCoverUrl" name="ImageCoverUrl" value="@Model.ImageCoverUrl" />
+                <div style="width: 366px; height: 206px; overflow: hidden;">
+                    <img id="preview" src="@Model.ImageCoverUrl" class="img-responsive" />
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin: 0;">
+            <div class="form-group col-md-6 hidden">
+                <label class="col-sm-2 control-label">Allow Forward:</label>
+
+                <div class="col-sm-10">
+                    <input type="hidden" name="IsTransmit" id="IsTransmit" value="@Model.IsTransmit.ToString()" />
+
+                    @if (Model.IsTransmit.HasValue && Model.IsTransmit.Value == true)
+                    {
+                        <input type="checkbox" name="IsTransmitBox" class="ace ace-switch ace-switch-5 form-control" checked="checked" />
+                    }
+                    else
+                    {
+                        <input type="checkbox" name="IsTransmitBox" class="ace ace-switch ace-switch-5 form-control" />
+                    }
+                    <span class="lbl mt10"></span>
+                    <p>(PS: If you choice IsTransmit,you should upload non tape watermark image in rich text editor.)</p>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin: 0;">
+            <div class="form-group">
+                <label class="col-sm-1 control-label">内容 :</label>
+                <div class="col-sm-11">
+                    <script type="text/plain" id="myEditor" name="ArticleContent" style="height: 640px; width: 100%">
+                        @Html.Raw(Model.ArticleContent)
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin: 15px 0 0;">
+            <div class="col-md-6">
+                @if (@ViewBag.IsCorp == 1)
+                {
+                    <div class="visible-range">
+                        <label class="col-sm-3 control-label">可见范围：</label>
+                        <div class="col-sm-9">
+                            <select class="form-control" id="SecurityLevel" name="SecurityLevel">
+                                <option value="0">企业号内部人员/关注人员</option>
+                                <option value="1">仅收到消息的人</option>
+                                <option value="2">app可见范围内人员</option>
+                                <option value="3">所有人</option>
+                            </select>
+                            <div class="clear"></div>
+                        </div>
+                    </div>
+                    <script>
+                        $(function(){
+                            $('#SecurityLevel').find('option').each(function(){
+                                if($(this).val() ===  '@Model.SecurityLevel')
+                                {
+                                    $(this).attr("selected","selected")
+                                }
+
+
+                            });
+                        })
+                    </script>
+
+                }
+
+            </div>
+
+            @{
+                if (@Model.ArticleStatus != null && @Model.ArticleStatus.Equals("Published"))
+                {
+                    <span class="msg pull-left">No update! This course have been published.</span>
+                    <button type="submit" class="btn btn-success pull-right" disabled="disabled">保存</button>
+                    <button type="button" class="btn btn-warning pull-right" disabled="disabled">保存并预览</button>
+                }
+                else
+                {
+                    <button type="submit" id="btnSubmit" class="btn btn-success pull-right">保存</button>
+                    if (@ViewBag.IsCorp == 1)
+                    {
+                        <button type="button" id="btnPreview_trigger" class="btn btn-warning pull-right" data-target="#previewModal" data-toggle="modal" style="margin-right: 8px;">保存并预览</button>
+                    }
+                    else
+                    {
+                        <button type="button" id="btnPreview_trigger" class="btn btn-warning pull-right" data-target="#myModal" data-toggle="modal" style="margin-right: 8px;">保存并预览</button>
+
+                    }
+
+                }
+            }
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="modal fade" role="dialog" aria-labelledby="myLabel" id="previewModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myLabel">选择预览</h4>
+                    </div>
+                    <div class="modal-body">
+                        @*<textarea name="Previewers" id="Previewers" class="form-control" placeholder="WeChatUserID / delimited by '|'" style="min-height: 50px; max-width: 568px;">@Model.Previewers</textarea>*@
+                        <div id="wechatab"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btnPreview" id="btnPreview">确认</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+
+
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" class="yulanModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myLabel">选择预览</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-xs-12">
+                                <span class="col-xs-4">&nbsp;&nbsp;&nbsp;&nbsp;发送人员昵称：</span>
+                                <div class="col-xs-8">
+                                    <input type="hidden" class="bigdrop multiple-select-yulan" style="width:100%" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary btnPreview" id="btnPreview">确认</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
+        </div>
+        <!-- /.modal -->
+    </form>
+
+</div>
+
+@section scripts_Foot
+{
+    <script src="~/Scripts/EasyUI/jquery.easyui.min.js"></script>
+    <script type="text/javascript">
+        //实例化编辑器
+        var ue = UE.getEditor('myEditor', {
+            allowDivTransToP: false, //阻止div标签自动转换为p标签
+            toolbars: [
+                    [
+                    'source', //源代码
+                    'undo', //撤销
+                    'redo', //重做
+                    'bold', //加粗
+                    'indent', //首行缩进
+                    'italic', //斜体
+                    'underline', //下划线
+                    'subscript', //下标
+                    'fontborder', //字符边框
+                    'superscript', //上标
+                    'unlink', //取消链接
+                    'link', //超链接
+                    'cleardoc', //清空文档
+                    'fontfamily', //字体
+                    'fontsize', //字号
+                    'paragraph', //段落格式
+                    //'simpleupload', //单图上传
+                    'insertimage', //多图上传
+                    //'emotion', //表情
+                    'spechars', //特殊字符
+                    'insertvideo', //视频
+                    'insertspecialvideo',//特殊视频 腾讯及优酷
+                    'attachment', //附件
+                    'help', //帮助
+                    'justifyleft', //居左对齐
+                    'justifyright', //居右对齐
+                    'justifycenter', //居中对齐
+                    'justifyjustify', //两端对齐
+                    'forecolor', //字体颜色
+                    'backcolor', //背景色
+                    'insertorderedlist', //有序列表
+                    'insertunorderedlist', //无序列表
+                    'fullscreen', //全屏
+                     'insertpolling'
+                    ]
+            ],
+            initialFrameHeight: 380,
+            autoHeightEnabled: false,
+            autoFloatEnabled: true,
+            enableAutoSave: true,
+            wordCountMsg: '{#count}',
+            //maximumWords:2000,       //允许的最大字符数
+            //wordCountMsg: '{#count}/剩余{#leave}',   //当前已输入 {#count} 个字符，您还可以输入 个字符
+            //wordOverFlowMsg: '<span style="color:red;">你输入的字符个数已经超出最大允许值，服务器可能会拒绝保存！</span>',    //<span style="color:red;">你输入的字符个数已经超出最大允许值，服务器可能会拒绝保存！</span>
+            elementPathEnabled: false
+
+        });
+
+        ue.on('selectionchange',function(){
+            ue.on('contentChange',function(){
+                $("#btnSubmit").attr("disabled","disabled")
+                $("#btnPreview_trigger").attr("disabled","disabled")
+            })
+        })
+        
+        ue.on('afterautosave',function(){
+            setTimeout(function(){
+                $("#btnSubmit").removeAttr("disabled");
+                $("#btnPreview_trigger").removeAttr("disabled");
+            },2100)
+            
+        })
+        
+
+        //
+        var validator = $('#ff').validate();
+        var uploader;
+        $(function () {
+            if ($('#IsCorp').val() == 1) {
+                $('#wechatab').WeChatAddressBook({ appId: @ViewBag.AppId });
+            }
+            else {
+                $('#wechatab').WeChatAddressSelection({ appId: @ViewBag.AppId });
+                $('.yulanModal').WeChatPersonSelection();
+            }
+
+            $('#clear_category').click(function () {
+                $('#CategoryId').combotree('setValue', '');
+            });
+
+            $('#btnSubmit').attr('disabled', false);
+
+            LEAP.Common.MainPop.options.fnAfrerPostError = function () { $('#btnSubmit').attr('disabled', false); };
+
+            $('#ff').submit(function () {
+                if (!validator.form()) { return false; }
+                $('#btnSubmit').attr('disabled', true);
+            });
+
+            $('input[name=IsPassingWeChatUserIDBox]').click(function () {
+                if ($(this).is(":checked")) {
+                    $('#IsPassingWeChatUserID').val("True");
+                } else {
+                    $('#IsPassingWeChatUserID').val("False");
+                }
+            });
+
+            $('input[name=IsLikeBox]').click(function () {
+                if ($(this).is(":checked")) {
+                    $('#IsLike').val("True");
+                    $(this).attr('checked', true);
+                } else {
+                    $('#IsLike').val("False");
+                    $(this).attr('checked', false);
+                }
+            });
+            $('input[name=ShowReadCountBox]').click(function () {
+                if ($(this).is(":checked")) {
+                    $('#ShowReadCount').val("True");
+                    $(this).attr('checked', true);
+                } else {
+                    $('#ShowReadCount').val("False");
+                    $(this).attr('checked', false);
+                }
+            });
+            $('input[name=ShowCommentBox]').click(function () {
+                if ($(this).is(":checked")) {
+                    $('#ShowComment').val("True");
+                    $(this).attr('checked', true);
+                } else {
+                    $('#ShowComment').val("False");
+                    $(this).attr('checked', false);
+                }
+            });
+            $('input[name=IsWatermarkBox]').click(function () {
+                if ($(this).is(":checked")) {
+                    $('#IsWatermark').val("True");
+                    $(this).attr('checked', true);
+                } else {
+                    $('#IsWatermark').val("False");
+                    $(this).attr('checked', false);
+                }
+            });
+            $('input[name=NoShareBox]').click(function () {
+                if ($(this).is(":checked")) {
+                    $('#NoShare').val("True");
+                    $(this).attr('checked', true);
+                } else {
+                    $('#NoShare').val("False");
+                    $(this).attr('checked', false);
+                }
+            });
+            $('input[name=IsTransmitBox]').click(function () {
+                if ($(this).is(":checked")) {
+                    $('#IsTransmit').val("True");
+                } else {
+                    $('#IsTransmit').val("False");
+                }
+            });
+            //点击trigger的时候就校验下form
+            $('#btnPreview_trigger').click(function () {
+                if (!validator.form()) {
+                    if (document.body.scrollTop > 0) {
+                        $('html, body').animate({ scrollTop: 0 }, 500);
+                    }
+                    return false;
+                }
+                //$('#Previewers').attr("validate", "{required:true,messages:{required:'Please input previewers WeChatUserID.'}}");
+            });
+
+            //Preview Funtion
+            $('.btnPreview').click(function () {
+                var form = $('#ff').serializeArray();
+                if ($('#IsCorp').val() == 1) {
+                    $('#previewModal').modal('hide');
+                    var wechatabData = JSON.parse($('#mainGroup').val());
+                    var personList = [];
+                    var groupList = [];
+                    var tagList = [];
+                    if (wechatabData && wechatabData.length > 0) {
+                        for(var i in wechatabData){
+                            switch (wechatabData[i].Type) {
+                                case 'Person':
+                                    personList.push(wechatabData[i].WeixinId);
+                                    break;
+                                case 'Group':
+                                    groupList.push(wechatabData[i].WeixinId);
+                                    break;
+                                case 'Tag':
+                                    tagList.push(wechatabData[i].WeixinId);
+                                    break;
+                            }
+                        }
+                    }
+
+                    if (personList.length > 0) {
+                        for (var i = 0; i < personList.length; i++) {
+                            form.push({"name": 'PersonList', "value":personList[i]});
+                        }
+                    }
+                    if (groupList.length > 0) {
+                        for (var i = 0; i < groupList.length; i++) {
+                            form.push({"name": 'groupList', "value":groupList[i]});
+                        }
+                    }
+                    if (tagList.length > 0) {
+                        for (var i = 0; i < tagList.length; i++) {
+                            form.push({"name": 'tagList', "value":tagList[i]});
+                        }
+                    }
+                }
+                else {
+                    $('#myModal').modal('hide');
+                    var mpPersonList = $(".multiple-select-yulan").select2("val");
+                    if (mpPersonList.length > 0) {
+                        for (var i = 0; i < mpPersonList.length; i++) {
+                            form.push({"name": 'PersonList', "value":mpPersonList[i]});
+                        }
+                    }
+                }
+
+
+                $.post('WxPreview', form, function (result) {
+                    if (result.Message.Text.indexOf(";") > 0) {
+                        var str = result.Message.Text.split(";");
+                        $('#ID').val(str[0]);
+                        artDialog.alert(str[1]);
+                    } else {
+                        if (result.Message.Status == 200) {
+                            $('#ID').val(result.Message.Text);
+                            $(".multiple-select-yulan").select2("val", null)
+                        }
+                        else if (result.Message.Status == 103) {
+                            return;
+                        }
+                        //artDialog.alert("预览成功！<br/>请在微信端查看推送的消息.","提示",function(){
+                        //    backtoList();
+                        //});
+                        var d = dialog({
+                            title: '提示',
+                            content: '预览成功！<br/>请在微信端查看推送的消息.',
+                            okValue: '确定',
+                            ok: function () {
+                                backtoList();
+                            },
+                            close: function(){
+                                backtoList();
+                            },
+                            cancle: function(){
+                                backtoList();
+                            },
+                        }).showModal();;
+                        d.show();
+
+                        //setTimeout("backtoList()", 1000);
+                    }
+                });
+
+
+
+            });
+
+
+            //Using webuoloader
+            if (uploader) {
+                uploadFileObj.clear();
+            } else {
+                uploader = uploadFileObj.uploadFile({
+                    auto: true,
+                    pick: {
+                        id: '#filePicker',
+                        label: '选择'
+                    },
+                    server: '/upload/uploadfile?type=image&IsNewsCover=true&appid='+@ViewBag.AppId,
+                    accept: {
+                        title: 'Images',
+                        extensions: 'gif,jpg,jpeg,bmp,png',
+                        mimeTypes: 'image/jpg,image/jpeg,image/png'
+                    },
+                    fileNumLimit: 1,
+                    fileSingleSizeLimit: 2 * 1024 * 1024,
+                    onSuccess: function (file, response) {
+                        var imageSrc = response.targetFilePath + response.serverFileName;
+                        $('#preview').prop('src', imageSrc);
+                        //$('#ThumbImageId').prop('value', response.id);
+                        $('#ImageCoverUrl').prop('value', imageSrc);
+                    },
+                    onUploadFinished: function () {
+                        uploadFileObj.clear();
+                    }
+                });
+
+            }
+        });
+
+        $(document).ready(function () {
+            LEAP.Common.MainPop.options.fnAfterSuccess = function () {
+                if ('@ViewBag.AppId' != '') {
+                    sessionStorage.backToIndexpage = "true"
+                    window.location.href = 'index?appid=@ViewBag.AppId';
+                } else {
+                    window.location.href = 'index';
+                }
+            };
+
+        });
+        var backtoList = function(){
+            window.location.href = "/WeChatMain/ArticleInfo/index?wechatid=@(ViewBag.AppId)&&appid=@(ViewBag.AppId)"
+        }
+    </script>
+}
+

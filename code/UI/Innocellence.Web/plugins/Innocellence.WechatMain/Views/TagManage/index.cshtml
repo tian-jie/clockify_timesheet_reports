@@ -1,0 +1,595 @@
+﻿@{
+   <link rel="stylesheet" href="~/Plugins/Innocellence.WechatMain/Content/tag.css" />
+    <script src="/Scripts/wechatab/lib/layer/layer.js"></script>
+    <script src="/Scripts/wechatab/dist/wechatab.js"></script>
+}
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+        <li role="presentation"><a id="a_address_book" href="../UserWechat/index">通讯录</a></li>
+        <li role="presentation" class="active"><a id="a_tag" data-toggle="tab" href="#div_tag">标签</a></li>
+    </ul>
+</div>
+<div class="tab-content bg-white">
+    <div class="tab-pane fade in active" id="div_tag">
+        <div class="main-inner">
+            <div class="row">
+                <div class="col-md-4 inner-left">
+                    <form class="form-inline" id="SearchForm" method="post">
+                        <input type="hidden" name="TagId" id="TagId" />
+                        <input class="form-control" type="text" id="SearchCondition_Tag" name="SearchCondition" placeholder="WWID / 姓名 / 手机 / 邮箱" style="width:180px;">
+                        <input class="form-control" type="text" id="TestEmpty" name="TestEmpty" placeholder="TestEmpty" style="display: none">
+                        <a href="#" class="btn  btn-sm" id="btnSearch">搜索</a>
+                    </form>
+                    <div style="overflow: auto; min-height: 430px; max-height: 565px; margin-top: 13px;">
+                        <div class="add-tag">
+                            <a href="javascript:void(0)" class="btn btn-info" type="button" id="addTag"><i class="fa fa-plus"></i>添加标签</a>
+                        </div>
+                        <div class="tag-list">
+                            <h4>标签列表 :</h4>
+                            <ul>
+                                @foreach (var item in ViewBag.taglist)
+                                {
+                                    var upClass = "";
+                                    if (@ViewBag.taglist.IndexOf(item) > 9)
+                                    {
+                                        upClass = "dropup";
+                                    }
+                                    <li class="dropdown @upClass">
+                                        <a href="javascript:void(0);" class="tag-sidebar" data-id="@item.tagid" data-name="@item.tagname">
+                                            <i class="blue fa fa-tag"></i>
+                                            <span>@item.tagname</span>
+                                        </a>
+                                        <a href="javascript:void(0)" data-toggle="dropdown" class="btn btn-xs dropdown-toggle pull-right"
+                                           id="tag-@item.tagid" aria-haspopup="true" aria-expanded="false">
+                                            <span class="caret"></span>
+                                        </a>
+                                        <ul class="dropdown-menu" aria-labelledby="#tag-@item.tagid">
+                                            <li><a href="#" class="renameTag" data-id="@item.tagid" data-name="@item.tagname">重命名</a></li>
+                                            <li><a href="#" class="delTag" data-id="@item.tagid">删除</a></li>
+                                            <li class="divider"></li>
+                                            <li class="disabled">ID: @item.tagid</li>
+                                        </ul>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-8">
+                    <h4 class="current-tag pull-left"></h4>
+                    <div class="pull-right">
+                        @*<a href="#" type="button" id="update_userlist" class="btn btn-warning btn-sm" title="Update Userlist">
+                            <i class="fa fa-refresh"></i>Update User List
+                        </a>*@
+                        <a href="#" type="button" id="add_Single" class="btn btn-success btn-sm" title="Add Single" data-toggle="modal" data-target="#UserModal_Tag">
+                            <i class="fa fa-plus"></i>添加成员
+                        </a>
+                        @*<a href="#" type="button" id="add_Batch" class="btn btn-success btn-sm" title="Add Batch" data-toggle="modal" data-target="#BatchModal_Tag">
+                            <i class="fa fa-plus"></i>Batch Add
+                        </a>*@
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="table-box">
+                        <div class="widget-content nopadding">
+                            <table id="data_table_tag" class="table table-bordered data-table dataTable table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="display:none">@T("ID")</th>
+                                        <th style="display:none">@T("成员ID")</th>
+                                        <th style="width: 30%">@T("名称")</th>
+                                        <th style="width: 30%">@T("部门")</th>
+                                        <th style="width: 10%">@T("操作")</th>
+                                        <th style="display:none"></th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Modal Begain-->
+        <div class="modal fade" id="UserModal_Tag" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modal-title">标签管理--添加成员</h4>
+                    </div>
+                    <div class="modal-body">
+                        @*<input type="text" name="txtSearch" id="txtSearch" class="form-control" placeholder="Please enter LiilyID" />*@
+                        <div id="wechatab"></div>
+                        @*<div class="user-list" style="overflow: auto; min-height: 200px;"></div>*@
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="btnSave_Tag">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="BatchModal_Tag" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modal-title">Batch Add</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="guide">
+                            <p>
+                                Please follow the information we provide a standard template to fill in address book, then to upload the CSV file,
+                                after the success of the upload directory members automatically imported into the corresponding tags.
+                                <a href="/Plugins/Innocellence.WeChatMain/ReferenceDoc/template_batch_user_tag.csv" target="_blank" type="button">Download Template</a>
+                            </p>
+                        </div>
+                        <div class="upload_csv">
+                            <div id="uploader" class="wu-example">
+                                <!--用来存放文件信息-->
+                                <div id="thelist_tag" class="uploader-list"></div>
+                                <div class="btns">
+                                    <div id="picker" class="pull-left" style="margin-right: 15px;">Select</div>
+                                    <button id="ctlBtn" class="btn btn-md btn-default">Start Upload</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Begain-->
+        <div class="modal fade" id="invalidModal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modal-title">Batch Add--Invalid UserID</h4>
+                    </div>
+                    <div class="modal-body">
+                        <textarea type="text" name="invalid_user" id="invalid_user" class="form-control" height="50" placeholder="Invalid WeChatUserID"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" data-dismiss="modal" class="btn btn-primary" id="okay">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>  
+@section scripts_Foot
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            //Picture Upload    
+            var uploader;
+            var BASE_URL = '/';
+            //$("#wechatab").WeChatAddressBook({ AjaxUrl: '/Tagmanage/GetAllVisiblePersonGroup' });
+        
+            LEAP.Common.MainPop.options.dataTable = $('#data_table_tag').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": {
+                    "url": "GetListByTag"
+                },
+
+                "aoColumns": [
+                    {
+                        "mData": 'Id',
+                        "bSortable": false,
+                        "sClass": "sTdCheckbox",
+                        "visible": false
+                    },
+                    {
+                        "mData": 'WeixinId',
+                        "bSortable": false,
+                        "sClass": "WeChatID",
+                        "visible":false
+                    },
+                    {
+                        "mData": 'WeixinName',
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    {
+                        "mData": 'Department',
+                        "bSearchable": false,
+                        "bSortable": false,
+                    },
+                    {
+                        "mData": 'Opretion',
+                        "bSearchable": false,
+                        "bSortable": false
+
+                    },
+                    {
+                        "mData": 'Type',
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "visible": false
+                    }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                    {
+                        "targets": 4,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="javascript:;" onclick="delTagMember(\'' + full.WeixinId + '\', \''+ full.Type +'\')" class="btn btn-danger btn-xs" id="btnDelete" title="Delete">'
+                                + '<i class="fa fa-trash-o"></i></a>';
+                        }
+                    },
+                    {
+                        "targets": 0,
+                        "render": function (data, type, full, meta) {
+                            return meta.row + 1;
+                        }
+                    }
+                ])
+            }));
+
+            $('#UserModal_Tag').on('show.bs.modal', function () {
+                $("#wechatab").html('');
+                $("#wechatab").WeChatAddressBook({ AjaxUrl: '/Tagmanage/GetAllVisiblePersonGroup', appId: 0,  showTag: false,pageHeader:'添加成员'});
+            });
+
+            $('#BatchModal_Tag').on('shown.bs.modal', function () {
+                //实例化uploader对象
+                if (uploader) {
+                    //第二次打开重置下
+                    uploader.reset();
+                    var $list = $('#thelist_tag');
+                    $list.html('');
+                } else {
+                    var $list = $('#thelist_tag');
+                    var $btn = $('#ctlBtn');
+                    var state = 'pending';
+                    uploader = WebUploader.create({
+                        //处理文件的服务端
+                        server: '../TagManage/addusersByTag',
+                        // Swf文件路径
+                        swf: '../scripts/webuploader/Uploader.swf',
+                        pick: '#picker',
+                        accept: {
+                            title: 'files',
+                            extensions: 'csv',
+                            mimeTypes: 'csv/*'
+                        },
+                        disableGlobalDnd: true,
+                        dnd: '#uploader .uploader-list',
+                        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                        resize: false,
+
+                        fileNumLimit: 1,
+                        fileSizeLimit: 5 * 1024 * 1024, // 200 M
+                        fileSingleSizeLimit: 1 * 1024 * 1024, // 50 M
+                    });
+
+                    $btn.on('click', function () {
+                        if (state === 'uploading') {
+                            uploader.stop();
+                        } else {
+                            uploader.upload();
+                        }
+                    });
+                    uploader.on('all', function (type) {
+                        if (type === 'startUpload') {
+                            state = 'uploading';
+                        } else if (type === 'stopUpload') {
+                            state = 'paused';
+                        } else if (type === 'uploadFinished') {
+                            state = 'done';
+                        }
+
+                        if (state === 'uploading') {
+                            // $btn.text('paused');
+                        } else {
+                            $btn.text('Start Upload');
+                        }
+                    });
+
+                    uploader.on('beforeFileQueued', function (file) {
+                        uploader.reset();
+                        return true;
+                    });
+
+                    //当文件开始上传前将当前标签id的成员删除掉---全员覆盖导入
+                    uploader.on('uploadStart', function (file) {
+
+                    });
+
+                    //显示用户的选择--WebUploader
+                    uploader.on('fileQueued', function (file) {
+                        $list.append('<div id="' + file.id + '" class="item">' +
+                            '<h4 class="info">' + file.name + '</h4>' +
+                            '<p class="state">wait for uploading...</p>' +
+                            '</div>');
+                    });
+
+                    //文件上传进度显示
+                    uploader.on('uploadProgress', function (file, percentage) {
+                        var $li = $('#' + file.id),
+                            $percent = $li.find('.progress .progress-bar');
+
+                        // 避免重复创建
+                        if (!$percent.length) {
+                            $percent = $('<div class="progress progress-striped active">' +
+                                '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                                '</div>' +
+                                '</div>').appendTo($li).find('.progress-bar');
+                        }
+
+                        $li.find('p.state').text('uploading...');
+
+                        $percent.css('width', percentage * 100 + '%');
+                    });
+
+                    //成功错误处理
+                    uploader.on('uploadSuccess', function (file, response) {
+                        uploader.reset();
+                        var $list = $('#thelist_tag');
+                        $list.html('');
+                        //close modal
+                        $('#BatchModal_Tag').modal('hide');
+                        //序列化服务器端的数据
+                        var data = JSON.parse(response._raw);
+                        if (data != null && data.result != "") {
+                            //open invalidModal
+                            $('#invalidModal').modal('show');
+                            $('#invalid_user').val(data.result);
+                        } else {
+                            artDialog.alert("Batch Add Successfully!");
+                        }
+
+                        //refresh datatable
+                        LEAP.Common.MainPop.options.dataTable.fnDraw();
+                    });
+
+                    uploader.on('uploadAccept', function (block, ret, fn) {
+                        if (ret.error) {
+                            fn(ret.error.message);
+                        }
+                    });
+
+                    uploader.on('uploadError', function (file, code) {
+                        uploader.reset();
+                        var $list = $('#thelist_tag');
+                        $list.html('');
+                        artDialog.alert(code);
+                    });
+
+                    uploader.on('error', function (type) {
+                        uploader.reset();
+                        var $list = $('#thelist_tag');
+                        $list.html('');
+                        switch (type) {
+                            case "Q_EXCEED_NUM_LIMIT":
+                                artDialog.alert('文件个数过多, 请重新选择!');
+                                break;
+                            case "F_EXCEED_SIZE":
+                            case "Q_EXCEED_SIZE_LIMIT":
+                                artDialog.alert('文件过大, 请重新选择!');
+                                break;
+                            case "Q_TYPE_DENIED":
+                                artDialog.alert('不支持的文件类型! ');
+                                break;
+                            default:
+                                artDialog.alert('Error: ' + type);
+                                break;
+                        }
+                    });
+
+                    uploader.on('uploadComplete', function (file) {
+                        $('#' + file.id).find('.progress').fadeOut();
+                    });
+                }
+            });
+
+            //将成员导入到此标签下
+            $('#btnSave_Tag').click(function () {
+                //将所有item里面的dataId拿出来组成list传给后台
+                var tagId = $('#TagId').val();
+                if (tagId == null || tagId == "") {
+                    artDialog.alert("请先从左边的列表中选择一个标签.");
+                    return false;
+                }
+                var userlist = new Array();
+                var partylist = new Array();
+                var ulength = $('.Showspan span[data-gtype="Person"]').length;
+                var plength = $('.Showspan span[data-gtype="Group"]').length;
+                for (var i = 0; i < ulength; i++) {
+                    userlist.push($('.Showspan span[data-gtype="Person"]').eq(i).data('gid'));
+                }
+                for (var i = 0; i < plength; i++) {
+                    partylist.push($('.Showspan span[data-gtype="Group"]').eq(i).data('gid'));
+                }
+                //去重
+                userlist = unique(userlist);
+                partylist = unique(partylist);
+                $.ajax({
+                    type: "Post",
+                    url: "addTagMember",
+                    data: { "userlist": userlist, "partylist": partylist, "tagId": tagId },
+                    success: function (data) {
+                        //clear item
+                        //$('.user-item').remove();
+                        //clear searchstr
+                        //$('#txtSearch').val("");
+                        //close modal 
+                        $('#UserModal_Tag').modal('hide');
+                        //refresh datatable
+                        LEAP.Common.MainPop.options.dataTable.fnSettings()._iDisplayStart = 0;
+                        LEAP.Common.MainPop.options.dataTable.fnSettings()._iRecordsTotal = 0;
+                        LEAP.Common.MainPop.options.dataTable.fnDraw();
+                    }
+                });
+            });
+
+            $('#update_userlist').click(function () {
+
+                $.ajax({
+                    type: "Get",
+                    url: "UpdateUserlist",
+                    success: function (data) {
+                        artDialog.alert("Update Successful !");
+                        LEAP.Common.MainPop.options.dataTable.fnDraw();
+                    }
+                });
+            });
+            $('.tag-sidebar').click(function () {
+                var id = $(this).data('id');
+                var name = $(this).data('name');
+                $('#TagId').val(id);
+                $('.current-tag').text(name);
+                $('.tag-list li.dropdown .tag-sidebar').css('font-weight', 'inherit');
+                $(this).css('font-weight', 'bold');
+                LEAP.Common.MainPop.options.dataTable.fnSettings()._iDisplayStart = 0;
+                LEAP.Common.MainPop.options.dataTable.fnSettings()._iRecordsTotal = 0;
+                LEAP.Common.MainPop.options.dataTable.fnDraw();
+            });
+            $('.tag-list li.dropdown').hover(function () {
+                $(this).find('a.dropdown-toggle').toggle();
+                $(this).siblings().find('a.dropdown-toggle').hide();
+            });
+
+            $('#addTag').click(function () {
+                var d = dialog({
+                    title: '添加标签',
+                    content: '<div class="form-inline">标签名&nbsp;<input name="tagName" class="form-control" maxlength="32" placeholder="少于32个字符" /></p>',
+                    okValue: '保存',
+                    ok: function () {
+                        $.ajax({
+                            type: 'Get',
+                            url: 'addTag',
+                            data: { tagName: $('input[name="tagName"]').val() },
+                            cache: false,
+                            success: function (data) {
+                                location.reload();
+                            }
+                        });
+                        return true;
+                    },
+                    cancelValue: '取消',
+                    cancel: function () { }
+                });
+
+                d.showModal();
+
+            });
+
+            $('.renameTag').click(function () {
+                var current = $(this).data("name"); //填充input
+                var id = $(this).data("id");
+                var d = dialog({
+                    title: '重命名标签',
+                    content: '<div class="form-inline">标签名&nbsp;<input name="tagName" class="form-control" maxlength="32" placeholder="less than 32 characters" value="' + current + '"/></p>',
+                    okValue: '保存',
+                    ok: function () {
+                        $.ajax({
+                            type: 'Get',
+                            url: 'renameTag', //'?Id=' + id + '&tagName=' + $('input[name="tagName"]').val(),
+                            data: { Id: id, tagName: $('input[name="tagName"]').val() },
+                            cache: false,
+                            success: function (data) {
+                                location.reload();
+                            }
+                        });
+                        return true;
+                    },
+                    cancelValue: '取消',
+                    cancel: function () { }
+                });
+
+                d.showModal();
+
+            });
+
+            $('.delTag').click(function () {
+                var id = $(this).data('id');
+                var d = dialog({
+                    title: '删除标签',
+                    content: '<p><i class="fa fa-alert"></i><span>是否确认删除该标签 ?</span><br/>删除标签会取消所有该标签内成员对该标签的关联.</p>',
+                    okValue: '确定',
+                    ok: function () {
+                        $.ajax({
+                            type: 'Get',
+                            url: 'delTag?Id=' + id,
+                            cache: false,
+                            success: function (data) {
+                                if (data.Message.Status == 200) {
+                                    location.reload();
+                                }
+                                else {
+                                    LEAP.Common.MainPop.options.dataTable.fnSettings()._iDisplayStart = 0;
+                                    LEAP.Common.MainPop.options.dataTable.fnSettings()._iRecordsTotal = 0;
+                                    LEAP.Common.MainPop.options.dataTable.fnDraw();
+                                }
+                            }
+                        });
+                        return true;
+                    },
+                    cancelValue: '取消',
+                    cancel: function () { }
+                });
+
+                d.showModal();
+            });
+        });
+
+        //删除某标签下的成员
+        function delTagMember(Id, mType) {
+            var d = dialog({
+                title: '删除成员',
+                content: '<p><i class="fa fa-alert"></i><span>您确实要从这个标签中删除这个成员吗？</span></p>',
+                okValue: '确定',
+                ok: function () {
+                    $.ajax({
+                        type: "get",
+                        url: "delTagmember?time=" + (new Date()).getTime(),
+                        data: { "userId": Id, "tagId": $('#TagId').val(), "mType": mType},
+                        success: function (data) {
+                            if (data != null) {
+                                LEAP.Common.MainPop.options.dataTable.fnSettings()._iDisplayStart = 0;
+                                LEAP.Common.MainPop.options.dataTable.fnSettings()._iRecordsTotal = 0;
+                                LEAP.Common.MainPop.options.dataTable.fnDraw();
+                            } else {
+                                return false;
+                            }
+                        }
+                    });
+                    return true;
+                },
+                cancelValue: '取消',
+                cancel: function () { }
+            });
+
+            d.showModal();
+        }
+
+        //去除数组中重复的项
+        function unique(obj) {
+            var res = [];
+            var json = {};
+            for (var i = 0; i < obj.length; i++) {
+                if (!json[obj[i]]) {
+                    res.push(obj[i]);
+                    json[obj[i]] = 1;
+                }
+            }
+            return res;
+        }
+
+        //在search之前得先选择Tag
+        function BeforeSearch() {
+            if ($('#SearchCondition_Tag').val() == "" || $('#SearchCondition_Tag').val() == null) {
+                artDialog.alert("请输入搜索条件（微信号 / 用户名）.");
+                return false;
+            }
+            if ($('#TagId').val() == "" || $('#TagId').val() == null) {
+                artDialog.alert("请先从左边的列表中选择一个标签.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}

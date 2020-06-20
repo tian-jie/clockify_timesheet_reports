@@ -1,0 +1,339 @@
+﻿@model Innocellence.WeChat.Domain.ModelsView.QuestionManageView
+@{
+    ViewBag.Title = "提交问题";
+    Layout = "~/plugins/Innocellence.WeChat/Views/Shared/_wxLayout.cshtml";
+}
+@section Header{
+    <link rel="stylesheet" href="~/plugins/Innocellence.WeChat/Content/style.css?v=20160413">
+}
+
+<style type="text/css">
+    #filePicker div {
+        width: 86px;
+        height: 40px;
+    }
+
+    #wx_div {
+        height: 100%;
+    }
+
+    .modal-dialog {
+        margin: 0;
+    }
+
+    .modal-backdrop {
+        z-index: 500 !important;
+    }
+</style>
+
+<form id="questionform" method="POST" class="form-horizontal container">
+    <input type="hidden" id="ID" name="ID" value="@Model.Id" />
+    <input type="hidden" id="AppId" name="AppId" value="@ViewBag.appid" />
+    <input type="hidden" id="Category" name="Category" value="@ViewBag.category" />
+    <input type="hidden" id="ImageIdList" name="ImageIdList" />
+    <div class="imgfix">
+        <img src="~/plugins/Innocellence.WeChat/Content/img/ithelp_button.png" class="img-responsive center-block" id="showmodal" data-toggle="modal" data-target="#myModal" onclick="1" />
+    </div>
+    <div class="modal fade modalclass" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index: 600" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    <p style="margin-bottom:3px;font-weight:bold">问题描述</p>
+                    <textarea id="Question" name="Question" cols="10" rows="10" class="form-control" placeholder="问题"
+                              required="true" maxlength="512"></textarea>
+                    <p style="margin-bottom:3px;font-weight:bold">附件</p>
+
+                    <div id="uploader">
+                        <!--用来存放item-->
+                        <div id="fileList"></div>
+                        <div class="clearfix"></div>
+                        <div id="filePicker">选择图片</div>
+                    </div><!--uploader-demo-->
+                </div>
+
+
+                <div class="modal-footer">
+                    <button id="QA_canel" type="button" class="btn btn-info" style="margin-bottom: 30px">关闭</button>
+                    <button id="QA_submit" type="button" class="btn btn-info" style="margin-bottom: 30px">提交</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+
+    <div id="questiondetail">
+        @if (Model.List == null || Model.List.Count == 0)
+        {
+            <div class="panel panel-default">
+                <div class="panel-heading" style="text-align:center">
+                    <span>您的历史提问记录</span>
+                </div>
+                <div class="panel-body">
+                    <span>目前没有提问</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="panel panel-default" style="margin-bottom: -10px">
+                <div class="panel-heading" style="text-align:center">
+                    <span>您的历史提问记录</span>
+                </div>
+            </div>
+            foreach (var strmodel in Model.List)
+            {
+                <a href="../questionmanage/FinanceDetail/@strmodel.Id">
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            @if (string.IsNullOrEmpty(@strmodel.Answer))
+                            {
+                                <div class="col-xs-12 text-right">
+                                    <span>@strmodel.CreatedDate.Value.ToString("yyyy-MM-dd")</span>
+                                </div>
+                                <div class="row clearfix">
+                                    <span class="col-xs-1 unask nopadding-lr"><i class="glyphicon glyphicon-question-sign"></i></span>
+                                    <span class="col-xs-11 nopadding-lr ques">Q: @strmodel.Question</span>
+                                </div>
+                                <div class="row">
+                                    <span class="col-xs-1 unask nopadding-lr"></span>
+                                    @*<span class="col-xs-2 ans" style="padding-right:0">A: </span><span class="col-xs-9"style="color:red;padding-left:0;">未回答</span>*@
+                                    <span class="col-xs-11 nopadding-lr ques">A: 未回答</span>
+                                </div>
+                            }
+                            else
+                            {
+
+                                <div class="col-xs-12 text-right">
+                                    <span>@strmodel.CreatedDate.Value.ToString("yyyy-MM-dd")</span>
+                                </div>
+                                <div class="row clearfix">
+                                    <span class="col-xs-1 ask nopadding-lr"><i class="glyphicon glyphicon-ok-sign"></i></span>
+                                    <span class="col-xs-11 nopadding-lr ques">Q: @strmodel.Question</span>
+                                </div>
+                                <div class="row">
+                                    <span class="col-xs-1 ask nopadding-lr"></span>
+                                    <span class="col-xs-11 nopadding-lr ans">A: @strmodel.Answer</span>
+                                </div>
+                            }
+
+                        </div>
+
+                    </div>
+                </a>
+            }
+        }
+    </div>
+    <div class="fix">
+        <span class="col-xs-12"> 财务热线：</span>
+        <span class="col-xs-12"><a href="tel://021-23021499">021-23021499转1转3转1</a></span>
+        <span class="col-xs-12"><a href="tel://021-23021222">021-23021222转1转3转1</a></span>
+
+    </div>
+</form>
+
+@section scripts_Foot
+{
+    <script>
+        //答案截取前四十个字符
+        var judgechar = function (dom, str) {
+            $(".ans").innerHTML = str;
+            if (str.trim().length > 39) {
+                str = str.substr(0, 39) + "...";
+
+            } else {
+                //str = str;
+            }
+            $(dom).text(str);
+        };
+        //问题截取前四十个字符
+        var judgeques = function (dom, str) {
+            $(".ques").innerHTML = str;
+            if (str.trim().length > 39) {
+                str = str.substr(0, 39) + "...";
+
+            } else {
+                //str = str;
+            }
+            $(dom).text(str);
+        };
+        $(".ques").each(function () {
+            judgeques(this, $(this).text());
+        });
+        $(".ans").each(function () {
+            judgechar(this, $(this).text());
+        });
+
+        //uploader;
+        //$('#myModal').on('show.bs.modal', function () {
+
+        //    if (uploader) {
+        //        uploader.clear();
+        //    } else {
+        var uploader = WebUploader.create({
+
+            // 选完文件后，是否自动上传。
+            auto: true,
+
+            // swf文件路径
+            swf: '../scripts/webuploader/Uploader.swf',
+
+            // 文件接收服务端。
+            server: '/Common/PostQuestionImage',
+            // 选择文件的按钮。可选。
+            // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+            pick: {
+                id: '#filePicker',
+                multiple: false
+            },
+            // 只允许选择图片文件。
+            accept: {
+                title: 'Images',
+                extensions: 'gif,jpg,jpeg,bmp,png,GIF,JPG,JPEG,BMP,PNG',
+                mimeTypes: 'image/*'
+            },
+            sendAsBinary: true
+        });
+
+
+        var $list = $('#fileList');
+        $list.html('');
+        // 当有文件添加进来的时候
+        uploader.on('fileQueued', function (file) {
+            var $li = $(
+                    '<div id="' + file.id + '" class="file-item thumbnail col-xs-4" style="height:80px">' +
+                    '<img id="preview_img' + file.id + '" style="width:100%;height:80%">' +
+                    '</div>'
+                ),
+                $img = $li.find('img');
+
+
+            // $list为容器jQuery实例
+            $list.append($li);
+            var thumbnailWidth = "100px";
+            var thumbnailHeight = "100px";
+            // 创建缩略图
+            // 如果为非图片文件，可以不用调用此方法。
+            // thumbnailWidth x thumbnailHeight 为 100 x 100
+            uploader.makeThumb(file, function (error, src) {
+                if (error) {
+                    $img.replaceWith('<span>不能预览</span>');
+                    return;
+                }
+                $img.attr('src', src);
+            }, thumbnailWidth, thumbnailHeight);
+        });
+        // 文件上传过程中创建进度条实时显示。
+        uploader.on('uploadProgress', function (file, percentage) {
+            var $li = $('#' + file.id),
+                  $percent = $li.find('.progress .progress-bar');
+
+            // 避免重复创建
+            if (!$percent.length) {
+                $percent = $('<div class="progress progress-striped active">' +
+                  '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                  '</div>' +
+                '</div>').appendTo($li).find('.progress-bar');
+            }
+
+            $li.find('p.state').text('上传中');
+
+            $percent.css('width', percentage * 100 + '%');
+
+        });
+        var imglist = '';
+        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+        uploader.on('uploadSuccess', function (file, response) {
+            //序列化服务器端的数据
+            var data = JSON.parse(response._raw);
+            if (data.result != "" || data.result != null) {
+                var result = $('#preview_img' + file.id).prop('src', "/Common/ThumbQuestionFile?id=" + data.id + "&filename=" + data.result.Src);
+                imglist = imglist + data.id + ",";
+                $('#ImageIdList').val(imglist);
+                result.load(function () {
+                    $('#' + file.id).find('.progress').remove();
+                    $('#' + file.id).css('height', '60px');
+                    $('#preview_img' + file.id).css('height', '100%');
+                });
+            }
+            $('#' + file.id).addClass('upload-state-done');
+            // $('#' + file.id).text('上传成功');
+        });
+
+        // 文件上传失败，显示上传出错。
+        uploader.on('uploadError', function (file) {
+            var $li = $('#' + file.id),
+                $error = $li.find('div.error');
+
+            // 避免重复创建
+            if (!$error.length) {
+                $error = $('<div class="error"></div>').appendTo($li);
+            }
+
+            $error.text('上传失败');
+        });
+
+        // 完成上传完了，成功或者失败，先删除进度条。
+        uploader.on('uploadComplete', function (file) {
+
+        });
+        //    }
+
+        //});
+
+        $("#QA_canel").click(function () {
+            $("#myModal").modal('hide');
+        });
+        $("#QA_submit").click(function () {
+            $("#QA_submit").attr("disabled", "disabled");
+            if ($("#Question").val().trim().length == 0 && $("#Question").val().length > 0) {
+                artDialog.alert("不允许只输入空格。");
+                $("#QA_submit").removeAttr("disabled");
+                return false;
+            }
+            if ($("#Question").val().trim().length == 0) {
+
+                artDialog.alert("请输入问题。");
+                $("#QA_submit").removeAttr("disabled");
+                return false;
+            }
+            var form = $('#questionform').serializeArray();
+            $.post('CreateFinance', form, function (data) {
+
+                if (data != null) {
+                    $('#ID').val(data.rtnId);
+
+                    if (data.str.indexOf('Success') > 0) {
+                        $("#QA_submit").attr("disabled", "disabled");
+
+                        var d = dialog({
+                            title: '提示',
+                            content: '问题已成功提交，已开启问题解答模式，尽快答复您~',
+                            okValue: '确定',
+                            ok: function () {
+                                $("#myModal").modal('hide');
+                                    window.location.href = window.location.href + "&v=" + (new Date()).getTime();
+                            },
+
+                        });
+                        //show dialog
+                        d.show();
+                    }
+
+                } else {
+                    $("#QA_submit").removeAttr("disabled");
+                    artDialog.alert("对不起，提交失败，不能输入重复问题。");
+                }
+
+            });
+        });
+
+        // WebUploader实例
+        // uploader;
+        if (!WebUploader.Uploader.support()) {
+            alert('Web Uploader 不支持您的浏览器！如果你使用的是IE浏览器，请尝试升级 flash 播放器');
+            throw new Error('WebUploader does not support the browser you are using.');
+        }
+    </script>
+}

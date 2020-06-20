@@ -1,0 +1,365 @@
+﻿@using Innocellence.WeChat.Domain.Entity
+
+<style>
+    .datagrid-mask-msg {
+        height: 36px !important;
+    }
+
+    .imageSelect li {
+        float: left;
+        height: 30px;
+        width: 25px;
+        text-align: center;
+    }
+
+    .imageSelect {
+        width: 500px;
+        left: -460px;
+    }
+
+    .dropdown-menu > li > a {
+        padding-left: 5px;
+    }
+
+    #MenuImg {
+        float: left;
+        margin-right: 3px;
+    }
+</style>
+<!--Action boxes-->
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-inline" id="SearchForm">
+            <input type="hidden" name="DeptId" id="DeptId" />
+            <div class="form-group pull-right">
+                <a href="#" class="btn btn-success btn-sm" id="btnAdd" data-toggle="tooltip" data-placement="top" title="增加">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+        </form>
+        <div class="clearfix"></div>
+
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered table-hover data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:5%;text-align:center;">@T("ID")</th>
+                            <th>@T("MenuName")</th>
+                            <th>@T("MenuTitle")</th>
+                            <th>@T("MenuUrl")</th>
+                            <th>@T("MenuGroup")</th>
+                            <th>@T("IsDisplay")</th>
+                            <th style="width:10%;">@T("Operation")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ModalTable" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="blue bigger">Please fill the followings</h4>
+            </div>
+
+            <div class="modal-body">
+                <form action="Post" id="ff" method="get" class="form-horizontal" datasource="Get">
+                    <input type="hidden" id="ID" name="ID" value="0" />
+                    <input type="hidden" id="MenuType" name="MenuType" value="1" />
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">MenuName:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="MenuName" class="form-control" placeholder="Menu Name" data-bind="value: MenuName"
+                                   validate="{required:true}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">MenuTitle:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="MenuTitle" class="form-control" placeholder="Menu Title" data-bind="value: MenuTitle"
+                                   validate="{required:true}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Parent:</label>
+                        <div class="col-sm-9">
+                            <select id="department" name="ParentID" class="easyui-combotree" data-options="url:'./GetTreeData',method:'get'" style="width:200px;" data-bind="value:ParentID"></select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">NavigateUrl:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="NavigateUrl" class="form-control" placeholder="Navigate Url" data-bind="value:NavigateUrl"
+                                   validate="{required:true}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">MenuGroup:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="MenuGroup" class="form-control" placeholder="MenuGroup" data-bind="value:MenuGroup"
+                                   validate="{required:true}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">MenuImg:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="MenuImg" id="MenuImg" class="form-control" placeholder="Menu Img" data-bind="value:MenuImg "
+                                   validate="{required:true}" />
+                            <div class="btn-group">
+                                <button data-toggle="dropdown" class="btn btn-primary btn-white dropdown-toggle">
+                                    <i class="ace-icon fa fa-angle-down icon-on-right"></i>
+                                </button>
+
+                                <ul class="dropdown-menu imageSelect">
+                                    <li>
+                                        <a href="#">Action</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">SortCode:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="SortCode" class="form-control" placeholder="Sort Code" data-bind="value: SortCode"
+                                   validate="{required:true,digits:true}" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">AppId:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="AppId" class="form-control" id="AppId" data-bind='value:AppId'/>
+                            @*<select id="appId" name="appId" data-bind='value:AppId' class="select2">
+    <option value="-1">Please Select APP</option>
+     @foreach (var item in (Dictionary<string, SysWechatConfig>)ViewBag.Apps)
+        {
+            <option value="@item.Key">@item.Value.AppName</option>
+        }
+                            </select>*@
+                        </div>
+                    </div>
+
+                    @*<div class="form-group">
+                            <label class="col-sm-3 control-label">IsDisplay:</label>
+                            <div class="col-sm-9">
+                                <div class="ace-settings-item">
+                                    <input type="checkbox" name="IsDisplay" value="true" class="ace ace-checkbox-2" id="ace-settings-navbar" />
+                                    <label class="lbl" for="ace-settings-sidebar"></label>
+                                </div>
+                            </div>
+                        </div>*@
+
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times"></i>
+                    Cancel
+                </button>
+
+                <button class="btn btn-sm btn-primary" data-action="save">
+                    <i class="ace-icon fa fa-check"></i>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="mm" class="easyui-menu" style="width:120px; display:none">
+    <div onclick="append()" data-options="iconCls:'icon-add'">Append</div>
+    <div onclick="removeit()" data-options="iconCls:'icon-remove'">Remove</div>
+    <div onclick="editit()" data-options="iconCls:'icon-remove'">Edit</div>
+    @*<div class="menu-sep"></div>
+        <div onclick="expand()">Expand</div>
+        <div onclick="collapse()">Collapse</div>*@
+</div>
+
+
+
+@section scripts_Foot
+{
+
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" />
+    <style>
+        .nav-list > li > a > .menu-icon {
+            display: inline-block !important;
+            position: relative !important;
+            min-width: 30px !important;
+            height: auto !important;
+            margin-right: 2px !important;
+            vertical-align: sub !important;
+            text-align: center;
+            font-size: 18px !important;
+            font-weight: normal !important;
+        }
+
+        .menu-text {
+            height: inherit;
+            line-height: inherit;
+            float: inherit;
+            padding-left: inherit;
+        }
+    </style>
+    <script src="~/Scripts/EasyUI/jquery.easyui.min.js"></script>
+
+    <script type="text/javascript">
+        $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+        $('#department').attr('data-options', "url:'./GetTreeData?appid=" + getUrlParam('appid') + "',method:'get'");
+        var treeEdit;
+        $(document).ready(function () {
+            var $select = $('#appId');
+            $('.data-table').treegrid({
+                url: 'GetListTree?t=' + (new Date()).getTime() + '&appid=' + getUrlParam('appid'),
+                method: 'get',
+                animate: true,
+                idField: 'id',
+                treeField: 'name',
+                columns: [[
+                    { title: 'Menu Name', field: 'name', width: '20%' },
+                    { title: 'Menu Title', field: 'MenuTitle', width: '15%' },
+                    { title: 'Menu URL', field: 'NavigateUrl', width: '25%' },
+                    { title: 'Menu Group', field: 'MenuGroup', width: '20%' },
+                    {
+                        title: 'Image', field: 'MenuImg', width: '20%', formatter: function (value, row, index) {
+                            return '<i class="' + value + '" title="' + value + '">' + value + '</>'
+                        }
+                    }
+                ]],
+                onClick: function (node) {
+                    //$("#DeptId").val(node.id);
+                    //LEAP.Common.MainPop.options.dataTable.fnDraw();
+                },
+                onContextMenu: function (e, node) {
+                    e.preventDefault();
+                    $(this).treegrid('select', node.id);
+                    $('#mm').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                }
+            });
+
+            LEAP.Common.MainPop.options.fnAfterSuccess = AfterSuccess;
+            treeEdit = LEAP.Common.MainPop;// $("#ModalTable1").formPopup({ fnAfterSuccess: AfterSuccess });
+            //LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+            //    "ajax": {
+            //        "url": "GetList"
+            //    },
+            //    "aoColumns": [
+            //       { "mData": 'Id'},
+            //       { "mData": 'MenuName' },
+            //       { "mData": "MenuTitle" },
+            //       { "mData": "NavigateUrl" },
+            //       // { "mData": "MenuType" },
+            //       { "mData": "Operation"}
+            //    ],
+            //    "columnDefs": [
+            //    {
+            //        "targets": 4,
+            //        "render": function (data, type, full, meta) {
+            //            return '<a href="#" onclick="LEAP.Common.MainPop.ShowUpdateInfo(\'' + full.Id + '\');return false;" class="artDailog btn btn-info  btn-xs" style="margin-right:10px;" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>' +
+            //                   '<a href="#" onclick="LEAP.Common.MainPop.RowClick(\'' + full.Id + '\',2)" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">' +
+            //                   '<i class="fa fa-trash-o"></i></a>';
+            //        }
+            //    }],
+            //    fnDrawCallback: function () {
+
+            //        $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+            //        $('#DataTables_Table_0_wrapper > .row:first-child').remove();
+            //    }
+            //}));
+
+
+            //<i class="ace-icon glyphicon glyphicon-user"></i>
+            //<li>
+            //<a href="#">Something else here</a>
+            //</li>
+
+            var g = 'asterisk,plus,euro,minus,cloud,envelope,pencil,glass,music,search,heart,star,star,user,film,th,th,th,ok,remove,zoom-in,zoom-out,off,signal,cog,trash,home,file,time,road,download,download,upload,inbox,play,repeat,refresh,list,lock,flag,headphones,volume-off,volume-down,volume-up,qrcode,barcode,tag,tags,book,bookmark,print,camera,font,bold,italic,text-height,text-width,align-left,align-center,align-right,align-justify,list,indent-left,indent-right,facetime-video,picture,map-marker,adjust,tint,edit,share,check,move,step-backward,fast-backward,backward';
+            var gs = g.split(',');
+            var html = '';
+            $.each(gs, function (i, item) {
+                html += '<li><a href="javascript:MenuSelect(\'' + item + '\')"><i class="ace-icon glyphicon glyphicon-' + item + '"></i></a></li>';
+            });
+
+
+            $('.imageSelect').html(html);
+
+            treeEdit.options.beforePost = function (forms) {
+
+                if ($select.val()) {
+                    forms.push({ name: $select.attr('name'), value: $select.val() });
+                }
+            };
+
+            treeEdit.options.afterBindData = function (model) {
+                if (model && model.AppId) {
+                    $select.val(model.AppId);
+                } else {
+                    $select.val(-1);
+                }
+            };
+        });
+
+        function AfterSuccess() {
+            var t = $('.data-table');
+            //t.treegrid('reload');
+            window.location.reload();
+
+        }
+        function editit() {
+            var t = $('.data-table');
+            var node = t.treegrid('getSelected');
+            treeEdit.ShowUpdateInfo(node.id);
+        }
+
+        function append() {
+            var t = $('.data-table');
+            var node = t.treegrid('getSelected');
+
+            treeEdit.ShowUpdateInfo(0);
+
+            //t.tree('append', {
+            //    parent: (node ? node.target : null),
+            //    data: [{
+            //        text: 'new item1'
+            //    }, {
+            //        text: 'new item2'
+            //    }]
+            //});
+        }
+
+        function removeit() {
+            var node = $('.data-table').treegrid('getSelected');
+            // $('#DepartmentTree').tree('remove', node.target);
+            treeEdit.fnDelete([{ Id: node.id }], 'Delete');
+        }
+        function collapse() {
+            var node = $('.data-table').treegrid('getSelected');
+            $('.data-table').treegrid('collapse', node.target);
+        }
+        function expand() {
+            var node = $('.data-table').treegrid('getSelected');
+            $('.data-table').treegrid('expand', node.target);
+        }
+
+
+        function MenuSelect(o) {
+
+            $('#MenuImg').val('glyphicon glyphicon-' + o);
+        }
+
+
+    </script>
+}
+

@@ -1,0 +1,283 @@
+﻿@model Innocellence.Activity.ModelsView.EventEntityView
+@{
+    ViewBag.Title = "活动";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    <script src="~/Scripts/ZeroClipboard/ZeroClipboard.js"></script>
+}
+<style type="text/css">
+    .modal-backdrop {
+        z-index: 500 !important;
+    }
+
+    .message > i, .message-text > i {
+        margin-right: 5px;
+    }
+</style>
+<div class="row">
+
+    <div class="col-sm-12">
+        <form class="form-inline" id="SearchForm" method="post">
+            <input type="hidden" id="ActivityAppId" name="ActivityAppId" value="@ViewBag.appid" />
+            <input type="hidden" id="Id" name="Id" />
+            <div class="form-group">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="Name" placeholder="名称">
+                </div>
+
+                <a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="清除条件">
+                    <i class="fa fa-remove"></i>
+                </a>
+                <a href="#" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索"><i class="fa fa-search"></i></a>
+            </div>
+            <div class="form-group pull-right">
+                <a href="javascript:Edit()" class="btn btn-success btn-sm" id="btnAdd1" data-toggle="tooltip" data-placement="top" title="添加">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index: 600;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-body">
+                            <p style="margin-bottom: 3px; font-weight: normal; font-size: 15px">
+                                您确定取消此次活动吗？<br />
+                                如果确认请填写取消原因。
+                            </p>
+                            <textarea id="CanceledReason" name="CanceledReason" rows="6" class="form-control" placeholder="取消原因"
+                                required="true" maxlength="512" style="min-width: 568px;"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="Cancel" type="button" class="btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
+                            <button id="AC_Submit" type="button" class="btn btn-info btn-sm">确认</button>
+                        </div>
+                    </div>
+                    <!-- /.modal-content -->
+                </div>
+                <!-- /.modal-dialog -->
+            </div>
+            <!-- /.modal -->
+        </form>
+
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%; text-align: center;">@T("ID")</th>
+                            <th style="width: 30%">@T("名称")</th>
+                            <th style="width: 8%">@T("报名链接")</th>
+                            <th style="width: 8%">@T("签到链接")</th>
+                            <th style="width: 8%">@T("报名人员")</th>
+                            <th style="width: 8%">@T("签到人员")</th>
+                            <th style="width: 8%">@T("操作")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@*<div class="modal fade" id="externalModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="z-index: 600;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">其他链接</h4>
+            </div>
+            <div class="modal-body">
+                <a href="/CAAdmin/Message/Edit?appid=@ViewBag.appid" class="btn btn-info btn-sm message"><i class="fa fa-external-link-square"></i>跳转至发消息</a>
+                <a href="/CAAdmin/MessageText/Edit?appid=@ViewBag.appid" class="btn btn-info btn-sm message-text"><i class="fa fa-external-link-square"></i>跳转至发文字</a>
+            </div>
+            <div class="modal-footer">
+                <button id="Cancel" type="button" class="btn btn-default btn-sm" data-dismiss="modal" aria-label="Close">取消</button>
+            </div>
+        </div>
+    </div>
+</div>*@
+
+
+@section scripts_Foot
+{
+   
+    <script>
+        var uploader;
+        var saveclip = new Array();
+
+        $(document).ready(function () {
+            $('#clear_condition').click(function () {
+                $('input[name=Name]').val('');
+                $('#btnSearch').trigger('click');
+            });
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList?appid=@ViewBag.appid&type=Activity" },
+
+                "aoColumns": [
+                    {
+                        "mData": "Id",
+                        "bSortable": false,
+                        "sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Name",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    { "mData": "RegisteredUrl" },
+                    { "mData": "CheckinUrl" },
+                    { "mData": "Registered" },
+                    { "mData": "Checkin" },
+                    { "mDate": "Opreation" }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                    {
+                        "targets": 0,
+                        "render": function (data, type, full, meta) {
+                            return full.Id;
+                        }
+                    },
+                    {
+                        "targets": 2,
+                        "render": function (data, type, full, meta) {
+                            if (full.RegisteredStartedDateTime == null || full.RegisteredStartedDateTime.length == 0) {
+                                return '<button class="artDailog btn btn-danger  btn-xs " data-text=""  >无报名链接</button>';
+                            } else if (full.CheckinStartedDateTime == null || full.CheckinStartedDateTime.length == 0) {
+                                return '<button class="artDailog btn btn-info  btn-xs btn-clip" data-text="/Activity/Eventmanage/EventDetail?eventId=' + full.Id + '" id=clipR' + full.Id + ' >只需报名</button>';
+                            }
+                            return '<button class="artDailog btn btn-info  btn-xs btn-clip" data-text="/Activity/Eventmanage/EventDetail?eventId=' + full.Id + '" id=clipR' + full.Id + ' >复制链接</button>';
+                        }
+                    },
+                    {
+                        "targets": 3,
+                        "render": function (data, type, full, meta) {
+                            if (full.RegisteredStartedDateTime == null || full.RegisteredStartedDateTime.length == 0) {
+                                return '<button class="artDailog btn btn-info  btn-xs btn-clip" data-text="' + full.AbsoluteUrl + 'Activity/Eventmanage/EventCheckIn?id=' + full.Id + '" id=clipC' + full.Id + '>只需签到</button>';
+                            } else if (full.CheckinStartedDateTime == null || full.CheckinStartedDateTime.length == 0) {
+                                return '<button class="artDailog btn btn-danger  btn-xs " data-text=""  >无签到链接</button>';
+                            }
+                            return '<button class="artDailog btn btn-info  btn-xs btn-clip" data-text="' + full.AbsoluteUrl + 'Activity/Eventmanage/EventCheckIn/' + full.Id + '" id=clipC' + full.Id + ' >复制链接</button>';
+                        }
+                    },
+                    {
+                        "targets": 4,
+                        "render": function (data, type, full, meta) {
+                            if (full.RegisteredStartedDateTime == null || full.RegisteredStartedDateTime.length == 0) {
+                                return '<button class="artDailog btn btn-danger  btn-xs " data-text=""  >无报名人员</button>';
+                            }
+                            return '<a href="EventProfileList?EventId=' + full.Id + '&TypeCode=Registered" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="查看详情" target="_blank">查看详情</a>';
+                        }
+                    },
+                    {
+                        "targets": 5,
+                        "render": function (data, type, full, meta) {
+                            if (full.CheckinStartedDateTime == null || full.CheckinStartedDateTime.length == 0) {
+                                return '<button class="artDailog btn btn-danger  btn-xs " data-text="" >无签到人员</button>';
+                            }
+                            return '<a href="EventProfileList?EventId=' + full.Id + '&TypeCode=Checkin" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="查看详情" target="_blank">查看详情</a>';
+                        }
+                    },
+                    {
+                        "targets": 6,
+                        "render": function (data, type, full, meta) {
+                            return '<a href="Edit?appId=@ViewBag.appid&Id=' + full.Id + '" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="编辑">' +
+                                '<i class="fa fa-pencil"></i></a>' +
+                                '<a target="_blank" href="/Activity/EventMessage/EventMessageIndex?appid=@ViewBag.appid&eventid=' + full.Id + '" class="btn btn-warning btn-xs" style="margin-right:5px;" data-id="' + full.Id + '"  data-toggle="tooltip" data-placement="top" title="跳转至发消息">' +
+                                '<i class="fa fa-external-link"></i></a>' +
+                                '<a href="#" onclick="Evaluate(' + full.Id + ')" class="btn btn-danger btn-xs" id="btnCanel" data-target="#myModal" data-toggle="modal" data-placement="top" title="取消">' +
+                                '<i class="fa fa-trash"></i></a>';
+                        }
+                    }
+                ]),
+                fnDrawCallback: function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                    $.each(saveclip, function (index) {
+                        saveclip[index].destroy();
+                    });
+                    saveclip.splice(0);
+                    $('.btn-clip').each(function () {
+                        var text = $(this).attr("data-text");
+                        var clip = new ZeroClipboard.Client();
+                        saveclip.push(clip);
+                        clip.setHandCursor(true); 
+                        clip.setText(text);
+                        clip.glue($(this).attr("id"));
+                        clip.addEventListener("complete", function () {
+                            artDialog.alert("复制成功。");
+                        });
+                    });
+                }
+            }));
+
+            $('#externalModal').on('show.bs.modal', function (e) {
+                var eventId = $(e.relatedTarget).data("id");
+                var orginHref = $('.message').attr('href');
+                var orginHref2 = $('.message-text').attr('href');
+                if (orginHref.indexOf("eventId") > 0 || orginHref2.indexOf("eventId") > 0) {
+                    orginHref=orginHref.substring(0, orginHref.lastIndexOf('=')+1);
+                    orginHref2=orginHref2.substring(0, orginHref2.lastIndexOf('=')+1);
+                    $('.message').attr('href', orginHref + eventId);
+                    $('.message-text').attr('href', orginHref2 + eventId);
+                    return;
+                }
+                if (eventId != "") {
+                    orginHref += '&eventId=' + eventId;
+                    orginHref2 += '&eventId=' + eventId;
+                }
+                $('.message').attr('href', orginHref);
+                $('.message-text').attr('href', orginHref2);
+            });
+
+        });
+
+
+        function Evaluate(id) {
+            $('#Id').val(id);
+            return true;
+        }
+
+        function Edit() {
+            window.location.href = "Edit?appId=" + $("#ActivityAppId").val();
+        }
+
+        $("#AC_Submit").click(function () {
+            $("#AC_Submit").attr("disabled", "disabled");
+            if ($("#CanceledReason").val().trim().length == 0 && $("#CanceledReason").val().length > 0) {
+                artDialog.alert("不允许只输入空格。");
+                $("#AC_Submit").removeAttr("disabled");
+                return false;
+            }
+            if ($("#CanceledReason").val().trim().length == 0) {
+                artDialog.alert("请输入取消的原因。");
+                $("#AC_Submit").removeAttr("disabled");
+                return false;
+            }
+            var form = $('#SearchForm').serializeArray();
+            $.post('Create?id=' + $('#Id').val(), form, function (data) {
+                if (data != null) {
+                    if (data.str.indexOf('Success') > 0) {
+                        $("#AC_Submit").attr("disabled", "disabled");
+                        $("#myModal").modal('hide');
+                        var d = dialog({
+                            title: '提示',
+                            content: '取消的原因已经提交，谢谢。',
+                            okValue: '确认',
+                            ok: function () {
+                                window.location.reload();
+                            },
+
+                        });
+                        d.show();
+                    }
+
+                } else {
+                    $("#AC_Submit").removeAttr("disabled");
+                    artDialog.alert("对不起，提交失败！");
+                }
+
+            });
+        });
+        
+    </script>
+}

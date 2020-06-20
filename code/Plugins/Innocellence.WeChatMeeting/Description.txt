@@ -1,0 +1,11 @@
+Group: Discount requirements
+FriendlyName: WeChatMeeting 
+SystemName: Innocellence.WeChatMeeting
+Version: 1.0.20160107
+SupportedVersions: 2.00
+Author: ying.he
+DisplayOrder: 1
+FileName: Innocellence.WeChatMeeting.dll
+Dependences: 
+Controllers: Innocellence.WeChatMeeting.Controllers
+Install: 1

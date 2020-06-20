@@ -1,0 +1,194 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>插入polling链接</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link href="/styles/bootstrap.css" rel="stylesheet" />
+    <script type="text/javascript" src="../internal.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/Scripts/bootstrap.min.js"></script>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+            color: #838383;
+        }
+
+        table {
+            font-size: 12px;
+            line-height: 30px;
+        }
+
+        .polling-list {
+            width:480px;
+            height:518px;
+            overflow-y: auto;
+            overflow-x:hidden;
+        }
+
+        .txt {
+            width: 400px;
+            height: 30px;
+            padding-left: 5px;
+            line-height: 21px;
+            border: 1px solid #d7d7d7;
+        }
+
+        label {
+            font-weight: normal !important;
+        }
+
+        table#Polling > tbody > tr {
+            margin-bottom: 10px !important;
+            height: 35px;
+        }
+
+        table#survey_table {
+            margin: 0;
+        }
+
+        table#Polling input[type=radio] {
+            margin-top: 0;
+        }
+
+        table#Polling > tbody > tr > td:nth-child(2) {
+            white-space: pre-wrap;
+            overflow: hidden;
+            word-break: break-all;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+
+    <input class="txt" id="PollingID" type="hidden" name="PollingID" />
+    <input class="txt" id="Name" type="hidden" />
+
+    <div class="polling-list">
+        <table id="Polling" class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Survey Name</th>
+                    <th>Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <script type="text/javascript">
+        var range = editor.selection.getRange(),
+            link = range.collapsed ? editor.queryCommandValue("polling") : editor.selection.getStart(),
+            url,
+            text = $G('text'),
+            rangeLink = domUtils.findParentByTagName(range.getCommonAncestor(), 'polling', true),
+            orgText;
+
+        $G("Name").value = url ? link.title : "";
+        $G("PollingID").value = url ? url : '';
+        $focus($G("PollingID"));
+
+        function handleDialogOk() {
+            var selectNode = $('input[name="survey"]:checked');
+
+
+            if (selectNode.length == 0) {
+                return;
+            }
+
+            $('#PollingID').val(selectNode.val());
+            $('#Name').val(selectNode.parent('td').next().text());
+
+            //清除所选
+            $('input[type="radio"]').attr("checked", false);
+            $('#Polling > tbody').html("");
+
+            var obj = {
+                'name': $G("Name").value,
+                'pollingid': $G("PollingID").value
+            };
+
+            //修改链接内容的情况太特殊了，所以先做到这里了
+            editor.execCommand('insertpolling', utils.clearEmptyAttrs(obj));
+            dialog.close();
+        }
+
+        dialog.onok = handleDialogOk;
+
+
+
+        $(document).ready(function () {
+            //请求前清除一次
+            $('#Polling > tbody').html("");
+
+            $.ajax({
+                type: 'GET',
+                cache: false,
+                url: '/Activity/PollingAdmin/GetPollingList',
+                data: { appId: $('#hiddenAppId', parent.document).val() },
+                success: function (result) {
+                    if (result.data != null) {
+                        var pollingType = "";
+                        var endDate, startDate;
+                        //轮循列表
+                        for (var x = 0; x < result.data.length; x++) {
+                            switch (result.data[x].Type) {
+                                case 1:
+                                    pollingType = "有奖问答";
+                                    break;
+                                case 2:
+                                    pollingType = "投票";
+                                    break;
+                                case 3:
+                                    pollingType = "活动";
+                                    break;
+                                default:
+                                    pollingType = "无效类型";
+                            }
+                            startDate = ChangeDateFormat(result.data[x].StartDateTime);
+                            endDate = ChangeDateFormat(result.data[x].EndDateTime);
+                            $('#Polling > tbody').append('<tr>' +
+                                '<td>' +
+                                '<input type="radio" name="survey" value=' + result.data[x].Id + ' /></td>' +
+                                '<td>' + result.data[x].Name + '</td>' +
+                                '<td>' + pollingType + '</td>' +
+                                '<td>' + startDate + '</td>' +
+                                '<td>' + endDate + '</td>' +
+                                '</tr>'
+                            );
+                        }
+                        //当前url反选
+                        var radioNode = $('input[name="survey"]');
+                        if ($('#PollingID').val() != null && $('#PollingID').val() != "") {
+                            for (var i = 0; i < radioNode.length; i++) {
+                                if ($('#PollingID').val() == radioNode.eq(i).val()) {
+                                    radioNode.eq(i).prop("checked", "checked");
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        //将/Date(...)格式转换为yyyy-MM-dd型日期格式
+        function ChangeDateFormat(time) {
+            if (time != null) {
+                var date = new Date(parseInt(time.replace("/Date(", "").replace(")/", ""), 10));
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var h = date.getHours();
+                var minute = date.getMinutes();
+                minute = minute < 10 ? ('0' + minute) : minute;
+
+                return date.getFullYear() + "-" + month + "-" + currentDate+" "+ h + ":" + minute;
+            }
+            return "";
+        }
+    </script>
+
+</body>
+</html>

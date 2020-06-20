@@ -1,0 +1,131 @@
+﻿@using Innocellence.WeChatMeeting.Domain.Entity;
+@model Innocellence.WeChatMeeting.Domain.Entity.MeetingFile
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0">
+    <title>Meeting Invitation Detail</title>
+    @{
+        Layout = null;
+    }
+    <script src="/Plugins/Innocellence.WeChatMeeting/Content/js/weui.min.js"></script>
+    <script src="/Scripts/jquery-1.11.1.min.js"></script>
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/font-awesome.min.css">
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/weui.min.css">
+    <link rel="stylesheet" href="/Plugins/Innocellence.WeChatMeeting/Content/main.css">
+</head>
+
+<body>
+    <input type="hidden" id="hid_file" value="@ViewBag.MeetFile" />
+    <input type="hidden" id="file_url" value="@ViewBag.FileUrl" />
+
+    <div class="container">
+        <div class="metting-top">
+            <div class="top-info">
+                <h3>您已成功报名</h3>
+                <h2 class="metting-title">@ViewBag.Title</h2>
+            </div>
+        </div>
+        <div class="confirm-info">
+            <div class="info-item">
+
+                <i class="fa fa-circle-o" aria-hidden="true"></i>
+                <span>地点:</span>
+                <p>@ViewBag.Location</p>
+            </div>
+            <div class="info-item">
+                <i class="fa fa-circle-o" aria-hidden="true"></i>
+                <span>讲者:</span>
+                <p>@ViewBag.Owner</p>
+            </div>
+            <div class="info-item" id="show_file" style="display:none;">
+                <i class="fa fa-circle-o" aria-hidden="true"></i>
+                <span>资料:</span>
+                <div class="info-file">
+                    @foreach (MeetingFile file in ViewBag.MeetFile)
+                    {
+                        <p id="@file.Id" style="cursor:pointer;" onclick="DownloadData('@file.FilePath')">@file.FileName</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="selected-time">
+            <div class="choose-item">
+                <div class="item-time">
+                    <div class="meeting-time">
+                        <span>会议：</span>
+                        <p id="s0"></p>
+                    </div>
+                    <div class="meeting-time">
+                        <span>签到：</span>
+                        <p id="s1"></p>
+                    </div>
+                </div>
+                <div class="modify-btn" onclick="Update_time()">修改</div>
+            </div>
+            <div class="common-btn" id="signup" onclick="SignUpInfo()">补充报名信息</div>
+            <div class="common-btn" id="trip" onclick="TravelInfo()">补充行程信息</div>
+        </div>
+
+    </div>
+</body>
+
+</html>
+<script type="text/javascript">
+    $(function () {
+        //资料存在
+        if ($("#hid_file").val() != "") {
+            $("#show_file").show();
+        }
+
+        var StartDateTime = "@ViewBag.StartDateTime";
+        var EndDateTime = "@ViewBag.EndDateTime";
+        var SignStartTime = "@ViewBag.SignStartTime";
+        var SignEndTime = "@ViewBag.SignEndTime";
+
+        $("#s0").html(ChangeDateFormat(StartDateTime) + "→" + ChangeDateFormat(EndDateTime));
+        $("#s1").html(ChangeDateFormat(SignStartTime) + "→" + ChangeDateFormat(SignEndTime));
+
+    })
+
+    //资料下载
+    function DownloadData(file_path) {
+        var file_url = $("#file_url").val();
+        window.location.href = file_url + file_path;
+    }
+
+
+    //时间格式化
+    function ChangeDateFormat(time) {
+        if (time != null) {
+            var date = new Date(time);
+            Y = date.getFullYear() + '/';
+            var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+            var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+            var h = date.getHours();
+            var minute = date.getMinutes();
+            minute = minute < 10 ? ('0' + minute) : minute;
+
+            return date.getFullYear() + "/" + month + "/" + currentDate + " " + h + ":" + minute;
+        }
+        return "";
+    }
+
+    //补充报名信息
+    function SignUpInfo() {
+        window.location.href = "SignUp?AppID=@ViewBag.AppId&wechatid=@ViewBag.AppId";
+    }
+
+    //补充行程信息
+    function TravelInfo() {
+        window.location.href = "Travel?meetingid=@ViewBag.MeetId&AppID=@ViewBag.AppId&wechatid=@ViewBag.AppId";
+    }
+
+    //重新选择会议时间段
+    function Update_time() {
+        window.location.href = "MeetingInvitation?meetingid=@ViewBag.MeetId&TimeClass=@ViewBag.TimeClass&AppID=@ViewBag.AppId&wechatid=@ViewBag.AppId";
+    }
+</script>

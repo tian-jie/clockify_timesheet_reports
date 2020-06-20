@@ -1,0 +1,425 @@
+﻿<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <link rel="stylesheet" href="/Styles/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/Styles/font-awesome.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/Styles/ace.css" class="ace-main-stylesheet" id="main-ace-style">
+    <link rel="stylesheet" href="/Styles/ace-fonts.css">
+    <!--<link href="/styles/bootstrap.css" rel="stylesheet" type="text/css">-->
+    <link href="/styles/bootstrapValidator.min.css" rel="stylesheet" type="text/css">
+    <link href="/styles/BMain.css" rel="stylesheet" type="text/css">
+    <!--<link href="/styles/font-awesome.min.css" rel="stylesheet" type="text/css">-->
+    <link href="/styles/jquery.dataTables.min.css" rel="stylesheet" type="text/css">
+    <link href="/styles/ui-dialog.css" rel="stylesheet" type="text/css">
+    <link href="/styles/bootstrap-responsive.min.css" rel="stylesheet" type="text/css">
+    <link href="/styles/Sendmessage.css" rel="stylesheet" type="text/css">
+    <!--<link href="/styles/style-responsive.css" rel="stylesheet" type="text/css">-->
+    <!--if lt IE 9
+    script(src='/Scripts/html5.js', type='text/javascript')
+    -->
+    <script src="/Scripts/util.js"></script>
+    <script src="/Scripts/wechatab/lib/jquery-2.0.3.min.js" type="text/javascript"></script>
+    <script src="/Scripts/angular.min.js" type="text/javascript"></script>
+    <script src="/Scripts/bootstrap.min.js"></script>
+    <script src="/Scripts/jquery.cookie.js" type="text/javascript"></script>
+    <script src="/Scripts/news-preview.js" type="text/javascript"></script>
+    <script src="/Scripts/jsviews.min.js" type="text/javascript"></script>
+    <script src="/Scripts/pages.js" type="text/javascript"></script>
+    <script src="/Scripts/p.list.bind.js" type="text/javascript"></script>
+
+    <script src="/Scripts/wechatab/lib/layer/layer.js"></script>
+    <!-- 配置文件-->
+    <script type="text/javascript" src="/Scripts/ueditor/ueditor.config.js" charset="utf-8"></script>
+    <!-- 编辑器源码文件-->
+    <script type="text/javascript" src="/Scripts/ueditor/ueditor.all.js" charset="utf-8"></script>
+    
+    <script>
+        (function (d) {
+            d.className = "dyn" + d.className.substring(6, d.className.length);
+        })(document.documentElement);
+    </script>
+    <link rel="stylesheet" href="/Scripts/wechatab/lib/layer/skin/layer.css" id="layui_layer_skinlayercss">
+    <script src="/Scripts/ueditor/lang/zh-cn/zh-cn.js" type="text/javascript" defer="defer"></script>
+    <link href="/Scripts/ueditor/themes/default/css/ueditor.css" type="text/css" rel="stylesheet">
+    <script src="/Scripts//ueditor/third-party/codemirror/codemirror.js" type="text/javascript" defer="defer"></script>
+    <link rel="stylesheet" type="text/css" href="/Scripts/ueditor/third-party/codemirror/codemirror.css">
+    <script src="/Scripts/ZeroClipboard/ZeroClipboard.js" type="text/javascript" defer="defer"></script>
+    <!--local widget-->
+    <script src="/Scripts/materialControl/materialControl.js"></script>
+    <script src="/Scripts/wechatab/dist/wechatab.js"></script>
+
+    <!-- jqueryUpload------->
+    <script src="/Scripts/jQuery-File-Upload-9.12.5/js/jquery.iframe-transport.js"></script>
+    <script src="/Scripts/jQuery-File-Upload-9.12.5/js/vendor/jquery.ui.widget.js"></script>
+    <link rel="stylesheet" href="/Scripts/jQuery-File-Upload-9.12.5/css/jquery.fileupload.css">
+    <script src="/Scripts/jQuery-File-Upload-9.12.5/js/jquery.fileupload.js"></script>
+    <!--jqueryUpload end-------->
+    <script src="appSendMsg.js"></script>
+    <script src="/Scripts/ueditor/third-party/webuploader/webuploader.min.js"></script>
+    <style type="text/css">
+        .mod-send-message__audio-timeimage-wrap {
+            width: 128px;
+            height: 31px;
+            background-image: url(images/style-old-global_801b41ce.png);
+            background-position: -106px -503px;
+            display: inline-block;
+            position: relative;
+            margin: 5px 5px 5px 20px;
+            float: left;
+        }
+
+        .mod-send-message__audio-time {
+            width: 30px;
+            display: inline-block;
+            vertical-align: 6px;
+            color: #75777A;
+        }
+
+        .icon_filetype {
+            width: 80px;
+            height: 80px;
+            display: inline-block;
+        }
+
+        .filetype_doc, .filetype_docx {
+            background-image: url(/images/style-old-global_801b41ce.png);
+            background-position: -450px -320px;
+        }
+
+        .filetype_zip {
+            background-image: url(/images/style-old-global_801b41ce.png);
+            background-position: -160px -160px;
+            background-size: 278px;
+        }
+
+        .filetype_txt {
+            background-image: url(/images/style-old-global_801b41ce.png);
+            background-position: -450px -160px;
+        }
+
+        .filetype_video {
+            background-image: url(/images/style-old-global_801b41ce.png);
+            background-position: 0 -80px;
+            background-size: 278px;
+        }
+
+        .filetype_ppt {
+            background-image: url(/images/style-old-global_801b41ce.png);
+            background-position: -160px 0;
+            background-size: 278px;
+        }
+
+        .filetype_xls.filetype_xlsx {
+            background-image: url(/images/style-old-global_801b41ce.png);
+            background-position: -160px -80px;
+            background-size: 278px;
+        }
+
+        .filetype_pdf {
+            background-image: url(/images/style-old-global_801b41ce.png);
+            background-position: 0 -160px;
+            background-size: 278px;
+        }
+
+        .filetype_others, .filetype_psd, .filetype_xml {
+            background-image: url(/images/style-old-global_801b41ce.png);
+            background-position: -80px -160px;
+            background-size: 278px;
+        }
+
+        .mod-send-message__audio-timeimage-wrap {
+            width: 128px;
+            height: 31px;
+            background-image: url(images/style-old-global_801b41ce.png);
+            background-position: -106px -503px;
+            display: inline-block;
+            position: relative;
+            margin: 5px 5px 5px 20px;
+            float: left;
+        }
+
+        .mod-send-message__audio-timeimage {
+            width: 12px;
+            height: 17px;
+            position: absolute;
+            background-image: url(images/style-old-global_801b41ce.png);
+            background-position: -578px -228px;
+            display: inline-block;
+            left: 20px;
+            top: 7px;
+        }
+
+        .mod-send-message__audio-time {
+            width: 30px;
+            display: inline-block;
+            vertical-align: 6px;
+            color: #75777A;
+        }
+
+        .item .info {
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .item .info img {
+            width: 80px;
+            height: 80px;
+            border-radius: 4px;
+        }
+
+        .layui-layer-msg {
+            background-color: rgba(243, 112, 33, 0.8);
+            border-color: #f37021;
+        }
+
+        .news-container {
+            padding-right: 0 !important;
+        }
+
+        .current-user-info {
+            height: 180px;
+            background: #fff;
+            padding: 20px;
+            margin: 0;
+            margin-bottom: 10px;
+        }
+        .current-user-info img {
+            width: 80%;
+            border: 1px solid #eee;
+            border-color: rgba(0,0,0,.1);
+        }
+
+        ul.main-personal-info li {
+            list-style:none;
+            padding-bottom:10px;
+        }
+        ul.main-personal-info li.col-sm-12 {
+            line-height: 21px;
+            max-height: 42px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        ul.main-personal-info li.dotdotdot::after {
+            content: "...";
+            font-weight: bold;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="" class="group">
+        <div class="zone zone-content">
+            <div class="content-box news-container" ng-app="newsEdit" ng-controller="NewsEdit">
+                <div class="current-user-info row">
+                    <div class="col-sm-2 headerImg">
+                        <img src="" />
+                        <p><strong class="cancelState"></strong></p>                       
+                    </div>
+                    <div class="col-sm-10 personal-info">
+                        <ul class="main-personal-info">
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="edit-box">
+                    <div id="bigForm" name="bigForm" class="form-horizontal">
+                            <div id="semdMsg-content" class="row-fluid sortable">
+                                <input id="hiddenType" type="hidden" name="msgtype" value="1">
+                                <div id="tabMsgType" class="box-part">
+                                    <!-- 类型区域-->
+                                    <ul id="msgType" class="nav tab-menu nav-tabs pull-left">
+                                        <li class="active"><a href="#msgType-word" class="msgType-word">文字</a></li>
+                                        <li><a href="#msgType-wordpic">图文</a></li>
+                                        <li><a href="#msgType-pic">图片</a></li>
+                                        <li><a href="#msgType-video">视频</a></li>
+                                        <li><a href="#msgType-sound">语音</a></li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                    <div id="myTabContent" class="tab-content" style="min-height: 400px;">
+                                        <!-- 文字-->
+                                        <div id="msgType-word" data-msg-type="1" class="tab-pane active">
+                                            <div class="control-group">
+                                                <div style="display:none" class="controls">
+                                                    <textarea id="msgType-text" name="msgType-text" style="height: 200px;" class="span6"></textarea><span class="errorMsg type1ErrorText">请输入文字</span>
+                                                </div>
+                                                <div class="controls">
+                                                    <div class="comment">
+                                                        <div class="com_form">
+                                                            <textarea id="saytext" name="saytext" class="input" maxlength="600"></textarea>
+                                                            <div class="com_info">
+                                                                <p id="count"></p>
+                                                                <p><span class="emotion">表情</span></p>
+                                                            </div>
+                                                            <div class="em_wrap">
+                                                                <div class="em_nr"><a title="微笑" href="javascript:;"></a><a title="撇嘴" href="javascript:;"></a><a title="色" href="javascript:;"></a><a title="发呆" href="javascript:;"></a><a title="得意" href="javascript:;"></a><a title="流泪" href="javascript:;"></a><a title="害羞" href="javascript:;"></a><a title="闭嘴" href="javascript:;"></a><a title="睡" href="javascript:;"></a><a title="大哭" href="javascript:;"></a><a title="尴尬" href="javascript:;"></a><a title="发怒" href="javascript:;"></a><a title="调皮" href="javascript:;"></a><a title="呲牙" href="javascript:;"></a><a title="惊讶" href="javascript:;" class="borderRightNone"></a><a title="难过" href="javascript:;"></a><a title="酷" href="javascript:;"></a><a title="冷汗" href="javascript:;"></a><a title="折磨" href="javascript:;"></a><a title="吐" href="javascript:;"></a><a title="偷笑" href="javascript:;"></a><a title="愉快" href="javascript:;"></a><a title="白眼" href="javascript:;"></a><a title="傲慢" href="javascript:;"></a><a title="饥饿" href="javascript:;"></a><a title="困" href="javascript:;"></a><a title="惊恐" href="javascript:;"></a><a title="流汗" href="javascript:;"></a><a title="憨笑" href="javascript:;"></a><a title="悠闲" href="javascript:;" class="borderRightNone"></a><a title="奋斗" href="javascript:;"></a><a title="咒骂" href="javascript:;"></a><a title="疑问" href="javascript:;"></a><a title="嘘" href="javascript:;"></a><a title="晕" href="javascript:;"></a><a title="抓狂" href="javascript:;"></a><a title="衰" href="javascript:;"></a><a title="骷髅" href="javascript:;"></a><a title="敲打" href="javascript:;"></a><a title="再见" href="javascript:;"></a><a title="擦汗" href="javascript:;"></a><a title="抠鼻" href="javascript:;"></a><a title="鼓掌" href="javascript:;"></a><a title="糗大了" href="javascript:;"></a><a title="坏笑" href="javascript:;" class="borderRightNone"></a><a title="左哼哼" href="javascript:;"></a><a title="右哼哼" href="javascript:;"></a><a title="哈欠" href="javascript:;"></a><a title="鄙视" href="javascript:;"></a><a title="委屈" href="javascript:;"></a><a title="快哭了" href="javascript:;"></a><a title="阴险" href="javascript:;"></a><a title="亲亲" href="javascript:;"></a><a title="吓" href="javascript:;"></a><a title="可怜" href="javascript:;"></a><a title="菜刀" href="javascript:;"></a><a title="西瓜" href="javascript:;"></a><a title="啤酒" href="javascript:;"></a><a title="篮球" href="javascript:;"></a><a title="乒乓" href="javascript:;" class="borderRightNone"></a><a title="咖啡" href="javascript:;"></a><a title="饭" href="javascript:;"></a><a title="猪头" href="javascript:;"></a><a title="玫瑰" href="javascript:;"></a><a title="凋谢" href="javascript:;"></a><a title="嘴唇" href="javascript:;"></a><a title="爱心" href="javascript:;"></a><a title="心碎" href="javascript:;"></a><a title="蛋糕" href="javascript:;"></a><a title="闪电" href="javascript:;"></a><a title="炸弹" href="javascript:;"></a><a title="刀" href="javascript:;"></a><a title="足球" href="javascript:;"></a><a title="瓢虫" href="javascript:;"></a><a title="便便" href="javascript:;" class="borderRightNone"></a><a title="月亮" href="javascript:;"></a><a title="太阳" href="javascript:;"></a><a title="礼物" href="javascript:;"></a><a title="拥抱" href="javascript:;"></a><a title="强" href="javascript:;"></a><a title="弱" href="javascript:;"></a><a title="握手" href="javascript:;"></a><a title="胜利" href="javascript:;"></a><a title="抱拳" href="javascript:;"></a><a title="勾引" href="javascript:;"></a><a title="拳头" href="javascript:;"></a><a title="差劲" href="javascript:;"></a><a title="爱你" href="javascript:;"></a><a title="NO" href="javascript:;"></a><a title="OK" href="javascript:;" class="borderRightNone"></a><a title="爱情" href="javascript:;" class="borderBottomNone"></a><a title="飞吻" href="javascript:;" class="borderBottomNone"></a><a title="跳跳" href="javascript:;" class="borderBottomNone"></a><a title="发抖" href="javascript:;" class="borderBottomNone"></a><a title="怄火" href="javascript:;" class="borderBottomNone"></a><a title="转圈" href="javascript:;" class="borderBottomNone"></a><a title="磕头" href="javascript:;" class="borderBottomNone"></a><a title="回头" href="javascript:;" class="borderBottomNone"></a><a title="跳绳" href="javascript:;" class="borderBottomNone"></a><a title="投降" href="javascript:;" class="borderBottomNone"></a><a title="激动" href="javascript:;" class="borderBottomNone"></a><a title="乱舞" href="javascript:;" class="borderBottomNone"></a><a title="献吻" href="javascript:;" class="borderBottomNone"></a><a title="左太极" href="javascript:;" class="borderBottomNone"></a><a title="右太极" href="javascript:;" class="borderRightNone borderBottomNone"></a></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 图文-->
+                                        <div id="msgType-wordpic" data-msg-type="2" class="tab-pane">
+                                            <div id="firstItem">
+                                                <div class="control-group">
+                                                    <div class="controls">
+                                                        <div id="img_material"></div>
+                                                        <script>
+                                                            $('#img_material').materialControl({
+                                                                category: 'image_1'
+                                                            });
+                                                        </script>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <div class="controls">
+                                                        <p class="help-block">标题<sup>*</sup></p>
+                                                        <input type="text" name="msgPictitle" maxlength="64" ng-model="firstitem.msgtitle" class="msgPictitle">
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <div class="controls">
+                                                        <p class="help-block">封面图片</p>
+                                                        <!--#uploader1--><span class="btn btn-white btn-primary fileinput-button">
+                                                            <i class="glyphicon glyphicon-plus"></i><span>增加图片</span>
+                                                            <!-- The file input field used as target for the file upload widget-->
+                                                            <input type="file" multiple="" name="file" class="uploader_news_cover" accept="image/png,image/jpeg">
+                                                        </span>
+                                                        <div class="progress1">
+                                                            <div style="width: 0%;height: 18px;background: green;display:none" class="bar"></div>
+                                                        </div>
+                                                        <input id="image1-src" readonly="readonly" ng-model="firstitem.msgfileImg" style="width:280px" type="text" name="" placeholder="点击上传封面，此处自动填写上传图片地址。" class="form-control">
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <div class="controls">
+                                                        <p class="help-block">摘要(摘要只在发送消息为单图文时显示，且不超过120个字符)</p>
+                                                        <textarea name="msgtips" style="width:400px;height:100px" ng-model="firstitem.msgtips" class="msgtips"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="control-group">
+                                                    <div class="controls">
+                                                        <p class="help-block">正文</p>
+                                                        <input id="editorvalue1" type="hidden" ng-model="firstitem.msgmaintext" name="name">
+                                                        <textarea id="editor1" class="msgmaintext"></textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 图片-->
+                                        <div id="msgType-pic" data-msg-type="3" class="tab-pane">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <div id="img3_material"></div>
+                                                    <script>
+                                                        $('#img3_material').materialControl({
+                                                            category: 'image_3'
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div>
+                                            <div class="controls">
+                                                <p class="help-block">选择图片 (推荐尺寸：342像素x190像素)</p><span class="btn btn-white btn-primary fileinput-button">
+                                                    <i class="glyphicon glyphicon-plus"></i><span>增加图片</span>
+                                                    <!-- The file input field used as target for the file upload widget-->
+                                                    <input type="file" accept="image/png,image/jpeg" name="file" class="uploader_image">
+                                                </span>
+                                                <div class="progress1">
+                                                    <div style="width: 0%;height: 18px;background: green;display:none" class="bar"></div>
+                                                </div>
+                                                <input id="image3-src" readonly="readonly" ng-model="type3_msgImg" style="width:280px" type="text" name="" placeholder="点击上传图片，此处自动填写上传图片地址。" class="form-control">
+                                            </div>
+                                        </div>
+                                        <!--视频-->
+                                        <div id="msgType-video" data-msg-type="4" class="tab-pane">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <div id="video_material"></div>
+                                                    <script>
+                                                        $('#video_material').materialControl({
+                                                            category: 'Video'
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <p class="help-block">视频 (格式支持mp4，文件大小不超过10M)</p><span class="btn btn-white btn-primary fileinput-button">
+                                                        <i class="glyphicon glyphicon-plus"></i><span>增加视频</span>
+                                                        <!-- The file input field used as target for the file upload widget-->
+                                                        <input type="file" name="file" accept="video/mp4,audio/mp4" class="uploader_video">
+                                                    </span>
+                                                    <div class="progress1">
+                                                        <div style="width: 0%;height: 18px;background: green;display:none" class="bar"></div>
+                                                    </div>
+                                                    <input id="image4-src" readonly="readonly" ng-model="type4_msgVideoSrc" style="width:280px;display:none" type="text" name="" placeholder="点击视频，此处自动填写上传的视频地址。" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <p class="help-block">标题<sup>*</sup></p>
+                                                    <input id="msgVideoTitle" type="text" name="msgVideoTitle" ng-model="type4_msgVideoTitle" class="msgVideoTitle">
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <p class="help-block">简介(选填)</p>
+                                                    <textarea id="msgVideoDesc" name="msgVideoDesc" style="width:400px;height:100px" ng-model="type4_msgVideoDesc"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- 语音-->
+                                        <div id="msgType-sound" data-msg-type="5" class="tab-pane">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <div id="audio_material"></div>
+                                                    <script>
+                                                        $('#audio_material').materialControl({
+                                                            category: 'Audio'
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <p class="help-block">语音（格式支持mp3，文件大小不超过2M，语音时长不超过1分钟）</p>
+                                                    <span class="btn btn-white btn-primary fileinput-button">
+                                                        <i class="glyphicon glyphicon-plus"></i><span>增加文件</span>
+                                                        <!-- The file input field used as target for the file upload widget-->
+                                                        <input type="file" accept="audio/mpeg" name="file" class="uploader_audio">
+                                                    </span>
+                                                    <div class="progress1">
+                                                        <div style="width: 0%;height: 18px;background: green;display:none" class="bar"></div>
+                                                    </div>
+                                                    <input id="image5-src" readonly="readonly" ng-model="type5_SoundSrc" style="width:280px;display:none" type="text" name="" class="form-control">
+                                                    <input id="image5-src_duration" readonly="readonly" ng-model="type5_duration" style="width:280px;display:none" type="text" name="" class="form-control">
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="msgbox-footer">
+                                        <button id="submitBtn" type="submit" class="btn btn-primary"><span>推送</span></button>
+                                    </div>
+                                </div>
+                                <div id="hiddenVideoDiv"></div>
+                                <input type="hidden" value="null" id="materialId" />
+                                <div style="display:none" class="obj_firstItem">{{firstitem}}</div>
+                                <div style="display:none" class="obj_news">{{news}}</div>
+                                <button style="display:none" ng-click="_ng_reset()" class="go-ng-reset">reset news[]</button>
+                                <button style="display:none" ng-click="_ng_resetImg()" class="go-ng-resetImg">reset img</button>
+                                <button style="display:none" ng-click="_ng_resetVideo()" class="go-ng-resetVideo">reset video</button>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

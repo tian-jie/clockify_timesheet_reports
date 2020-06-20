@@ -1,0 +1,444 @@
+﻿@using Innocellence.WeChat.Domain.ModelsView;
+@using Innocellence.WeChat.Domain.Entity;
+
+@model Innocellence.WeChat.Domain.ModelsView.ArticleInfoView
+
+<style>
+    .widget-box {
+        margin-bottom: 10px;
+    }
+
+    #image_file {
+        margin-top: 5px;
+    }
+
+    .labelPlus {
+        cursor: pointer;
+    }
+</style>
+<div id="CourseEdit" style="width:90%;min-width:900px">
+
+    <form action="Post" id="ff" method="get" class="form-horizontal">
+        <input type="hidden" id="ID" name="ID" value="@Model.Id" />
+        <input type="hidden" id="ArticleCate" name="ArticleCate" value="@Request["iType"]" />
+        <div class="row">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">活动标题 :</label>
+                <div class="col-sm-9">
+                    <input type="text" name="ArticleTitle" class="form-control" placeholder="活动标题" value="@Model.ArticleTitle"
+                           validate="{required:true,maxlength:512}" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">活动链接 :</label>
+                <div class="col-sm-9">
+                    <input type="text" name="ArticleURL" class="form-control" placeholder="活动链接" value="@Model.ArticleTitle"
+                           validate="{required:true,maxlength:512}" />
+                </div>
+            </div>
+            @{int iLength = (Model == null || Model.ArticleContentViews == null) ? 0 : Model.ArticleContentViews.Count;
+            if (iLength > 0 && Model.ArticleContentViews.Count == 2 && Model.ArticleContentViews[1].ImageUrl != null && Model.ArticleContentViews[1].ImageUrl.ToString().IndexOf(".zip") > 0)
+            {
+                iLength = -1;
+            }
+            }
+            <div class="form-group">
+                <label class="col-sm-3 control-label">内容 :</label>
+                <div class="tabbable col-sm-9">
+                    <ul class="nav nav-tabs" id="myTab">
+                        <li class="@(iLength != -1 ? "active" : "")">
+                            <a data-toggle="tab" href="#text">
+                                <i class="green ace-icon fa fa-home bigger-120"></i>
+                                模板
+                            </a>
+                        </li>
+                        <li class="@(iLength == -1 ? "active" : "")">
+                            <a data-toggle="tab" href="#file">
+                                <i class="green ace-icon fa fa-home bigger-120"></i>
+                                上传
+                            </a>
+                        </li>
+
+                    </ul>
+
+
+                    <input type="hidden" name="isSelect" value="@iLength" />
+                    <input type="hidden" name="isUpdate" value="0" />
+                    <div class="tab-content">
+                        <div id="text" class="tab-pane fade in @(iLength != -1 ? "active" : "")">
+
+                            <div class="" style="padding-left:0px" id="lstContent">
+
+                                @for (int iIndex = 0; iIndex < iLength; iIndex++)
+                                {
+                                    var objContent = Model.ArticleContentViews[iIndex];
+                                    <div class="widget-box">
+                                        <div class="widget-header">
+                                            <h4 class="widget-title">Text Area</h4>
+
+                                            <div class="widget-toolbar">
+                                                <a href="#" data-action="collapse">
+                                                    <i class="ace-icon fa fa-chevron-up"></i>
+                                                </a>
+                                                <a href="#" data-action="settings">
+                                                    <i class="fa fa-plus"></i>
+                                                </a>
+                                                <a href="#" data-action="close">
+                                                    <i class="ace-icon fa fa-times"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="widget-body">
+                                            <div class="widget-main">
+                                                <div class="col-sm-8">
+
+                                                    <textarea class="form-control" name="ArticleContents" placeholder="" rows="8"
+                                                              validate="{required:true,maxlength:512}">
+                                                        @objContent.ArticleParamContent
+                                                        </textarea>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div style="border:solid 1px gray;width:120px;height:90px;">
+                                                            <img id="preview@{@iIndex.ToString();}" style="width:100%;height:100%" src="/Common/File?id=@objContent.ImageID&FileName=/temp/@objContent.ImageUrl&ImgType=1" />
+                                                        </div>
+                                                        @*<input type="file" name="image_file" id="image_file" onchange="fileSelectHandler('#Content1 ', this)" />*@
+                                                        <input id="pdf-upload-input" class="form-control " multiple="multiple" type="file" name="file" onchange="return uploadImage(this,'@iIndex');" />
+                                                        <input type="hidden" name="ImgUrl" validate="{required:true}" value="@objContent.ImageUrl" />
+                                                        <input type="hidden" name="ImgID" value="@objContent.ImageID" />
+                                                        <input type="hidden" name="ImgUrl_Old" value="@objContent.ImageUrl" />
+                                                        <div class="progress" style="margin-bottom: 0px">
+                                                            <div id="progress-bar@{@iIndex.ToString();}" class="progress-bar" style="width:0">0</div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-sm-12" style="padding-top:5px">
+                                                        Video: <input type="text" name="VideoUrl" style="width:50%" value="@objContent.VideoUrl" />
+                                                    </div>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                }
+
+                                <div class="widget-box" id="Content" style="display:none">
+                                    <div class="widget-header">
+                                        <h4 class="widget-title">Text Area</h4>
+
+                                        <div class="widget-toolbar">
+                                            <a href="#" data-action="collapse">
+                                                <i class="ace-icon fa fa-chevron-up"></i>
+                                            </a>
+                                            <a href="#" data-action="settings">
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                            <a href="#" data-action="close">
+                                                <i class="ace-icon fa fa-times"></i>
+                                            </a>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="widget-body">
+                                        <div class="widget-main">
+                                            <div class="col-sm-8">
+
+                                                <textarea class="form-control ignore" name="ArticleContents" placeholder="" rows="10"
+                                                          validate="{required:true,maxlength:512}"></textarea>
+                                            </div>
+                                            <div class="col-sm-4">
+                                                <div style="border:solid 1px gray;width:120px;height:90px;"><img id="preview" style="width:100%;height:100%" /></div>
+                                                <input id="upload-input" class="form-control " multiple="multiple" type="file" name="file" />
+                                                <input type="hidden" name="ImgUrl"  />
+                                                <input type="hidden" name="ImgID" />
+                                                <input type="hidden" name="ImgUrl_Old" />
+                                                <div class="progress" style="margin-bottom: 0px">
+                                                    <div id="progress-bar" class="progress-bar" style="width:0">0</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12" style="padding-top:5px">
+                                                Video: <input type="text" name="VideoUrl" style="width:50%" value="" />
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+                            <div class="center">
+                                <label class="control-label"></label>
+                                <label class="control-label labelPlus "><i class="fa fa-plus"></i></label>
+                            </div>
+                        </div>
+
+                        <div id="file" class="tab-pane fade in @(iLength == -1 ? "active" : "")">
+                            <div class="form-group formImg">
+                                <label class="col-sm-3 control-label">封面:</label>
+                                <div class="col-sm-9">
+                                    <input type="hidden" id="ArticleContents" name="ArticleContents" value="封面" />
+                                    <input type="hidden" name="ImgUrl" id="ImgUrl" validate="{required:true}" value="@(iLength != -1 ? "" : Model.ArticleContentViews[0].ImageUrl)" />
+                                    <input type="hidden" name="ImgUrl_Old" value="@(iLength != -1 ? "" : Model.ArticleContentViews[0].ImageUrl)" />
+                                    <input type="hidden" name="ImgID" value="@(iLength != -1 ? "" : Model.ArticleContentViews[0].ImageID.ToString())" />
+                                    <img id="preview0" style="width:80px;height:60px" src="/Common/File?id=@(iLength != -1 ? "" : Model.ArticleContentViews[0].ImageID.ToString())&FileName=/temp/@(iLength != -1 ? "" : Model.ArticleContentViews[0].ImageUrl)&ImgType=1" />
+                                    <input id="upload-input" class="form-control " multiple="multiple" type="file" name="file" onchange="return uploadHDImage(this);" />
+                                    <div class="progress" style="margin-bottom: 0px">
+                                        <div id="progress-bar_1" class="progress-bar" style="width:0">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group formZip">
+                                <label class="col-sm-3 control-label">附件:</label>
+                                <div class="col-sm-9">
+                                    <a href="Common/File?id=@(iLength != -1 ? "" : Model.ArticleContentViews[1].ImageID.ToString())&FileName=/temp/@(iLength != -1 ? "" : Model.ArticleContentViews[1].ImageUrl)&ImgType=1" id="Download">Download</a>
+                                    <input type="hidden" id="ArticleContents" name="ArticleContents" value="附件" />
+                                    <input type="hidden" name="ImgUrl" id="ImgUrl" validate="{required:true}" value="@(iLength != -1 ? "" : Model.ArticleContentViews[1].ImageUrl)" />
+                                    <input type="hidden" name="ImgUrl_Old" value="@(iLength != -1 ? "" : Model.ArticleContentViews[1].ImageUrl)" />
+                                    <input type="hidden" name="ImgID" value="@(iLength != -1 ? "" : Model.ArticleContentViews[1].ImageID.ToString())" />
+                                    <input id="upload-input" class="form-control " multiple="multiple" type="file" name="file" onchange="return uploadHDFile(this);" />
+                                    <div class="progress" style="margin-bottom: 0px">
+                                        <div id="progress-bar_2" class="progress-bar" style="width:0">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="center" style="margin-top:20px">
+            @{
+                if (@Model.ArticleStatus != null && @Model.ArticleStatus.Equals("Published"))
+                {
+                    <span class="msg pull-left">No update! This course have been published.</span>
+                    <button type="submit" class="btn btn-success center" disabled="disabled">Save</button>
+                }
+                else
+                {
+                    <button type="submit" id="btnSubmit" class="btn btn-success center">Save</button>
+                }
+            }
+            <div class="clearfix"></div>
+        </div>
+    </form>
+
+</div>
+
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            $('#btnSubmit').on("click", function () {
+
+                var validator = $('#ff').validate({ ignore: '.ignore', });
+
+
+                if ($('#text').hasClass('active')) {
+
+                    $('#isUpdate').val($('#isSelect').val() == '-1' ? '1' : '0');
+
+                    $('#file').find("input, select, textarea").not('.ignore').addClass('ignore').prop('name', function (i, name) { return name + '_' });
+
+                } else {
+                    $('#isUpdate').val($('#isSelect').val() == '-1' ? '0' : '1');
+                    $('#text .widget-box:not([id=Content])').find("input, select, textarea").not('.ignore').addClass('ignore').prop('name', function (i, name) { return name + '_' });
+                    $('#text').find("input, select, textarea").prop('name', function (i, name) { return name + '_' });
+                }
+                var eles = $('#ff').find("input, select, textarea")
+                   .not(":submit, :reset, :image, [disabled]").not('.ignore');
+                var bol = true;
+                for (var i = 0; i < eles.length; i++) {
+
+                    var strName = eles[i].name;
+                    eles[i].name = strName + String(i);
+                    var b = validator.element(eles[i]);
+
+                    eles[i].name = strName;
+                    if (!b) { bol = false; }
+                }
+
+                if (bol) {
+                    $('#ff').submit();
+                }
+                $('#file').find("input, select, textarea").not('.ignore').removeClass('ignore').prop('name', function (i, name) { return name.replace('_', '') });
+                $('#text .widget-box:not([id=Content])').find("input, select, textarea").removeClass('ignore').prop('name', function (i, name) { return name.replace('_', '') });
+                $('#text').find("input, select, textarea").prop('name', function (i, name) { return name.replace('_', '') });
+                return false;
+
+            });
+
+
+            LEAP.Common.MainPop.options.fnAfterSuccess = function () {
+
+                window.location.href = 'index?iType=@Request["iType"]';
+            }
+
+
+            $('.widget-box').on('setting.ace.widget', function () {
+
+                addOrInsertBox(this);
+
+            });
+
+
+
+
+
+            function fileSelectHandler(iIndex, obj) {
+
+                // get selected file
+                var oFile = obj.files[0];
+
+                // hide all errors
+                $('.error').hide();
+
+                // check for image type (jpg and png are allowed)
+                var rFilter = /^(image\/jpeg|image\/png)$/i;
+                if (!rFilter.test(oFile.type)) {
+                    $('.error' + String(iIndex)).html('Please select a valid image file (jpg and png are allowed)').show();
+                    return;
+                }
+
+                // check for file size
+                if (oFile.size > 250 * 1024) {
+                    $('.error' + String(iIndex)).html('You have selected too big file, please select a one smaller image file').show();
+                    return;
+                }
+
+                // preview element
+                var oImage = $(obj).parent().parent().find('#preview');
+
+                // prepare HTML5 FileReader
+                var oReader = new FileReader();
+                oReader.onload = function (e) {
+
+                    // e.target.result contains the DataURL which we can use as a source of the image
+                    oImage[0].src = e.target.result;
+                    oImage.onload = function () { // onload event handler
+
+                    };
+                };
+
+                // read selected file as DataURL
+                oReader.readAsDataURL(oFile);
+            }
+
+            var iIndex = 100;
+
+            $('.labelPlus').on('click', function () {
+
+                addOrInsertBox();
+            });
+
+
+            function addOrInsertBox(obj) {
+
+                var row = $('#Content').clone();
+                row[0].id = '';
+                row.find('#preview').prop('id', 'preview' + String(iIndex));
+                row.find('#progress-bar').prop('id', 'progress-bar' + String(iIndex));
+
+                row.find('.ignore').removeClass('ignore');
+
+                //  row.find('[name=ArticleContents]').attr('validate', row.find('[name=ArticleContents]').attr('validate1'));
+
+                var id = String(iIndex);
+                var f = row.find('#upload-input');
+                f.on('change', function () {
+
+                    uploadImage(this, id);
+
+                });
+
+                f.prop('id', 'file' + String(iIndex));
+
+                if (obj) {
+                    $(row).insertBefore(obj);
+                } else {
+                    $('#lstContent').append(row);
+                }
+
+                row.on('setting.ace.widget', function () {
+
+                    addOrInsertBox(this);
+
+                })
+                iIndex++;
+                row.show();
+
+            }
+
+
+            if ($('#text .widget-box').length < 2) {
+                $('#text .labelPlus').trigger("click");
+            }
+        });
+
+        function uploadImage(obj, id) {
+            $(obj).FileUpload({
+                self: obj,
+                url: "/Common/PostImage",
+                allowExtension: '.jpg,.png,.bmp,.jpeg,.gif,.JPG,.PNG,.BMP,.JPEG,.GIF',
+                rewriteDocumentId: 'preview' + id,
+                processBarId: 'progress-bar' + id,
+                callBack: function (data) {
+                    $('#preview' + id).prop('src', data.result.Src);
+                    $('#preview' + id).parent().parent().parent().find('[name=ImgUrl]').val(data.result.Src);
+
+                }
+            });
+
+        }
+
+        function uploadHDImage(obj) {
+
+            $('#btnSave').prop("disabled", true);
+            $(obj).FileUpload({
+                self: obj,
+                url: "/Common/PostImage",
+                allowExtension: '.jpg,.png,.bmp,.jpeg,.gif,.JPG,.PNG,.BMP,.JPEG,.GIF',
+                rewriteDocumentId: '',
+                processBarId: 'progress-bar_1',
+                callBack: function (data) {
+                    //$('#preview' + id).prop('src', data.result.Src);
+                    $('.formImg #ImgUrl').val(data.result.Src);
+                    $('#preview0').prop('src', data.result.Src);
+                    $('#btnSave').prop("disabled", false);
+
+                }
+            });
+        }
+
+        function uploadHDFile(obj) {
+
+            $('#btnSave').prop("disabled", true);
+            $(obj).FileUpload({
+                self: obj,
+                url: "/Common/PostImage",
+                allowExtension: '.zip',
+                rewriteDocumentId: '',
+                processBarId: 'progress-bar_2',
+                callBack: function (data) {
+                    //$('#preview' + id).prop('src', data.result.Src);
+                    $('.formZip #ImgUrl').val(data.result.Src);
+                    $('#Download').prop('href', data.result.Src);
+                    $('#btnSave').prop("disabled", false);
+
+                }
+            });
+        }
+    </script>
+}
+

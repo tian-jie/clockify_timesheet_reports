@@ -1,0 +1,134 @@
+﻿
+<div class="row">
+    <div class="col-sm-12">
+            <form class="form-inline" id="SearchForm">
+                @*<div class="form-group">
+                    <div class="form-group">
+                        <input class="input form-control" type="text" name="txtUserName" placeholder="UserName/RealName">
+                    </div>
+                        <a href="#" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+                </div>*@
+                <div class="form-group" style="float: right; ">
+                    <a href="#" class="btn btn-success btn-sm" id="btnAdd" data-toggle="tooltip" data-placement="top" title="增加">
+                    <i class="fa fa-plus"></i></a>
+                </div>
+            </form>
+            <div class="clearfix"></div>
+            
+            <div class="widget-box">
+                <div class="widget-content nopadding">
+                    <table class="table table-bordered data-table">
+                        <thead>
+                            <tr>
+                                <th style="width:5%;">@("Id")</th>
+                                <th style="width:18%">@T("UserName")</th>
+                                <th style="width:18%">@T("RealName")</th>
+                                <th style="width:34%">@T("Email")</th>
+                                <th style="width:5%">@T("Operation")</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+        <div style="display:none;" class="">
+            <div class="row" id="NewsEdit">
+                <div class="widget-box" style="width:500px">
+                    <div class="widget-header">
+                        <span class="icon"> <i class="icon-align-justify"></i> </span>
+                        <h5>Personal-info</h5>
+                    </div>
+                    <div class="widget-body">
+                        <form action="UserEdit" id="ff" method="get" class="form-horizontal" datasource="Get">
+                            <input type="hidden" id="ID" name="ID" data-bind="value:Id" />
+                            <input type="hidden" value="@ViewBag.UserId" name="UserId" id="UserId"/>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">UserName :</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="UserName" class="form-control" placeholder="User Name" data-bind="value:UserName" 
+                                     validate="{required:true,messages:{required:'Please input UserName!'}}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">RealName :</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="WeChatUserID" class="form-control" placeholder="Real Name" data-bind="value:WeChatUserID" 
+                                    validate="{required:true,messages:{required:'Please input your real name!'}}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Email :</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="Email" class="form-control" placeholder="Email Address" data-bind="value:Email" 
+                                     validate="{required:true,email:true,messages:{required:'Please input your email address!',email:'Please check your email address format.'}}" />
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success pull-right">Save</button>
+                                <div class="clearfix"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    
+
+
+    @section scripts_Foot
+    {
+<link rel="stylesheet" type="text/css" href="~/scripts/webuploader/webuploader.css">
+
+<!--引入JS-->
+<script type="text/javascript" src="~/scripts/webuploader/webuploader.js"></script>
+<script type="text/javascript" src="~/scripts/common/commonupload.js"></script>
+
+        <script>
+            var uploader;
+            $(document).ready(function () {
+                LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                    "ajax": {"url":"UserList"},
+                    "aoColumns": [
+                      {
+                          "mData": "Id",
+                          "bSearchable": false,
+                          "bSortable": false
+                      },
+                      {
+                          "mData": "UserName",
+                          "bSearchable": false,
+                          "bSortable": false
+                      },
+                      { "mData": "UserTrueName", "bSortable": false },
+                      { "mData": "Email", "bSortable": false },
+                      { "mData": "Operation"}
+                    ],
+                    "columnDefs": jQuery.extend(true, datatableSetting.columnDefs,
+                    [{
+                        "targets": 4,
+                        "render": function (data, type, full, meta) {
+                            var userId=parseInt($('#UserId').val());
+                            if (userId == full.Id) {
+                                return  '<a href="#" onclick="LEAP.Common.MainPop.ShowUpdateInfo(\'' + full.Id + '\');return false;" class="artDailog btn btn-info  btn-xs" style="margin-right:10px;" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>'
+                                        + '<a href="#" onclick="deleteUser()" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">'
+                                        + '<i class="fa fa-trash-o"></i></a>';
+                            } else {
+                                return  '<a href="#" onclick="LEAP.Common.MainPop.ShowUpdateInfo(\'' + full.Id + '\');return false;" class="artDailog btn btn-info  btn-xs" style="margin-right:10px;" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>'
+                                        + '<a href="#" onclick="LEAP.Common.MainPop.RowClick(\'' + full.Id + '\',2)" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">'
+                                        + '<i class="fa fa-trash-o"></i></a>';
+                            }
+                        }
+                    }]),
+                    fnDrawCallback: function () { $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' }); $('#DataTables_Table_0_wrapper > .row:first-child').remove(); }
+                }));   
+
+            });
+
+            function deleteUser() {
+                artDialog.alert("You can't delete yourself !");
+            }
+
+        </script>
+    }

@@ -1,0 +1,98 @@
+﻿<div id="NewsEdit">
+    <div class="widget-box" style="width:824px">
+        <div class="widget-header">
+            <span class="icon"> <i class="icon-align-justify"></i> </span>
+            <h5>宏图</h5>
+        </div>
+        <div class="widget-body">
+            <form action="Post" id="ff" method="get" class="form-horizontal" datasource="Get">
+                <input type="hidden" id="ID" name="ID" data-bind="value:Id" />
+                <input type="hidden" id="ArticleCate" name="ArticleCate" value="@Request["iType"]" />
+                
+                <div class="form-group">
+                    <label class="col-sm-3 control-label">标题:</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="ArticleTitle" class="form-control" placeholder="标题" data-bind="value:ArticleTitle"
+                               validate="{required:true,maxlength:512}" />
+                    </div>
+                </div>
+                <div class="form-group formImg">
+                    <label class="col-sm-3 control-label">封面:</label>
+                    <div class="col-sm-9">
+                        <input type="hidden" id="ArticleContents" name="ArticleContents" value="封面" />
+                        <input type="hidden" name="ImgUrl" id="ImgUrl" validate="{required:true}" data-bind="value:ArticleContentViews[0].ImageUrl" />
+                        <input type="hidden" name="ImgUrl_Old" data-bind="value:ArticleContentViews[0].ImageUrl" />
+                        <input type="hidden" name="ImgID" data-bind="value:ArticleContentViews[0].ImageID" />
+                        <img id="preview" style="width:80px;height:60px"  />
+                        <input id="upload-input" class="form-control " multiple="multiple" type="file" name="file" onchange="return uploadHDImage(this);" />
+                        <div class="progress" style="margin-bottom: 0px">
+                            <div id="progress-bar1" class="progress-bar" style="width:0">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group formZip">
+                    <label class="col-sm-3 control-label">附件:</label>
+                    <div class="col-sm-9">
+                        <a href="#" id="Download">Download</a>
+                        <input type="hidden" id="ArticleContents" name="ArticleContents" value="附件" />
+                        <input type="hidden" name="ImgUrl" id="ImgUrl" validate="{required:true}" data-bind="value:ArticleContentViews[1].ImageUrl" />
+                        <input type="hidden" name="ImgUrl_Old" data-bind="value:ArticleContentViews[1].ImageUrl" />
+                        <input type="hidden" name="ImgID" data-bind="value:ArticleContentViews[1].ImageID" />
+                        <input id="upload-input" class="form-control " multiple="multiple" type="file" name="file" onchange="return uploadHDFile(this);" />
+                        <div class="progress" style="margin-bottom: 0px">
+                            <div id="progress-bar" class="progress-bar" style="width:0">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <span class="msg pull-left" id="labelSubmit">No update! This news have been published.</span>
+                    <button type="submit" class="btn btn-success pull-right" id="btnSave" disabled="disabled">Save</button>
+                    <div class="clearfix"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    function uploadHDImage(obj) {
+
+        $('#btnSave').prop("disabled", true);
+        $(obj).FileUpload({
+            self: obj,
+            url: "/Common/PostImage",
+            allowExtension: '.jpg,.png,.bmp,.jpeg,.gif,.JPG,.PNG,.BMP,.JPEG,.GIF',
+            rewriteDocumentId: '',
+            processBarId: 'progress-bar1',
+            callBack: function (data) {
+                //$('#preview' + id).prop('src', data.result.Src);
+                $('.formImg #ImgUrl').val(data.result.Src);
+                $('#preview').prop('src', data.result.Src);
+                $('#btnSave').prop("disabled", false);
+
+            }
+        });
+    }
+
+    function uploadHDFile(obj) {
+
+        $('#btnSave').prop("disabled", true);
+        $(obj).FileUpload({
+            self: obj,
+            url: "/Common/PostImage",
+            allowExtension: '.zip',
+            rewriteDocumentId: '',
+            processBarId: 'progress-bar',
+            callBack: function (data) {
+                //$('#preview' + id).prop('src', data.result.Src);
+                $('.formZip #ImgUrl').val(data.result.Src);
+                $('#Download').prop('href', data.result.Src);
+                $('#btnSave').prop("disabled", false);
+
+            }
+        });
+    }
+
+</script>

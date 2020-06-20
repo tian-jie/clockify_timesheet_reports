@@ -1,0 +1,35 @@
+﻿@*@model System.Web.Mvc.HandleErrorInfo
+
+@{
+    ViewBag.Title = "错误";
+}
+
+<h1 class="text-danger">错误。</h1>
+<h2 class="text-danger">处理你的请求时出错。</h2>
+<h3>Message:@Model.Exception.Message</h3>
+<h3>Stack:@Model.Exception.StackTrace</h3>*@
+
+
+@model System.Web.Mvc.HandleErrorInfo
+@{
+    ViewBag.Title = "General Site Error";
+    Layout = null;
+}
+
+<h2>A General Error Has Occurred</h2>
+
+@if (Model != null)
+{
+    <p>
+        @Model.Exception.GetType().Name<br />
+    thrown in @Model.ControllerName @Model.ActionName
+</p>
+    <p>Error Details:</p>
+    <p>@Model.Exception.Message</p>
+    
+#if DEBUG
+       <p>@Model.Exception.StackTrace</p> 
+#endif
+        
+}
+

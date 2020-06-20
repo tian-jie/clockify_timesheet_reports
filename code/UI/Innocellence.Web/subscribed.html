@@ -1,0 +1,53 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keyword" content="">
+    <meta name="description" content="">
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <title>关注成功</title>
+    <style>
+        img {
+            pointer-events: none;
+        }
+
+        a {
+            display: inline-block;
+        }
+
+        iframe {
+            border: none;
+        }
+
+            iframe.card_iframe {
+                position: relative;
+                z-index: 1000;
+            }
+    </style>
+    <link rel="stylesheet" type="text/css" href="style/subscribed.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <script>
+        document.addEventListener("WeixinJSBridgeReady", function () {
+            WeixinJSBridge.call("hideOptionMenu");
+        });
+
+
+    </script>
+
+</head>
+<body class="body_media_lock">
+    <div class="media_container">
+        <div class="media_lock">
+            <span class="icon_lock_big"></span>
+            <p class="lock_text">您已成功关注<br />XXX企业号</p>
+            <p class="lock_text">You are Subscribed</p>
+            <p class="lock_text"></p>
+            <input type="image" src="style/images/close.png" onclick="javascript:WeixinJSBridge.call('closeWindow');" style="width:6em;height:3em;font-size:1.2em" />
+        </div>
+    </div>
+
+    <script type="text/javascript">function htmlDecode(e) { return e.replace(/&#39;/g, "'").replace(/<br\s*(\/)?\s*>/g, "\n").replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&") } function trim(e) { return e.replace(/^\s*|\s*$/g, "") } function viewProfile() { "undefined" != typeof WeixinJSBridge && WeixinJSBridge.invoke && WeixinJSBridge.invoke("profile", { username: user_name, scene: "57" }) } function report_article() { var e = "" == sourceurl ? location.href : sourceurl, i = [nickname, location.href, title, e].join("|WXM|"); location.href = "http://mp.weixin.qq.com/mp/readtemplate?t=wxm-appmsg-inform&__biz=" + biz + "&info=" + encodeURIComponent(i) + "#wechat_redirect" } function initWeixinBridge() { evalWXjsApi(function () { WeixinJSBridge.call("hideOptionMenu") }) } function addCard(e) { evalWXjsApi(function () { WeixinJSBridge.invoke("batchAddCard", { card_list: [e] }, function (e) { var i = e.err_msg.replace("batchAddCard:", ""); "ok" === i || ("fail" === i || "batchAddCard:fail_the permission value is offline verifying" === e.err_msg) && alert("系统错误。请重新打开图文领取卡券。") }) }) } var biz = "", nickname = "", user_name = "", msg_title = "", msg_source_url = "", title = trim(htmlDecode(msg_title)), sourceurl = trim(htmlDecode(msg_source_url)), ISWP = !!navigator.userAgent.match(/Windows\sPhone/i); if (ISWP) { var profile = document.getElementById("post-user"); profile && profile.setAttribute("href", "weixin://profile/" + user_name) } var voice_box = document.querySelector(".msg_item.voice"); if (voice_box) { var audio = document.querySelector("audio"); voice_box.addEventListener("click", function (e) { -1 != voice_box.className.indexOf("cur") ? (audio.currentTime = 0, audio.src = audio.src, audio.pause(), voice_box.classList.remove("cur")) : (voice_box.classList.add("cur"), audio.play()) }) } on_finish_play = function () { document.querySelector(".msg_item.voice").classList.remove("cur") }; var evalWXjsApi = function (e) { "object" == typeof WeixinJSBridge && "function" == typeof WeixinJSBridge.invoke ? e() : (document.attachEvent && document.attachEvent("WeixinJSBridgeReady", e), document.addEventListener && document.addEventListener("WeixinJSBridgeReady", e)) }; initWeixinBridge();</script>
+</body>
+</html>

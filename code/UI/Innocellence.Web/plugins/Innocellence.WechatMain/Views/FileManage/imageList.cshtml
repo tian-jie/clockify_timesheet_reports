@@ -1,0 +1,590 @@
+﻿@{
+    ViewBag.Title = "image list";
+    ViewBag.Type = "image";
+}
+
+<h2>image list</h2>
+
+<link href="~/Plugins/Innocellence.WechatMain/Content/FileManage.css" rel="stylesheet" />
+
+<div class="message_list">
+
+    <div class="message_bar" style="padding: 0 10px;">
+        <div class="float-right js_create"><a class="btn mb_btn float-right btn-sm btn-success" data-toggle="modal" data-placement="top" id="UploadBtn" href="#">新建素材</a></div>
+        <!-- <div class="float-right"><a id="js_upload_material" class="btn mb_btn float-right" href="javascript:;">上传素材</a></div> -->
+        <ul class="js_toolbar message_filetype_items">
+            <li data-type="image" class="active"><a href="javascript:;">图片</a></li>
+            <li data-type="audio" class=""><a href="javascript:;">语音</a></li>
+            <li data-type="video" class=""><a href="javascript:;">视频</a></li>
+            <li data-type="file" class=""><a href="javascript:;">文件</a></li>
+        </ul>
+    </div>
+</div>
+
+<div id="filemanagepage">
+    <div class="row">
+        <div class="col-sm-12">
+            <form class="form-inline" id="SearchForm" method="post">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title">
+                                <a href="#" class="btn btn-sm btn-success" data-toggle="modal" data-placement="top"
+                                   title="Upload Image" id="btnImgUpload" data-target="#ImageUploadModal">
+                                    <i class="fa fa-image"></i>&nbsp;图片上传
+                                </a>
+                                <a href="#" class="btn btn-sm btn-success" data-toggle="modal" data-placement="top"
+                                   title="Upload Attachment" id="btnAttachmentload" data-target="#AttachmentUploadModal">
+                                    <i class="fa fa-inbox"></i>&nbsp;附件上传
+                                </a>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div class="widget-box">
+                <div class="widget-content nopadding">
+                    <table class="table table-bordered data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">@T("Id")</th>
+                                <th style="width: 40%">@T("文件名")</th>
+                                <th style="width: 20%">@T("文件类型")</th>
+                                <th style="width: 10%">@T("文件大小")</th>
+                                <th style="width: 15%">@T("复制链接")</th>
+                                <th style="width: 10%">@T("删除")</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="ImageUploadModal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal-title">Picture Upload</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="picUploader" class="wu-example">
+                        <div id="picFilePicker">选择图片</div>
+                        <div id="picFileList" class="uploader-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="AttachmentUploadModal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal-title">Attachment Upload</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <h6>&nbsp;&nbsp;&nbsp;&nbsp;仅支持如下格式文件上传</h6>
+                        <dl class="dl-horizontal">
+                            <dt>文本文件</dt>
+                            <dd>txt</dd>
+                            <dt>Word文档</dt>
+                            <dd>doc,docx</dd>
+                            <dt>幻灯片</dt>
+                            <dd>ppt,pptx</dd>
+                            <dt>Excel表格</dt>
+                            <dd>xls,xlsx,csv</dd>
+                            <dt>压缩文件</dt>
+                            <dd>zip</dd>
+                            <dt>音频文件</dt>
+                            <dd>mp3</dd>
+                            <dt>视频文件</dt>
+                            <dd>mp4</dd>
+                        </dl>
+                    </div>
+                    <div id="attaUploader" class="wu-example">
+                        <div class="row">
+                            <div class="col-xs-4 col-xs-8">
+                                <div id="attaFilePicker">选择上传附件</div>
+                                <a href="#" id="stopUpload" class="btn btn-info btn-sm hidden" role="button">停止上传</a>
+                            </div>
+                        </div>
+                        <div id="attaFileList" class="uploader-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ImageReviewModal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="modal-title">Picture Review</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="picUploader" class="wu-example">
+                        <div id="picReview" class="uploader-list">
+                            <div class="file-item thumbnailreview">
+                                <img id="picReviewSrc" onerror="this.src = '/Content/img/smiley.png'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts_Foot
+        {
+    <script>
+        var picUploader;
+        var attaUploader;
+        var picState;
+        var attaState;
+        var attaFile;
+        $(document).ready(function () {
+            $('.js_toolbar li').each(function () {
+                this.onclick = function () {
+                    debugger
+                    $('#container').empty();
+                    var type = $(this).attr("data-type");
+                    currentType = $(this);
+                    switch (type) {
+                        case "image":
+                            $('#UploadBtn').attr("title", "Upload Image");
+                            $('#UploadBtn').attr("data-target", "#ImageUploadModal");
+                            break;
+                        case "video":
+                            $('#UploadBtn').attr("title", "Upload Video");
+                            $('#UploadBtn').attr("data-target", "#VideoUploadModal");
+                            break;
+                        default:
+                            $('#UploadBtn').attr("title", "");
+                            $('#UploadBtn').attr("data-target", "");
+                            break;
+                    }
+                    $(".js_toolbar li").removeClass("active");
+                    $('.js_toolbar li[data-type="' + type + '"]').addClass("active");
+                }
+            });
+
+
+
+
+
+            // 图片上传
+            $('#ImageUploadModal').on('shown.bs.modal', function () {
+
+                if (picUploader) {
+                    picUploader.reset();
+                    $('#picFileList').html('');
+                }
+                else {
+                    picUploader = WebUploader.create({
+
+                        auto: true,
+
+                        swf: '../scripts/webuploader/Uploader.swf',
+                        // 文件接收服务端。
+                        server: 'PostFile',
+
+                        // 选择文件的按钮。可选。
+                        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                        pick: '#picFilePicker',
+                        fileNumLimit: 1,
+                        // 图片容量最大5M
+                        fileSingleSizeLimit: 1024 * 1024 * 5,
+                        // 不允许上传相同文件
+                        duplicate: false,
+                        // 不对图片进行压缩
+                        compress: false,
+                        resize: false,
+                        // 只允许选择图片文件。
+                        accept: {
+                            title: 'Images',
+                            extensions: 'gif,jpg,jpeg,bmp,png',
+                            mimeTypes: 'image/*'
+                        }
+
+                    });
+
+                    picUploader.on('fileQueued', function (file) {
+                        $('#picFileList').html('');
+                        $("#picFilePicker").hide();
+                        var $li = $(
+                                '<div id="' + file.id + '" class="file-item thumbnailreview">' +
+                                    '<img>' +
+                                    '<div class="info">' + file.name + '</div>' +
+                                '</div>'
+                                ),
+                            $img = $li.find('img');
+
+                        // $list为容器jQuery实例
+                        $('#picFileList').append($li);
+
+                        picUploader.makeThumb(file, function (error, src) {
+                            if (error) {
+                                $img.replaceWith('<span>不能预览</span>');
+                                return;
+                            }
+
+                            $img.attr('src', src);
+                        }, 1, 1);
+
+                    });
+
+                    picUploader.on('all', function (type) {
+                        picState = type;
+
+                    });
+
+                    picUploader.on('uploadProgress', function (file, percentage) {
+                        var $li = $('#' + file.id),
+                            $percent = $li.find('.progressText');
+
+                        // 避免重复创建
+                        if (!$percent.length) {
+                            $percent = $('<p class="progressText">正在上传中...</p>')
+                                    .appendTo($li);
+                        }
+
+                    });
+
+                    // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+                    picUploader.on('uploadSuccess', function (file) {
+                        $('#' + file.id).addClass('upload-state-done');
+                        LEAP.Common.MainPop.options.dataTable.fnSettings()._iDisplayStart = 0;
+                        LEAP.Common.MainPop.options.dataTable.fnSettings()._iRecordsTotal = 0;
+                        LEAP.Common.MainPop.options.dataTable.fnDraw();
+                    });
+
+                    // 文件上传失败，显示上传出错。
+                    picUploader.on('uploadError', function (file, code) {
+                        var $li = $('#' + file.id),
+                            $error = $li.find('div.error');
+
+                        // 避免重复创建
+                        if (!$error.length) {
+                            $error = $('<div class="error"></div>').appendTo($li);
+                        }
+
+                        $error.text('上传失败');
+                        artDialog.alert(code);
+                    });
+
+                    // 完成上传完了，成功或者失败，先删除进度条。
+                    picUploader.on('uploadComplete', function (file) {
+                        $('#' + file.id).find('.progressText').remove();
+                        picUploader.reset();
+                        $("#picFilePicker").show();
+                    });
+
+                    picUploader.on("error", function (type) {
+                        if (type == "Q_TYPE_DENIED") {
+                            artDialog.alert("只能上传图片格式的文件!");
+                        } else if (type == "F_EXCEED_SIZE") {
+                            artDialog.alert("上传图片大小不能超过5M");
+                        }
+                    });
+
+                }
+            });
+
+            $('#ImageUploadModal').on('hidden.bs.modal', function () {
+                if (picUploader) {
+                    if (picState === "startUpload" || picState === "uploadProgress") {
+                        picUploader.stop();
+                    }
+                    picUploader.reset();
+                    $('#picFileList').html('');
+                    $("#picFilePicker").show();
+                }
+            })
+
+            // 附件上传
+            $('#AttachmentUploadModal').on('shown.bs.modal', function () {
+
+                if (attaUploader) {
+                    attaUploader.reset();
+                    $('#attaFileList').html('');
+                }
+                else {
+                    attaUploader = WebUploader.create({
+
+                        auto: true,
+
+                        swf: '../scripts/webuploader/Uploader.swf',
+                        // 文件接收服务端。
+                        server: 'PostFile',
+
+                        // 选择文件的按钮。可选。
+                        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                        pick: '#attaFilePicker',
+                        fileNumLimit: 1,
+                        // 附件容量最大100M
+                        fileSingleSizeLimit: 1024 * 1024 * 100,
+                        // 不允许上传相同文件
+                        duplicate: false,
+                        resize: false,
+                        accept: [
+                            {
+                                title: 'Excel',
+                                extensions: 'xlsx,xls,csv'
+                            },
+                            {
+                                title: 'Note',
+                                extensions: 'txt'
+                            },
+                            {
+                                title: 'PowerPoint',
+                                extensions: 'pptx,ppt'
+                            },
+                            {
+                                title: 'Audio',
+                                extensions: 'mp3'
+                            },
+                            {
+                                title: 'Video',
+                                extensions: 'mp4'
+                            },
+                            {
+                                title: 'ZIP',
+                                extensions: 'zip'
+                            },
+                            {
+                                title: 'Word',
+                                extensions: 'docx,doc'
+                            }
+                        ],
+                    });
+
+                    attaUploader.on('fileQueued', function (file) {
+                        $("#attaFilePicker").hide();
+                        $("#stopUpload").removeClass("hidden").addClass("show");
+                        attaFile = file;
+                        $('#attaFileList').html('');
+                        var $li = $(
+                                '<div id="' + file.id + '" class="file-item thumbnailreview">' +
+                                    '<img src="/Content/img/attachment.jpg">' +
+                                    '<div class="info">' + file.name + '</div>' +
+                                '</div>'
+                                )
+                        // $list为容器jQuery实例
+                        $('#attaFileList').append($li);
+
+                    });
+
+                    attaUploader.on('all', function (type) {
+                        attaState = type;
+
+                    });
+
+                    attaUploader.on('uploadProgress', function (file, percentage) {
+                        var $li = $('#' + file.id),
+                            $percent = $li.find('.progressText');
+
+                        // 避免重复创建
+                        if (!$percent.length) {
+                            $percent = $('<p class="progressText">正在上传中...</p>')
+                                    .appendTo($li);
+                        }
+
+                    });
+
+                    attaUploader.on('beforeFileQueued', function (file) {
+                        if (file.name.length > 50) {
+                            attaUploader.reset();
+                            artDialog.alert("文件名过长,请控制在50字符以内!");
+                            return false;
+                        }
+
+                    });
+
+                    // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+                    attaUploader.on('uploadSuccess', function (file) {
+                        $('#' + file.id).addClass('upload-state-done');
+                        LEAP.Common.MainPop.options.dataTable.fnSettings()._iDisplayStart = 0;
+                        LEAP.Common.MainPop.options.dataTable.fnSettings()._iRecordsTotal = 0;
+                        LEAP.Common.MainPop.options.dataTable.fnDraw();
+                    });
+
+                    // 文件上传失败，显示上传出错。
+                    attaUploader.on('uploadError', function (file, code) {
+                        var $li = $('#' + file.id),
+                            $error = $li.find('div.error');
+
+                        // 避免重复创建
+                        if (!$error.length) {
+                            $error = $('<div class="error"></div>').appendTo($li);
+                        }
+
+                        $error.text('上传失败');
+                        artDialog.alert(code);
+                    });
+
+                    // 完成上传完了，成功或者失败，先删除进度条。
+                    attaUploader.on('uploadComplete', function (file) {
+                        $('#' + file.id).find('.progressText').remove();
+                        $("#attaFilePicker").show();
+                        attaUploader.reset();
+                        $("#stopUpload").removeClass("show").addClass("hidden");
+                    });
+
+                    attaUploader.on("error", function (type) {
+                        if (type == "Q_TYPE_DENIED") {
+                            artDialog.alert("上传文件格式不被允许!");
+                        } else if (type == "F_EXCEED_SIZE") {
+                            artDialog.alert("上传文件大小不能超过100M");
+                        }
+                    });
+
+                    $("#stopUpload").on("click", function () {
+                        if (attaState === "startUpload" || attaState === "uploadProgress") {
+                            attaUploader.stop();
+                            attaUploader.cancelFile(attaFile);
+                            $("#attaFilePicker").show();
+                            $("#stopUpload").removeClass("show").addClass("hidden");
+                            $('#' + attaFile.id).find('.progressText').remove();
+                            var $li = $('#' + attaFile.id),
+                            $error = $li.find('div.error');
+
+                            // 避免重复创建
+                            if (!$error.length) {
+                                $error = $('<div class="error"></div>').appendTo($li);
+                            }
+
+                            $error.text('上传中断');
+                        }
+                    });
+
+                }
+            });
+
+            $('#AttachmentUploadModal').on('hidden.bs.modal', function () {
+                if (attaUploader) {
+                    if (attaState === "startUpload" || attaState === "uploadProgress") {
+                        attaUploader.stop();
+                        attaUploader.cancelFile(attaFile);
+                    }
+                    attaUploader.reset();
+                    $('#attaFileList').html('');
+                    $("#attaFilePicker").show();
+                    $("#stopUpload").removeClass("show").addClass("hidden");
+
+                }
+            })
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList" },
+                "aoColumns": [
+                  { "mData": "Id" },
+                  { "mData": "OriginalName" },
+                  { "mData": "FileType" },
+                  { "mData": "FileSize" },
+                  { "mData": "FileName" },
+                  { "mData": "Id" }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                {
+                    "targets": 0,
+                    "render": function (data, type, full, meta) {
+                        return data;
+                    }
+                },
+                {
+                    "targets": 1,
+                    "render": function (data, type, full, meta) {
+                        var fileType = full.FileType.toLowerCase();
+                        if (fileType.indexOf("image") >= 0) {
+                            return '<a href="#" class="imageReview" data-toggle="modal" data-placement="top" title="Picture Review" data-target="#ImageReviewModal" ' +
+                                'onclick="changeReviewPic(\'' + (full.Url + full.FilePath + full.FileName) + '\')">' + data + '</a>';
+                        }
+                        else {
+                            return data;
+                        }
+                    }
+                },
+                {
+                    "targets": 4,
+                    "render": function (data, type, full, meta) {
+                        var fileType = full.FileType.toLowerCase();
+                        if (fileType.indexOf("image") >= 0 || fileType.indexOf("audio") >= 0 || fileType.indexOf("video") >= 0) {
+                            return '<button class="artDailog btn btn-info btn-xs btn-clip" data-text="' + (full.Url + full.FilePath + data) + '" id="clipR' + full.Id + '" >复制链接</button>';
+                        }
+                        else {
+                            return "此文件格式不支持链接复制!";
+                        }
+                    }
+                },
+                {
+                    "targets": 5,
+                    "render": function (data, type, full, meta) {
+                        return '<a href="#" onclick="LEAP.Common.MainPop.RowClick(\'' + data + '\',2)" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">' +
+                               '<i class="fa fa-trash-o"></i></a>';
+                    }
+                }]),
+
+                fnDrawCallback: function () {
+                    $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    $('ul.pagination').append("<li class='paginate_button'><input type='text' style='width:30px;float:left' id='go_page'></li><li class='paginate_button'><a class='gotopage'>Go</a></li>")
+                    $('.gotopage').click(function () {
+                        var gopage = (/^[0-9]+$/).test($('#go_page').val()) ? $('#go_page').val() : "1";
+                        $('.data-table').dataTable().api().page(parseInt(gopage) - 1).draw(false)
+                    })
+                    $('.btn-clip').each(function () {
+                        var text = $(this).attr("data-text");
+                        var clip = new ZeroClipboard.Client(); // 新建一个对象
+                        clip.setHandCursor(true); // 设置鼠标为手型
+                        clip.setText(text); // 设置要复制的文本。
+                        // 注册一个 button，参数为 id。点击这个 button 就会复制。
+                        //这个 button 不一定要求是一个 input 按钮，也可以是其他 DOM 元素。
+                        clip.glue($(this).attr("id"));
+                        clip.addEventListener("complete", function () {
+                            artDialog.alert("Copy success.");
+                        });
+                    });
+                }
+            }));
+
+        });
+
+        function changeReviewPic(src) {
+            $("#picReviewSrc").attr("src", src);
+        }
+
+        //Array.forEach implementation for IE support..
+        //https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/forEach
+        if (!Array.prototype.forEach) {
+            Array.prototype.forEach = function (callback, thisArg) {
+                var T, k;
+                if (this == null) {
+                    throw new TypeError(" this is null or not defined");
+                }
+                var O = Object(this);
+                var len = O.length >>> 0; // Hack to convert O.length to a UInt32
+                if ({}.toString.call(callback) != "[object Function]") {
+                    throw new TypeError(callback + " is not a function");
+                }
+                if (thisArg) {
+                    T = thisArg;
+                }
+                k = 0;
+                while (k < len) {
+                    var kValue;
+                    if (k in O) {
+                        kValue = O[k];
+                        callback.call(T, kValue, k, O);
+                    }
+                    k++;
+                }
+            };
+        }
+    </script>
+<script src="~/Plugins/Innocellence.WechatMain/Scripts/filemanage.js"></script>
+}

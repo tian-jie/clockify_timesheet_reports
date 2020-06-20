@@ -1,0 +1,262 @@
+﻿.message_list {
+    min-width: 800px;
+}
+
+.message_bar {
+    height: 40px;
+    line-height: 40px;
+    color: #d8d8d8;
+    display: block;
+}
+
+    .message_bar .mb_btn {
+        margin: 5px 0 0 5px;
+    }
+
+.float-right {
+    float: right;
+    margin-top: -10px;
+    margin-right: -10px;
+    _display: inline;
+}
+
+
+
+.btn {
+    box-sizing: content-box;
+    display: inline-block;
+    height: 28px;
+    margin: 0;
+    padding: 0 10px;
+    min-width: 30px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 28px;
+    color: #222;
+    border: 1px solid #c8c8c8;
+    border-radius: 2px;
+    background: -moz-linear-gradient(top,#fdfdfd 0,#eff1f4 100%);
+    background: -webkit-linear-gradient(top,#fdfdfd 0,#eff1f4 100%);
+    background: -o-linear-gradient(top,#fdfdfd 0,#eff1f4 100%);
+    background: -ms-linear-gradient(top,#fdfdfd 0,#eff1f4 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FDFDFD', endColorstr='#EFF1F4', GradientType=0);
+    background: linear-gradient(top,#fdfdfd 0,#eff1f4 100%);
+    cursor: default;
+    -webkit-user-select: none;
+}
+
+dd, dl, li, ul {
+    list-style-type: none;
+}
+
+fieldset, ol, p, ul {
+    margin: 0;
+    padding: 0;
+}
+
+.message_filetype_items li {
+    float: left;
+    padding: 0 20px;
+    margin-right: 20px;
+    font-size: 16px;
+    color:#333 ;
+}
+
+.message_filetype_items li a{
+    font-size: 15px;
+}
+
+    .message_filetype_items li:hover a {
+        text-decoration: none;
+    }
+
+    .message_filetype_items li.active, .message_filetype_items li:hover {
+        border-bottom: 3px solid #e73237;
+        color: #222;
+      
+    }
+
+.clear {
+    clear: both;
+    
+}
+/*上传素材图片*/
+.tools a {
+    display: block;
+    margin: 0 13px;
+}
+
+.ace-thumbnails {
+    float: left;
+    width: 160px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+}
+
+    .ace-thumbnails li {
+        width: 160px;
+        height: 160px;
+        overflow: hidden;
+        border: none;
+        float: none;
+    }
+
+        .ace-thumbnails li .material-listimg {
+            display: table;
+            width: 160px;
+            height: 160px;
+            border: 1px solid #ccc;
+      
+        }
+
+        .ace-thumbnails li .material-img {
+            display: table-cell;
+            vertical-align: middle;
+            width: 100%;
+            height: auto;
+        }
+
+            .ace-thumbnails li .material-img img {
+                width: 100%;
+                height: auto;
+            }
+
+.intercept{
+	width: 160px;
+	padding:0 3px ; 
+    text-overflow:ellipsis; 
+    -o-text-overflow:ellipsis; 
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.material-time {
+    font-size: 14px;
+    color: #777;
+}
+
+.img-name {
+    margin: 10px 0;
+    width: 100%;
+    text-align: center;
+}
+
+.widthBreak {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+}
+.material-picname {
+    margin-left: 4px;
+    height: 35px;
+}
+.material-change-picname {
+    width: 100%;
+    margin-left: 2px;
+    height: 34px;
+    line-height: 34px;
+    margin-top: 2px;
+}
+
+/*上传素材语音*/
+.material-voice .item {
+    position: relative;
+    padding: 5px 125px 5px 20px;
+    height: 50px;
+    line-height: 40px;
+    width: 100%;
+    cursor: default;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 14px;
+}
+
+.item-left {
+    float: left;
+}
+
+.item-right {
+    float: right;
+}
+
+.item-right-icon {
+    position: absolute;
+    right: 20px;
+    top: 5px;
+    display: none;
+}
+
+    .item-right-icon a {
+        color: #aaaaaa;
+        display: inline-block;
+        margin-left: 13px;
+        font-size: 18px;
+    }
+
+.voice-bg {
+    border-radius: 4px;
+    padding: 0 10px;
+    margin-top: 3px;
+    margin-right: 15px;
+    width: 160px;
+    height: 33px;
+    border: 1px solid #79a337;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    background-color: #c1dd8c;
+    background-image: -moz-linear-gradient(top, #c1dd8c 0, #a5c561 100%);
+    background-image: -webkit-linear-gradient(#c1dd8c, #a5c561);
+    color: #33470c;
+}
+
+    .voice-bg span {
+        line-height: 33px;
+    }
+
+.displaynone {
+    display: none;
+}
+
+.material-voice-bgcolor {
+    background-color: #cccccc;
+}
+
+.chart-icon {
+    display: inline-block;
+    margin-top: 3px;
+    width: 25px;
+    height: 25px;
+}
+
+.play {
+    background: url('chart.png') no-repeat -5px top;
+}
+
+.pause {
+    background: url('chart.gif') no-repeat -5px top;
+}
+
+/*素材整体*/
+.box-add{
+	background: #fff;
+	min-height: 500px;
+	padding: 20px;	
+}
+
+.widget-box{
+	border: none;
+}
+
+.pagination-mar{
+	margin-right: -15px !important;
+}
+.default-img-box video{
+    width:158px;
+    height: 116px;
+}
+
+pre{
+	white-space: pre-wrap;
+}
+

@@ -1,0 +1,190 @@
+﻿@using Innocellence.WeChatMeeting.Domain.ViewModel;
+@using Innocellence.WeChatMeeting.Domain.Entity;
+@model Innocellence.WeChatMeeting.Domain.ViewModel.MeetingTravelInfoView
+@using Infrastructure.Web.Domain.Service;
+@using System.Linq;
+@section easyui_css
+{
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" type="text/css" />
+    <script src="~/Scripts/ZeroClipboard/ZeroClipboard.js"></script>
+    <script src="/Scripts/wechatab/lib/layer/layer.js"></script>
+
+
+}
+
+<input type="hidden" id="mid" value="@ViewBag.meetingId" />
+<div class="subpage-title">
+    <div class="pull-left">
+        出行信息
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="row" style="margin-top: 65px;">
+    <div class="col-sm-12">
+
+        <form class="form-inline" id="SearchForm" method="post">
+            <div class="form-group">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="txtUserName" placeholder="用户名称">
+                </div>
+                <div data-date-format="yyyy-mm-dd" class="input-append date date-picker" style="display:inline-block;">
+                    <div class="input-group">
+                        <input data-date-format="yyyy-mm-dd" readonly="readonly" type="datetime" name="txtDepartureTime" class="form-control" placeholder="出发时间" />
+                        <span class="input-group-addon">
+                            →
+                        </span>
+                        <input data-date-format="yyyy-mm-dd" readonly="readonly" type="datetime" name="txtArrivalTime" class="form-control" placeholder="到达时间" />
+                    </div>
+                </div>
+                <select name="txtMode" class="form-control">
+                    <option value="0">请选择</option>
+                    <option value="飞机">飞机</option>
+                    <option value="火车">火车</option>
+                    <option value="轮船">轮船</option>
+                </select>
+
+
+                <a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="重置">
+                    <i class="fa fa-remove"></i>
+                </a>
+                <a href="javascript:void(0);" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索">
+                    <i class="fa fa-search"></i>
+                </a>
+            </div>
+
+            <div class="form-group pull-right">
+                @*<a href="javascript:void(0);" class="btn btn-white btn-primary" data-toggle="tooltip" data-placement="top" title="导出" id="btnExport">
+                        <i class="fa fa-download"></i> 导出
+                    </a>
+                *@
+            </div>
+        </form>
+
+        <div class="table-box">
+            <table class="table table-bordered data-table">
+                <thead>
+                    <tr>
+                        <th style="width:10%">@T("用户名称")</th>
+                        <th style="width:8%">@T("出行方式")</th>
+                        <th style="width:20%">@T("航班号/车次/轮船班次")</th>
+                        <th style="width:15%">@T("出行时间")</th>
+                        <th style="width:15%">@T("到达时间")</th>
+                        <th style="width:15%">@T("预计到达时间")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+@section scripts_Foot
+{
+    <script src="~/Scripts/EasyUI/jquery.easyui.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            $('#clear_condition').click(function () {
+
+                $('input[name=txtUserName]').val('');
+                $('input[name=txtDepartureTime]').val('');
+                $('input[name=txtArrivalTime]').val('');
+                $("select[name=txtMode]").val(0);
+
+            });
+
+
+            //datepicker plugin
+            $('input[type="datetime"]').datepicker({
+                autoclose: true,
+                todayHighlight: true,
+                dateFormat: 'yyyy-mm-dd',
+                minDate: -10,
+                maxDate: "+1M +10D",
+                todayBtn: "linked",
+                clearBtn: true
+            });
+
+
+
+            var mid = $("#mid").val();
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetTravelList?meetingId" + mid },
+                "aoColumns": [
+                  { "mData": "UserName", "sClass": "center" },
+                  { "mData": "Mode","sClass": "center" },
+                  { "mData": "Flight_Train", "sClass": "center" },
+                  { "mData": "DepartureTime", "sClass": "center" },
+                  { "mData": "ArrivalTime", "sClass": "center" },
+                  { "mData": "ExpectArrivalTime", "sClass": "center" }
+
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                    {
+                        "targets": 1,
+                        "render": function (data, type, full, meta) {
+                            if (full.Mode == "飞机") {
+                                return "飞机";
+                            }
+                            else if (full.Mode == "火车") {
+                                return "火车";
+                            }
+                            else if (full.Mode == "轮船") {
+                                return "轮船";
+                            }
+                        }
+                    },
+                    {
+                        "targets": 3,
+                        "render": function (data, type, full, meta) {
+                            return ChangeDateFormat(data)
+                        }
+                    },
+                     {
+                         "targets": 4,
+                         "render": function (data, type, full, meta) {
+                             return ChangeDateFormat(data)
+                         }
+                     },
+                ]),
+                fnDrawCallback: function () { $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' }); }
+            }));
+
+
+            LEAP.Common.MainPop.options.afterShowModal = function () {
+
+            };
+
+            LEAP.Common.MainPop.options.afterBindData = function (o) {
+
+
+            };
+
+
+
+        });
+        function ChangeDateFormat(time) {
+            if (time != null) {
+                var date = new Date(time);
+                Y = date.getFullYear() + '年';
+                var month = date.getMonth() + 1 < 10 ? "0" + (date.getMonth() + 1) : date.getMonth() + 1;
+                var currentDate = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+                var h = date.getHours();
+                var minute = date.getMinutes();
+                minute = minute < 10 ? ('0' + minute) : minute;
+
+                //return date.getFullYear() + "/" + month + "/" + currentDate + " " + h + ":" + minute;
+                return date.getFullYear() + "年" + month + "月" + currentDate + "日";
+
+            }
+            return "";
+        }
+    </script>
+}

@@ -1,0 +1,109 @@
+﻿<!--Action boxes-->
+  <div class="row">
+      <div class="col-sm-12">
+          <form class="form-inline" id="SearchForm">
+              <input type="hidden" name="DeptId" id="DeptId" />
+              <div class="form-group">
+                    <select id="txtSubCate" class="form-control" name="txtSubCate" data-placeholder="Please Select Category">
+                        <option value="">Please Select App</option>
+                        
+                    </select>
+                    <a href="#" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+              </div>
+              <div class="form-group pull-right">
+                  <a href="#" class="btn btn-success btn-sm" id="btnAdd" data-toggle="tooltip" data-placement="top" title="增加">
+                      <i class="fa fa-plus"></i>
+                  </a>
+              </div>
+          </form>
+          <div class="clearfix"></div>
+
+          <div class="widget-box">
+              <div class="widget-content nopadding">
+                  <table class="table table-bordered table-hover data-table">
+                      <thead>
+                          <tr>
+                              <th style="width:5%;text-align:center;">@T("ID")</th>
+                              <th style="width:45%;">@T("CategoryName")</th>
+                              <th style="width:10%;">@T("Operation")</th>
+                          </tr>
+                      </thead>
+                  </table>
+              </div>
+          </div>
+
+          
+          <!--/End surveyEdit-->
+      </div>
+ </div>
+
+@section scripts_Foot
+{
+<script src="~/Scripts/bootstrap-colorpicker.js"></script>
+<script src="~/Scripts/ace/elements.colorpicker.js"></script>
+<link rel="stylesheet" href="~/styles/colorpicker.css" />
+
+
+    <script type="text/javascript">
+        $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+        var iIndex=@(ViewBag.CateType == "1"?2:1);
+        $(document).ready(function () {
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": {
+                    "url": "GetList"
+                },
+                "aoColumns": [
+                   {
+                       "mData": 'Id',
+                       "bSortable": false,
+                       "sClass": "sTdCheckbox"
+                   },
+                   {
+                       "mData": "CategoryName"
+                   },
+                  
+                   
+
+                   { "mData": "Operation"}
+                ],
+                "columnDefs": [
+                    //{
+                    //    "targets": iIndex,
+                    //    "render": function (data, type, full, meta) {
+                    //        return '<span class="btn-colorpicker" style="background-color:'+data+'" ></span>  '+data;
+                             
+                    //    }
+                    //},
+                {
+                    "targets": 2,
+                    "render": function (data, type, full, meta) {
+                        return '<a href="#" onclick="ClearCache(\'' + full.CategoryName + '\');return false;" class="artDailog btn btn-info  btn-xs" style="margin-right:10px;" data-toggle="tooltip" data-placement="top" title="清除"><i class="fa fa-pencil"></i></a>';
+                    }
+                }],
+                fnDrawCallback: function () {
+                   
+                    $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    $('#DataTables_Table_0_wrapper > .row:first-child').remove();
+                }
+            }));
+
+            LEAP.Common.MainPop.options.afterShowModal = function () {
+               
+            };
+            $('#colorpicker1').colorpicker();
+
+
+           
+
+        });
+
+        function ClearCache(strKey){
+            $.post("Clear", {strKey:strKey}, function (data) {
+                LEAP.Common.MainPop.options.dataTable.fnSettings()._iRecordsTotal = 0;
+                LEAP.Common.MainPop.options.dataTable.fnDraw();
+            });
+        }
+
+    </script>
+}
+

@@ -1,0 +1,276 @@
+﻿@model Innocellence.Activity.ModelsView.EventEntityView
+@{
+    ViewBag.Title = "活动详情";
+    Layout = "~/plugins/Innocellence.CA/Views/Shared/_wxLayout.cshtml";
+    string limit = Model.MaxUser == 0 ? "无限制" : Model.MaxUser.ToString();
+    string btnStr = "";
+    switch (Model.Status)
+    {
+        case "NotStarted":
+            btnStr = "报名未开始";
+            break;
+        case "Finished":
+            btnStr = "报名已结束";
+            break;
+        case "OverMaxUser":
+            btnStr = "人数已满";
+            break;
+        case "RepeatRegistered":
+            btnStr = "您已报名";
+            break;
+        case "CanceledEvent":
+            btnStr = "活动已取消";
+            break;
+        case "Continue":
+            btnStr = "我要报名";
+            break;
+    }
+}
+@section Header{
+    <link rel="stylesheet" href="~/Plugins/Innocellence.CA/Content/style.css" />
+}
+<style>
+    .btnSmall {
+        width: 45%;
+        float: left;
+    }
+</style>
+<div class="event-detail">
+    <input type="hidden" id="PollingId" name="PollingId" value="@Model.PollingId.GetValueOrDefault()" />
+    <h3>@Model.Name</h3>
+    <div class="col-xs-12 title nopadding-lr">
+        <h4 class="pull-left">时间安排</h4>
+    </div>
+    @if (Model.RegisteredStartedDateTime != null && Model.RegisteredEndedDateTime != null)
+    {
+        <p>
+            报名时间: @Model.RegisteredStartedDateTime.Value.ToString("yyyy-MM-dd HH:mm")&nbsp;&nbsp;
+            <i class="glyphicon glyphicon-resize-horizontal"></i>&nbsp;&nbsp;@Model.RegisteredEndedDateTime.Value.ToString("yyyy-MM-dd HH:mm")
+        </p>
+    }
+    @if (Model.CheckinStartedDateTime != null && Model.CheckinEndedDateTime != null)
+    {
+        <p>
+            签到时间: @Model.CheckinStartedDateTime.Value.ToString("yyyy-MM-dd HH:mm")&nbsp;&nbsp;
+            <i class="glyphicon glyphicon-resize-horizontal"></i>&nbsp;&nbsp;@Model.CheckinEndedDateTime.Value.ToString("yyyy-MM-dd HH:mm")
+        </p>
+    }
+    <p>
+        活动时间: @Model.StartedDateTime.ToString("yyyy-MM-dd HH:mm")&nbsp;&nbsp;
+        <i class="glyphicon glyphicon-resize-horizontal"></i>&nbsp;&nbsp;@Model.EndedDateTime.ToString("yyyy-MM-dd HH:mm")
+    </p>
+
+    <div class="col-xs-12 title nopadding-lr">
+        <h4 class="pull-left">基本信息</h4>
+    </div>
+
+    <p><i class="glyphicon glyphicon-user"></i>&nbsp; 人数限制: @limit</p>
+    <p><i class="glyphicon glyphicon-map-marker"></i>&nbsp; 活动地点: @Model.Location</p>
+    <p><i class="glyphicon glyphicon-list-alt"></i>&nbsp; 活动内容: @Model.Desc</p>
+
+    <div class="col-xs-12 nopadding-lr mb10" id="btn_area">
+        @if (Model.PollingId.GetValueOrDefault() == 0)
+        {
+            if (Model.Status.Equals("Continue"))
+            {
+                <a href="javascript:void(0);" class="btn btn-info" id="btnRegister" type="button" data-event="@Model.Id">@btnStr</a>
+                <a class="btn btn-danger" type="button" data-event="@Model.Id" id="cancel" style="width:45%;display:none;float:right">取消报名</a>
+            }
+            else if (Model.Status.Equals("RepeatRegistered"))
+            {
+                <a href="javascript:void(0);" class="btn btn-danger disabled btnSmall" id="btnRegister" type="button" data-event="@Model.Id" disabled="disabled">@btnStr</a>
+                <a class="btn btn-danger" type="button" data-event="@Model.Id" id="cancel" style="width:45%;display:block;float:right">取消报名</a>
+            }
+            else
+            {
+                <a href="javascript:void(0);" class="btn btn-danger disabled" id="btnRegister" type="button" data-event="@Model.Id" disabled="disabled">@btnStr</a>
+            }
+        }
+        else
+        {
+            if (Model.Status.Equals("Continue"))
+            {
+                <a class="btn btn-info" id="btnRegister" type="button" data-event="@Model.Id"
+                   data-toggle="modal">@btnStr</a>
+                <a class="btn btn-danger" type="button" data-event="@Model.Id" id="cancel" style="width:45%;display:none;float:right">取消报名</a>
+            }
+            else if (Model.Status.Equals("RepeatRegistered"))
+            {
+                <a class="btn btn-danger disabled btnSmall" id="btnRegister" type="button" data-event="@Model.Id" disabled="disabled"
+                   data-toggle="modal">@btnStr</a>
+                <a class="btn btn-danger" type="button" data-event="@Model.Id" id="cancel" style="width:45%;display:block;float:right">取消报名</a>
+            }
+            else
+            {
+                <a class="btn btn-danger disabled" id="btnRegister" type="button" data-event="@Model.Id" disabled="disabled"
+                   data-toggle="modal">@btnStr</a>
+            }
+        }
+    </div>
+</div>
+
+<!-- Modal Begain-->
+<div class="modal fade" id="polling_modal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-title">活动投票</h4>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+
+@section scripts_Foot{
+    @*<script src="~/plugins/Innocellence.CA/Content/js/ImgPreview.js"></script>*@
+    <script type="text/javascript">
+        $(function () {
+            $("#cancel").on("click", function () {
+                $.ajax({
+                    type: "Post",
+                    url: "/EventManage/EventCancel",
+                    data: { pollingId: $('#PollingId').val(), eventId: $('#btnRegister').data("event") },
+                    success: function (result) {
+                        if (result != null) {
+                            var rtn = result.Message.Text;
+                            if (rtn == "成功") {
+
+                                var d = dialog({
+                                    title: '提示',
+                                    content: "取消成功",
+                                    okValue: 'ok',
+                                    ok: function () {
+                                        window.location.href = "EventDetail?eventId=" + $('#btnRegister').data("event");
+                                    }
+                                });
+                                d.show();
+                                //setTimeout(function () {
+
+                                //}, 1000);
+                                //$('#btnRegister').text("我要报名");
+                                //$('#btnRegister').removeClass('disabled');
+                                //$('#btnRegister').removeAttr("disabled");
+                                //$('#btnRegister').removeClass('btn-danger').addClass('btn-info');
+                                //$("#cancel").css("display", "none");
+                                //$("#btnRegister").removeClass("btnSmall");
+                            }
+                            else {
+                                var d = dialog({
+                                    title: '提示',
+                                    content: rtn,
+                                    okValue: 'ok',
+                                    ok: function () {
+                                    }
+                                });
+                                d.show();
+                            }
+                        }
+
+                    }
+                })
+            });
+
+            $('#polling_modal').on("show.bs.modal", function () {
+                //请求前清除一次
+                $('#polling_modal .modal-body').html('<img id="loading" src="/content/img/loading.gif" />');
+                //取polling页面
+                $.ajax({
+                    type: "Get",
+                    url: "/Activity/Polling/WxVoteMain",
+                    data: { id: $('#PollingId').val(), eventId: $('#btnRegister').data("event") },
+                    success: function (data) {
+                        $('#polling_modal .modal-body').html(data);
+                        //$.getScript('/Plugins/Innocellence.Activity/Content/js/FrontPolling.js?ver=20161112');
+                        $.getScript('/Plugins/Innocellence.CA/Content/js/ImgPreview.js');
+
+                        var script = document.createElement('script');
+                        script.src = '/Plugins/Innocellence.Activity/Content/js/FrontPolling.js?ver=20161112';
+
+                        document.head.appendChild(script);
+                        $("#btnRegister").addClass("btnSmall");
+                        $("#cancel").css("display", "block");
+                    }
+                });
+
+            });
+
+            $('#polling_modal').on("hide.bs.modal", function () {
+                artDialog.alert("报名成功,请留意活动开始时间!");
+            });
+
+            $('#btnRegister').on('click', function () {
+                Register().done(function () {
+                    
+                    if ($('#PollingId').val() != "0") {
+                        $('#polling_modal').modal();
+                    }
+                });
+            });
+
+            function Register() {
+                $('#btnRegister').attr("disabled", "disabled");
+                $("#btnRegister").addClass("btnSmall");
+                var deffered = $.Deferred();
+
+                $.ajax({
+                    type: "Get",
+                    url: "/EventManage/EventRegister",
+                    data: { eventId: $('#btnRegister').data("event") },
+                    success: function (result) {
+                        if (result != null) {
+                            var btnStr = "";
+                            var status = result.Message.Text.split(";")[0];
+                            var errmsg = result.Message.Text.split(";")[1];
+                            //根据状态去改变UI
+                            switch (status) {
+                                case "NotStaContinuerted":
+                                    btnStr = "报名未开始";
+                                    break;
+                                case "Finished":
+                                    btnStr = "报名已结束";
+                                    break;
+                                case "OverMaxUser":
+                                    btnStr = "人数已满";
+                                    break;
+                                case "RepeatRegistered":
+                                    btnStr = "您已报名";
+                                    break;
+                                case "Success":
+                                    btnStr = "您已报名";
+                                    deffered.resolve();
+                                    //return;
+                                    break;
+                                case "CanceledEvent":
+                                    btnStr = "活动已取消";
+                                    break;
+                            }
+                            $('#btnRegister').text(btnStr);
+                            $('#btnRegister').addClass('disabled');
+                            $('#btnRegister').removeClass('btn-info').addClass('btn-danger');
+
+                            if ($('#PollingId').val() != "0" && status != "Success") {
+                                artDialog.alert(errmsg);
+                            }
+                            if ($('#PollingId').val() == "0") {
+                                artDialog.alert(errmsg);
+                            }
+                            if (status == "Success") {
+                                $("#cancel").css("display", "block");
+                            }
+                            else
+                            {
+                                $("#btnRegister").removeClass("btnSmall");
+                                $("#cancel").css("display", "none");
+                            }
+                        }
+                    }
+
+                });
+                
+                return deffered;
+            }
+        });
+    </script>
+}
+

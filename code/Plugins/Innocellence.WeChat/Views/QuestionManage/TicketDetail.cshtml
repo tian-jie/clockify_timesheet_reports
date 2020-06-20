@@ -1,0 +1,94 @@
+﻿﻿@using Innocellence.WeChat.Domain.Entity
+@model Innocellence.WeChat.Domain.ModelsView.QuestionManageView
+@{
+    ViewBag.Title = "详细内容";
+    Layout = "~/plugins/Innocellence.WeChat/Views/Shared/_wxLayout.cshtml";
+}
+@section Header{
+
+    <link rel="stylesheet" href="~/plugins/Innocellence.WeChat/Content/style.css?v=20160413">
+
+}
+<style>
+    #wx_div {
+        height: 100%;
+    }
+</style>
+
+<div class="container" style="margin-top:-30px;">
+
+    @if (Model.IsDeleted.Value)
+    {
+        <span class="text-center">@T("此Ticket已被删除")</span>
+    }
+    else
+    {
+        <div class="imgfix">
+            <img src="~/plugins/Innocellence.WeChat/Content/img/ithelp.png" class="img-responsive center-block" id="showmodal" data-toggle="modal" data-target="#myModal" onclick="1" />
+        </div>
+        <div class="createddate">
+            @if (Model.CreatedDate.HasValue)
+            {
+                <span>@Model.CreatedDate.Value.ToString("yyyy-MM-dd")</span>
+            }
+        </div>
+        <div id="questiondetail" class="panel panel-default">
+            <div class="panel-heading">
+                <div class="col-xs-4 nopadding-lr"><em class="glyphicon glyphicon-question-sign"></em>&nbsp;&nbsp; 问题</div>
+                <div class="col-xs-4 nopadding-lr"><em class="glyphicon glyphicon-user"></em>&nbsp;&nbsp;提问者</div>
+                <div class="col-xs-4 nopadding-lr">@Model.CreatedUserId</div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <p>@Model.Question</p>
+
+                @if (Model.QuestionImages != null && Model.QuestionImages.Count > 0)
+                {
+
+                    foreach (var entity in Model.QuestionImages)
+                    {
+
+                        <div class="col-xs-4 nopadding-lr" style="height:60px;margin-bottom: 8px">
+                            <img src="/Common/QuestionFile?id=@entity.Id&filename=@entity.ImageName" style="height:60px" />
+
+                        </div>
+
+                    }
+
+                }
+            </div>
+            <div class="clearfix"></div>
+
+        </div>
+
+        <div id="answerdetail" class="panel panel-default">
+            <div class="panel-heading">
+                <div class="col-xs-4 nopadding-lr">
+                    <em class="glyphicon glyphicon-ok-sign"></em> &nbsp;&nbsp;单号
+                </div>
+                <div class="col-xs-4 nopadding-lr"><em class="glyphicon glyphicon-user"></em>&nbsp;&nbsp;回答者</div>
+                @if (@Model.Status.Trim() == "未开单")
+                {
+
+                }
+                else
+                {
+                    <span class="col-xs-4 nopadding-lr">@Model.UpdatedUserId</span>
+                }
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <span>@Model.Answer</span>
+            </div>
+        </div>
+    }
+</div>
+
+@section scripts_Foot{
+    <script src="~/Scripts/Common/ImgPreview.js" type="text/javascript"></script>
+}
+
+
+
+
+

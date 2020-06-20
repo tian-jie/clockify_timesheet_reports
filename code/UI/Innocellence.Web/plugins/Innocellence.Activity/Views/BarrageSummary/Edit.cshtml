@@ -1,0 +1,130 @@
+﻿@model Innocellence.Activity.Contracts.ViewModel.BarrageSummaryView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="ModalTable">
+    <form method="POST" id="ff" class="form-horizontal" action="Post">
+        <input type="hidden" id="ID" name="ID" value="@Model.Id" />
+        <input type="hidden" id="AppId" name="AppId" value="@ViewBag.appid" />
+
+        <div class="form-group col-lg-12">
+            <label class="col-lg-2 nopd-lr control-label">标题 :</label>
+            <div class="col-lg-10">
+                <textarea name="Title" id="Title" class="form-control" placeholder="标题" style="min-height: 110px; text-align: left; padding-left: 4px;"
+                    validate="{required:true,maxlength:250,messages:{required:'请填写标题',maxlength:'标题长度太长'}}">@Model.Title</textarea>
+            </div>
+        </div>
+
+        <div class="form-group col-lg-12">
+            <label class="col-lg-2 nopd-lr control-label">关键字 :</label>
+            <div class="col-lg-10">
+                @if(Model.IsEnabled!=null && Model.IsEnabled.Value)
+                 {
+                     <textarea name="Keyword" id="Keyword" class="form-control disabled" placeholder="关键字" style="min-height: 60px; text-align: left; padding-left: 4px;" disabled="disabled"
+                         validate="{required:false,maxlength:30,messages:{maxlength:'关键字长度太长.'}}">@Model.Keyword</textarea>
+                }
+                 else
+                 {
+                     <textarea name="Keyword" id="Keyword" class="form-control" placeholder="关键字" style="min-height: 60px; text-align: left; padding-left: 4px;"
+                         validate="{required:false,maxlength:30,messages:{maxlength:'关键字长度太长.'}}">@Model.Keyword</textarea>
+                }
+                 <span>（此关键字可以不填，同等条件下，有关键字的优先被命中）</span>
+            </div>
+        </div>
+
+        @*<div class="form-group col-lg-12 keyword">
+            <label class="col-lg-2  nopd-lr control-label">是否生效 :</label>
+            <div class="col-lg-10">
+                @if(Model.IsEnabled!=null)
+                {
+                    <input name="IsEnabled" id="IsEnabled" type="hidden" value="@Model.IsEnabled.Value.ToString()" />
+                }
+                else
+                {
+                    <input name="IsEnabled" id="IsEnabled" type="hidden" value="False" />
+                }
+                <label style="margin-top: 8px;">
+                    @if(Model.IsEnabled!=null)
+                    {
+                        if (Model.IsEnabled.Value)
+                        {
+                            <input name="IsEnable" id="IsEnable" class="ace ace-switch ace-switch-2" type="checkbox" checked="checked" />
+                    }
+                        else
+                        {
+                            <input name="IsEnable" id="IsEnable" class="ace ace-switch ace-switch-2" type="checkbox" />
+                    }
+                    }
+                    else
+                    {
+                        <input name="IsEnable" id="IsEnable" class="ace ace-switch ace-switch-2" type="checkbox" />
+                    }
+                    <span class="lbl"></span>
+                </label>
+            </div>
+        </div>
+        *@
+
+        <div class="form-group col-lg-12">
+            <label class="col-lg-2 nopd-lr control-label">回复文字 :</label>
+            <div class="col-lg-10">
+                <textarea name="ReturnText" id="ReturnText" class="form-control" placeholder="回复文字"
+                    style="min-height: 60px; text-align: left; padding-left: 4px;" validate="{required:true,maxlength:255,messages:{required:'请输入回复文字',maxlength:'回复文字长度太长.'}}">@Model.ReturnText</textarea>
+            </div>
+        </div>
+
+        <div class="col-lg-9 col-lg-offset-3" style="margin-top: 15px;">
+            <button type="submit" id="btnSubmit" class="btn btn-success">保存</button>
+        </div>
+    </form>
+</div>
+
+@section scripts_Foot
+{
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            var validator = $('#ff').validate();
+
+            $('#btnSubmit').attr('disabled', false);
+
+            $('#ff').submit(function () {
+                if (!validator.form()) {
+                    return false;
+                }
+            });
+
+            $('#IsEnable').click(function () {
+                if ($(this).is(":checked")) {
+                    $("#IsEnabled").val("True");
+                    $(this).attr("checked", "checked");
+                } else {
+                    $("#IsEnabled").val("False");
+                    $(this).attr("checked", false);
+                }
+            });
+
+            //页面成功后跳转
+            LEAP.Common.MainPop.options.fnAfterSuccess = function () {
+                window.location.href = 'Index?appId=' + $("#AppId").val();
+            };
+
+            LEAP.Common.MainPop.options.beforePost = function (postData) {
+                var repeater = false;
+                $.each(postData, function (i, item) {
+                    if (item.name == 'Keyword') {
+                        repeater = true;
+                        return;
+                    }
+                });
+                if (repeater == false) {
+                    postData.push({ name: "Keyword", value: $('#Keyword').val() });
+                }
+            };
+
+        });
+        
+    </script>
+}

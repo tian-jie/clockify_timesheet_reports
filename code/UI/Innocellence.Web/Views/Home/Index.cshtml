@@ -1,0 +1,298 @@
+﻿@using Infrastructure.Web.Domain.Entity;
+@{
+    ViewBag.Title = "AccountManage";
+    Layout = "~/Views/Shared/_LayoutNoMenu.cshtml";
+}
+<div class="select-chart">选择微信号</div>
+
+@{
+            if (ViewBag.Company != null && ViewBag.Company.Count > 0)
+            {
+        <div class="chart-part">
+            <h4>企业号</h4>
+            <div id="qy_Content">
+                @foreach (var item in ViewBag.Company)
+                {
+                    <div class="choselogo">
+                        <a class="chart-NO boder-blue AccountItem" data-accountid="@item.Id">
+                            <img src="@item.AccountLogo" />
+                            <p class="bg-blue widthBreak" style="cursor: pointer">@item.AccountName</p>
+                        </a>
+                    </div>
+
+                }
+            </div>
+            <div class="clear"></div>
+        </div>
+    }
+
+}
+
+@{
+    @*var User = Session["UserInfo"] as Infrastructure.Web.Domain.Entity.SysUser;
+                if (User.Apps.Contains(-1))
+                {
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-xs-12">
+                        <a class="chart-NO boder-gray " data-toggle="modal" data-placement="top" id="UploadBtn_0" data-accounttype="0" href="#adds">
+                            <div class="add-chart-NO">
+                                <i class="ace-icon glyphicon glyphicon-plus bigger-150"></i>
+                                <br />
+                                <span>添加</span>
+                            </div>
+
+                        </a>
+                    </div>
+        }*@
+}
+
+
+
+@{
+    var user = Session["UserInfo"] as SysUser;
+    if (user.Apps.Contains(-2))
+    {
+        if (ViewBag.Service != null && ViewBag.Service.Count > 0)
+        {
+            <div class="chart-part">
+                <h4>服务号</h4>
+                <div id="service_Content">
+                    @foreach (var item in ViewBag.Service)
+                    {
+                        <div class="choselogo">
+                            <a class="chart-NO boder-green AccountItem" data-accountid="@item.Id">
+                                <img src="@item.AccountLogo" />
+                                <p class="bg-green widthBreak" style="cursor: pointer">@item.AccountName</p>
+                            </a>
+                        </div>
+                    }
+                    @if (user != null && user.Apps != null && user.Apps.Contains(-2))
+                    {
+                        <div class="choselogo">
+                            <a class="chart-NO boder-gray " data-toggle="modal" data-placement="top" id="UploadBtn_0" data-accounttype="0" href="#adds">
+                                <div class="add-chart-NO">
+                                    <i class="ace-icon glyphicon glyphicon-plus bigger-150"></i>
+                                    <br />
+                                    <span>添加</span>
+                                </div>
+
+                            </a>
+                        </div>
+                    }
+
+                </div>
+                <div class="clear"></div>
+            </div>
+        }
+        else
+        {
+            if (user != null && user.Apps != null && user.Apps.Contains(-2))
+                    {
+                <div class="chart-part">
+                    <h4>服务号</h4>
+                    <div id="service_Content">
+                        <div class="choselogo">
+                            <a class="chart-NO boder-gray " data-toggle="modal" data-placement="top" id="UploadBtn_0" data-accounttype="0" href="#adds">
+                                <div class="add-chart-NO">
+                                    <i class="ace-icon glyphicon glyphicon-plus bigger-150"></i>
+                                    <br />
+                                    <span>添加</span>
+                                </div>
+
+                            </a>
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            }
+
+        }
+
+    }
+    else
+    {
+        if (ViewBag.Service != null && ViewBag.Service.Count > 0)
+        {
+            <div class="chart-part">
+                <h4>服务号</h4>
+                <div id="service_Content">
+                    @foreach (var item in ViewBag.Service)
+                    {
+                        <div class="choselogo">
+                            <a class="chart-NO boder-green AccountItem" data-accountid="@item.Id">
+                                <img src="@item.AccountLogo" />
+                                <p class="bg-green widthBreak" style="cursor: pointer">@item.AccountName</p>
+                            </a>
+                        </div>
+                    }
+                </div>
+                <div class="clear"></div>
+            </div>
+        }
+    }
+
+}
+
+<div id="adds" class="modal" tabindex="-1" role="dialog" aria-labelledby="myLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="blue bigger" id="myLabel">新建服务号管理</h4>
+            </div>
+
+            <div class="modal-body container-fluid">
+                <div class="form-group row">
+                    <label class="col-md-3">名称</label>
+                    <input class="col-md-8" id="AccountName" name="AccountName" type="text" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">描述</label>
+                    <input class="col-md-8" id="AccountDescription" name="AccountDescription" type="text" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">AppID(应用ID)</label>
+                    <input class="col-md-8" id="WeixinAppId" name="WeixinAppId" type="text" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">AppSecret<br>(应用密钥)</label>
+                    <input class="col-md-8" id="WeixinCorpSecret" name="WeixinCorpSecret" type="text" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">Token(令牌)</label>
+                    <input class="col-md-8" id="WeixinToken" name="WeixinToken" type="text" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">EncodingAESKey<br>(消息加解密密钥)</label>
+                    <input class="col-md-8" id="WeixinEncodingAESKey" name="WeixinEncodingAESKey" type="text" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">服务号图标</label>
+                    <input class="col-md-8" id="AccountLogo" name="AccountLogo" type="file" accept="image/gif, image/png, image/bmp, image/jpeg" />
+                </div>
+                <div class="form-group row">
+                    <label class="col-md-3">二维码</label>
+                    <input class="col-md-8" id="QrCode" name="QrCode" type="file" accept="image/gif, image/png, image/bmp, image/jpeg" />
+                </div>
+                <input id="AccountType" type="hidden" name="AccountType" value="1" />
+            </div>
+            <div class="modal-footer">
+                <button id="modal_Submit" class="btn  btn-success">确认</button>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script>
+    $(function () {
+        $(".AccountItem").on("click", function () {
+            createCookie("AccountManageId", $(this).data("accountid"), 1);
+            window.location.href = "/WeChatMain/Home/index?AccountManageid=" + $(this).data("accountid");
+        });
+
+        $('#adds').on('show.bs.modal', function (e) {
+            var value = $(e.relatedTarget).attr('data-accounttype');
+            $("#AccountType").val(value);
+            $('#AccountName').val('');
+            $('#AccountDescription').val('');
+            $('#CorpId').val('');
+            $('#AccountLogo').val('');
+            $('#QrCode').val('');
+        });
+
+        $("#modal_Submit").on('click', function () {
+            var data = new FormData();
+            data.append("AccountName", $('#AccountName').val());
+            data.append("AccountDescription", $('#AccountDescription').val());
+            data.append("WeixinAppId", $('#WeixinAppId').val());
+            data.append("WeixinCorpSecret", $('#WeixinCorpSecret').val());
+            data.append("WeixinToken", $('#WeixinToken').val());
+            data.append("WeixinEncodingAESKey", $('#WeixinEncodingAESKey').val());
+            data.append("AccountLogo", $('#AccountLogo')[0].files[0]);
+            data.append("QrCode", $('#QrCode')[0].files[0]);
+            data.append("AccountType", 1);
+            $.ajax({
+                method: "POST",
+                url: "Home/AddAccountManages",
+                contentType: false,
+                processData: false,
+                data: data
+            }).done(function (resp) {
+                if (resp.result == 200) {
+                    $('#adds').modal('hide');
+                    var type = $("#AccountType").val();
+                    var target, color;
+                    if (type == 0) {
+                        target = $("#qy_Content");
+                        color = 'blue';
+                    }
+                    else {
+                        target = $("#service_Content");
+                        color = 'green';
+                    }
+                    var html = '';
+                    for (var i in resp.data) {
+                        html += template(resp.data[i], color);
+                    }
+                    target.html(html);
+                    //location.reload();
+                }
+            });
+        });
+    });
+
+    var template = function (data, color) {
+        return '<div class="col-lg-2 col-md-3 col-sm-4 col-xs-12">' +
+                                '<a class="chart-NO boder-' + color + ' AccountItem" data-accountid="' + data.AccountType + '">' +
+                                    '<img src="' + data.AccountLogo + '" />' +
+                                    '<p class="bg-' + color + ' widthBreak">' + data.AccountName + '</p>' +
+                                '</a>' +
+                            '</div>';
+    }
+
+    function uploadPicture() {
+
+        $.ajax({
+            url: "Home/UploadPicture",
+            async: false,
+            type: "GET",
+            data: {
+                file: speakerId,
+                meetingId: meetingId,
+            },
+            success: function (data) {
+                var obj = eval(data);
+                var textSpeakerId = document.getElementById("SpeakerIdCurrent");
+                textSpeakerId.setAttribute("value", obj.Id);
+
+                var SpeakerId = document.getElementById("SpeakerId");
+                var textSpeakerName = document.getElementById("SpeakerName");
+                if (textSpeakerId == SpeakerId) {
+                    textSpeakerName.setAttribute("value", "Select a speaker or fill details manually");
+                }
+                else {
+                    textSpeakerName.setAttribute("value", obj.Name);
+                }
+
+
+                var textSpeakerHospitalName = document.getElementById("SpeakerHospitalName");
+                textSpeakerHospitalName.setAttribute("value", obj.HospitalName);
+
+                var textSpeakerUrl = document.getElementById("SpeakerUrl");
+                textSpeakerUrl.setAttribute("value", obj.Url);
+
+                var textSpeakerDescription = document.getElementById("SpeakerDescription");
+                textSpeakerDescription.innerText = obj.Description == null ? "" : obj.Description;
+
+                var textSpeakerImageUrl = document.getElementById("SpeakerImageUrl");
+                textSpeakerImageUrl.setAttribute("value", obj.ImageUrl);
+
+                var textSpeakerImageUrl = document.getElementById("img");
+                textSpeakerImageUrl.setAttribute("src", obj.ImageUrl);
+            }
+        });
+        return result;
+    }
+</script>

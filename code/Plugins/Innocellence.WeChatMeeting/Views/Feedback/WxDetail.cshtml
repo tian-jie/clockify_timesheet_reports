@@ -1,0 +1,66 @@
+﻿﻿@using Innocellence.WeChat.Domain.Entity
+@model Innocellence.WeChat.Domain.ModelsView.FeedBackView
+@{
+    ViewBag.Title = "互动问答";
+    Layout = "/plugins/Innocellence.WeChat/Views/Shared/_wxLayout.cshtml";
+}
+
+<style type="text/css">
+    .sendButtonArea {
+        text-align:right;
+        line-height:60px;
+    }
+</style>
+<form id="feedbackForm" method="POST" class="form-horizontal container">
+    <div class="row">
+        <div class="col-xs-12">
+            <img src="~/plugins/Innocellence.WeChat/Content/img/AskJohn.jpg" class="img-responsive center-block" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <input type="hidden" id="MenuCode" name="MenuCode" value="@ViewBag.MenuCode" />
+            <input type="hidden" id="AppID" name="AppID" value="@ViewBag.AppID" />
+            <textarea id="Content" name="Content" cols="10" rows="10" class="form-control" placeholder="请输入您的问题(5个字以上，500个字以下)" maxlength="500"></textarea>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12 sendButtonArea">
+            <button id="btnSend" type="button" class="btn btn-info">
+                <span class="glyphicon glyphicon-send" aria-hidden="true"></span> Send
+            </button>
+        </div>
+    </div>
+</form>
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $("#btnSend").click(function () {
+            $("#btnSend").attr("disabled", "disabled");
+            if ($("#Content").val().trim().length < 5) {
+                artDialog.alert("请输入您的问题，并且至少5个字符哦。");
+                $("#btnSend").removeAttr("disabled");
+                return false;
+            }
+            if ($("#Content").val().trim().length > 500) {
+                artDialog.alert("您的问题太长啦，老板日理万机，没空看哦。");
+                $("#btnSend").removeAttr("disabled");
+                return false;
+            }
+            var form = $('#feedbackForm').serializeArray();
+            $.post('Create', form, function (data) {
+                $("#btnSend").removeAttr("disabled");
+                if (data != null) {
+                    if (data.str.indexOf('Success') > 0) {
+                        artDialog.alert(data.msg);
+                        $("#Content").val("");                        
+                    }
+                    else if (data.str.indexOf('Failed') > 0) {
+                        artDialog.alert(data.msg);
+                    }
+
+                } 
+            });
+        });
+    </script>
+}

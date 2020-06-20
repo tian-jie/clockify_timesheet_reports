@@ -1,0 +1,138 @@
+﻿<!--Action boxes-->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="modal-body">
+            <form class="form-horizontal" id="SearchForm">
+                <div class="row">
+                    <div class="form-group col-sm-3">
+                        <label class="col-sm-2 control-label" style="text-align:left">DB:</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" name="txtConn" id="txtConn">
+                                <option value="DefaultConnection">Platform</option>
+                                <option value="CAAdmin">WeChat</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group col-sm-9">
+                        <label class="col-sm-2 control-label right-align" style="text-align: right;">SQL:</label>
+                        <div class="col-sm-10">
+                            <textarea style="width:100%; height:100px" name="strSql" id="strSql"></textarea>
+
+
+                            <a href="#" class="btn  btn-sm" id="btnExe" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            </div>
+            <div class="widget-box">
+                <div class="widget-content nopadding">
+                    <table class="table table-bordered table-hover data-table">
+                        <thead>
+                            <tr>
+                                <th style="width:5%;text-align:center">@T("ID")</th>
+                                <th>@T("Content")</th>
+                                <th>@T("Type")</th>
+                                <th>@T("Created Date")</th>
+                                <th>@T("UserID")</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+</div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+
+        $('#btnExe').on('click', function () {
+
+            var text = $('#strSql').val().trim();
+            if (text.indexOf('select') != 0) {
+
+                $.get("GetList", { "strSql": text, txtConn: $('#txtConn').val() }, function (data) {
+                    alert(data);
+                });
+
+                return;
+            }
+
+
+            $.get("GetListFirst", { "strSql": text, txtConn: $('#txtConn').val() }, function (data) {
+                // alert(data);
+
+                if (data == null || data == '') {
+                    data = "id,name";
+                }
+                var a = data.split(',');
+                var strHtml = '<thead><tr>';
+                var dd = [];
+                $.each(a, function (i, item) {
+
+                    dd.push({ "mData": item });
+
+                    strHtml += '<th>' + item + '</th>';
+
+                });
+
+                strHtml += '</tr></thead>';
+                $('.data-table').html(strHtml);
+
+                $('.data-table').DataTable().destroy();
+                GetList(dd);
+                //LEAP.Common.MainPop.TableSearchClick();
+            });
+
+
+
+
+
+
+        });
+
+        function GetList(aoColumns) {
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": {
+                    "url": "GetList"
+                },
+                "aoColumns": aoColumns,
+                "columnDefs": [
+                {
+                    "targets": 1,
+                    "render": function (data, type, full, meta) {
+                        return data;
+                    }
+                }],
+                fnDrawCallback: function () {
+                    $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    $('#DataTables_Table_0_wrapper > .row:first-child').remove();
+                    $('ul.pagination').append("<li class='paginate_button'><input type='text' style='width:30px;float:left' id='go_page'></li><li class='paginate_button'><a class='gotopage'>Go</a></li>")
+                    $('.gotopage').click(function () {
+                        var gopage = (/^[0-9]+$/).test($('#go_page').val()) ? $('#go_page').val() : "1";
+                        $('.data-table').dataTable().api().page(parseInt(gopage) - 1).draw(false)
+                    })
+                }
+            }));
+
+        }
+
+        //datepicker plugin
+        $('.date-picker').datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'yyyy-mm-dd',
+            minDate: -10,
+            maxDate: "+1M +10D",
+        })
+        //.next().on(ace.click_event, function () {
+        //    $(this).prev().focus();
+        //});
+
+    </script>
+}

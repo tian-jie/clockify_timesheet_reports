@@ -1,0 +1,232 @@
+#grouplist{ 
+
+    select{
+        width: 120px;
+        margin-right: 5px;
+    } 
+    
+    .line-h{
+        line-height: 32px;
+    }
+     
+    .user-title{
+        margin-top: 15px;
+        margin-bottom: 22px;
+        
+    }
+      
+    .user{
+        display: block;
+        margin-bottom: 10px;
+        padding-left: 10px;
+        line-height: 1;
+        font-size: 15px;
+        color: #333;
+    }
+        
+    .user-add{
+        margin-bottom: 5px;
+        margin-top: 50px;
+
+    }
+           
+    .tag-manage{  
+        width: 100%;
+        text-align: right;
+    }
+    
+    .user-tag{
+        position: relative;
+        width: 100%;
+        padding: 10px 0 10px 100px;
+        border-bottom: 1px dotted #ccc;
+        min-height: 50px;
+        
+        &:last-child{
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .tag-title{
+            position: absolute;
+            left: 0;
+            top: 10px;
+            text-align: right;
+            font-weight: bolder;
+            width: 90px; 
+            height: 30px;
+            line-height: 30px;        
+        }
+
+    }
+    
+    .tag{
+        margin-left: 0;
+        margin-bottom: 0;
+        
+        li{
+            float: left;
+            list-style: none;
+            padding: 0 29px;
+            height: 30px;
+            line-height: 30px;
+            cursor: pointer ;
+           
+            
+            p{float: left;}
+            
+            .import{
+                float: left;
+                display: none;                   
+                .input-small{
+                   width: 103px;
+                   height: 24px;
+                   margin-top: 3px;
+                   padding: 1px 4px 2px !important; 
+                   border: 1px solid red;
+                }
+            }
+                                 
+            &:hover{
+                background: #ee4b46;
+                color: #fff;
+                 }
+        }
+    }
+    
+    .tag-rename,.tag-delete{
+        float: right;
+        padding-left: 5px;
+        display: none ;
+    }
+    
+   .tag-edit-all{
+       margin-top: 20px;
+   }
+   
+   .tag-class{
+       background: #f6f6f6;
+       min-height: 200px;
+       margin-bottom: 20px;
+       padding: 10px 0 10px 10px;
+        
+        .tag-class-add{
+            display: block;
+
+            color: #ee4b46;
+            text-decoration: none;
+            span{
+                font-size: 20px;
+            }
+            
+            &:hover,{
+                background: #fff;
+//              background-color: inherit;
+            }
+        }
+        
+        ul{
+           list-style: none;
+           margin-left: 0px;
+           margin-top: 5px;
+           
+           li{
+               padding: 5px;
+               margin-bottom: 5px;
+               cursor:pointer; 
+               
+                p{
+                   float: left;
+                   padding: 0;
+                   margin: 0;
+                }
+                                                
+                a{ 
+                   float: right;
+                   display: inline-block;
+                   padding-right: 5px;
+                }                   
+
+                
+                &:hover, &.active{
+                       background: #fff;
+                }  
+            }
+        }
+   }
+   
+    .import{
+        float: left;
+        display: none;                   
+        .input-small{
+            width: 103px;
+           padding: 1px 4px 2px !important; 
+        }
+    }
+   
+   
+   .pack-up{
+       position: relative;
+       margin: 0 auto 30px;
+       padding-right: 20px;
+       width: 100px;
+       height: 30px;
+       line-height: 30px;
+       text-align: center;
+       background: #fff;
+       border-bottom-left-radius: 5px;
+       border-bottom-right-radius: 5px;
+       cursor: pointer;
+       
+       i{
+           position: absolute;
+           right: 13px;
+           top: 5px;
+       }
+   }
+   
+   .tag-height{
+       .user-tag:not(:first-child) {
+            display: none;          
+        }
+//     .user-tag:first-child {
+//          border-bottom: none;         
+//      }
+   }
+   
+   .marginTop{
+       margin-top: 35px;
+   }
+   
+   .marginTop1{
+       margin-top: 20px;
+   }
+   
+    .edit-tag{
+       margin-right: -20px;
+       line-height: 32px;
+    }
+    
+    .filter-tag{
+        display: inline-block;
+        padding: 3px 10px;
+        margin: 5px 10px 5px 0;
+        border: 1px solid #ee4b46;
+        background: #fff;
+        color: #e03a35;
+        
+        a{
+            padding-left:5px ;
+            color: #e03a35;
+        }
+    }
+    
+    .add1,.add2{
+        color: #fff;
+    }
+    
+    .show-tag{
+        font-size: 21px;
+    }
+    
+}

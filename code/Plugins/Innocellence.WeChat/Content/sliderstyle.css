@@ -1,0 +1,120 @@
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0}
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+fieldset,img{border:0}
+table{border-collapse:collapse;border-spacing:0}
+li{list-style:none}
+a,a:hover{text-decoration:none;color:#ffe400;}
+html,body{ height: 100%;}
+body{line-height:1.5;font-size:12px;font-family:"hiragino sans gb",Arial;color:#fff;-webkit-tap-highlight-color:rgba(0,0,0,0)} 
+.wrap{position:relative;color:#fff; height: 100%; overflow: hidden;}
+.hide {display: none;}
+/*页面加载提示*/
+.mod_loading{position:absolute;height:100%;left:0;top:0;width:100%;z-index:100;background-color:#b9ccd5;display:-webkit-box;-webkit-box-align:center;}
+.mod_loading .content{ text-align:center;-webkit-box-flex:1;margin:0 80px;}
+.mod_loading .content .progress{height:13px;padding:2px;-webkit-border-radius:17px;border-radius:17px;background-color:#242a39;}
+.mod_loading .content .progress span{display:block;height:13px;-webkit-border-radius:13px;border-radius:13px;background-color:#65cfd5;}
+.mod_loading .content p{line-height:34px;color:#5f696a;}
+/*滑块*/
+.slider {position: absolute;width: 36px;height: 36px;margin-left: -18px;left: 50%;bottom: 10px;z-index: 9999;}
+.slider span {position: absolute;width: 24px;height: 35px;left: 50%;top: 50%;margin: -17px 0 0 -12px;background-position: -158px -46px;-webkit-animation: slide_up 2s infinite ease-out;}
+.item, .item .box {width: 100%;height: 100%;overflow: hidden;}
+.icon_sound{position:absolute;z-index:10;top:10px;right:10px;width:26px;height:26px;line-height:999px;overflow:hidden;border-radius:999px;border:solid 2px #fff}
+.icon_sound:before,.icon_sound.off:after{content:'';background:url(img/sprite.png?max_age=2592000) no-repeat;background-size:30px 250px}
+.icon_sound:before{display:block;width:13px;height:11px;margin:7px auto 0;background-position:0 -30px}
+.icon_sound.off:after{position:absolute;top:6px;left:6px;width:14px;height:14px;background-position:0 -60px}
+
+@-webkit-keyframes slide_up {
+    0%,30%{opacity: 0;-webkit-transform: translate3d(0,10px,0);}
+    60% {opacity: 1;-webkit-transform: translate3d(0,0,0);}
+    100% {opacity: 0;-webkit-transform: translate3d(0,-8px,0);}
+}
+
+ .arrow{
+        content: url(/plugins/Innocellence.WeChat/Content/img/FlexBenefit/arrow.png);
+        height: auto;
+        width: 10%;
+        left: 40%;
+        position: absolute;
+		bottom: 20%;
+        -webkit-animation: arrowGo 1.5s infinite steps(4, end);
+        animation: arrowGo 1.5s infinite steps(4, end);
+		z-index:100;
+    }
+    
+    @-webkit-keyframes arrowGo {
+    0%{
+        opacity: 1; 
+        bottom: 10px
+    }
+    100%{
+        opacity: 0.5;
+        bottom: 50px
+    }
+}
+   @keyframes arrowGo {
+   0%{
+        opacity: 1; 
+        bottom: 10px
+    }
+    100%{
+        opacity: 0.5;
+        bottom: 50px
+    }
+}
+
+.item {
+    background-attachment:fixed;
+    background-size:100% auto;
+    background-repeat: no-repeat;
+}
+.box1{
+    width: 78%;
+    background-image: url(/plugins/Innocellence.WeChat/Content/img/FlexBenefit/p1.png);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    height: 100px;
+    margin-left: 10%;
+    margin-top: 10%;
+}
+.box2{
+    background-image: url(/plugins/Innocellence.WeChat/Content/img/FlexBenefit/p2.png);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    width: 48%;
+    margin-left: 41%;
+	padding-bottom: 25px;
+}
+.box3{
+    background-image: url(/plugins/Innocellence.WeChat/Content/img/FlexBenefit/p3.png);
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    height: 320px;
+    width: 60%;
+    margin-left: 30%;
+}
+.title{
+    font-size: 30px;
+    font-weight:800;
+    color:#cd370f;
+    padding-left: 10px;
+}
+ .text {
+    padding-top: 31%;
+    padding-left: 35%;
+    font-size: 14px;
+    font-weight: bold;
+	color: black;
+}
+.box4 {
+    width: 70%;
+    font-size: 16px;
+    font-weight: bold;
+	color: black;
+    padding-top: 8px;
+    padding-left: 10%;
+	padding-right: 10%;
+}
+.item img {
+    width:100%;
+    height:auto;
+}

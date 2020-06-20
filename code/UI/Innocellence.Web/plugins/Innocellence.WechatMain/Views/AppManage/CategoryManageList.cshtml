@@ -1,0 +1,527 @@
+﻿@section easyui_css{
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="~/Plugins/Innocellence.WechatMain/Content/tag.css" />   
+}
+
+<style>
+.datagrid-header, .datagrid-toolbar, .datagrid-pager, .datagrid-footer-inner {
+    border-color: #e6e6e6;
+    line-height: 45px;
+}
+</style>
+
+
+<div class="subpage-title">
+    <div class="pull-left">
+    	菜单管理
+    </div>      	    
+    <div class="clear"></div>
+</div>
+<!--Action boxes-->
+<div class="row" style="margin-top: 65px;">
+    <div class="col-sm-12">
+        <form class="form-inline" id="SearchForm">
+            <input type="hidden" name="DeptId" id="DeptId" />
+            <div class="form-group pull-right">
+                <a href="javascript:void(0);" type="button" id="sync_categoryList" class="btn btn-warning btn-sm" title="Synchronous Category">
+                    <i class="fa fa-refresh"></i>同步类型
+                </a>
+                <a href="#" class="btn btn-primary btn-sm" id="btnAdd" data-toggle="tooltip" data-placement="top" title="增加">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+        </form>
+
+        <div class="clearfix"></div>
+
+        <div class="table-box">
+
+                <table class="table table-bordered table-hover data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%; text-align: center;">@T("ID")</th>
+                            <th>@T("CategoryName")</th>
+                            <th>@T("CategoryOrder")</th>
+                        </tr>
+                    </thead>
+                </table>
+
+        </div>
+    </div>
+</div>
+
+
+<div id="ModalTable" class="modal" tabindex="-1" role="dialog" aria-labelledby="myLabel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="blue bigger" id="myLabel">Please fill the followings</h4>
+            </div>
+
+            <div class="modal-body">
+
+
+                <form action="~/WechatMain/AppMenu/Post" id="ff" method="post" class="form-horizontal" datasource="~/WechatMain/AppMenu/Edit">
+                    <input type="hidden" id="ID" name="ID" data-bind="value: Id" />
+                    <input type="hidden" id="AppId" name="AppId" value="@ViewBag.appid" />
+                    <p class="col-sm-12">可创建最多3个一级菜单,每个一级菜单下可创建最多5个二级菜单,菜单层级最多为二级.</p>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">CategoryName:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="CategoryName" class="form-control" placeholder="Category Name" data-bind="value: CategoryName"
+                                   validate="{required:true,maxlength:16, messages:{required:'Please input category name.',maxlength:'Please check limitation of length.'}}" />
+                            <span>
+                                Level 1/2 Menu limit shouldn't more than 4/8 characters or
+                                <br />
+                                8/16 letters.<br />
+                            </span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Parent:</label>
+                        <div class="col-sm-9">
+                            <select id="department" name="ParentCode" class="easyui-combotree" data-options="url:'/wechatmain/appmanage/GetTreeData?appid=@ViewBag.appid',method:'get'" style="width: 200px;" data-bind="value: ParentCode"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">CategoryType:</label>
+                        <div class="col-sm-9">
+                            <select id="type" name="type" class="form-control" data-bind="value: ButtonReturnType.Button.type">
+                                <option value="" disabled="disabled" selected="selected" style="display: none;">添加事件类型</option>
+                                <option value="click">菜单Key</option>
+                                <option value="view">跳转到网页</option>
+                                <option value="view-news-list">跳转到图文列表</option>
+                                @*<option value="scancode_push">扫描推事件</option>*@
+                                @*<option value="scancode_waitmsg">扫描推事件(弹窗)</option>
+                                    <option value="pic_sysphoto">弹出系统拍照发图</option>
+                                    <option value="pic_photo_or_album">弹出拍照或者相册发图</option>
+                                    <option value="pic_weixin">弹出微信相册发图器</option>
+                                    <option value="location_select">弹出地理位置选择器</option> *@
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="Key_Box">
+                        <label class="col-sm-3 control-label">Key Value:</label>
+                        <div class="col-sm-9">
+                            <input type="text" id="CategoryCode" name="CategoryCode" class="form-control" placeholder="菜单KEY值，用于消息接口推送"
+                                   data-bind="value: CategoryCode" />
+                        </div>
+                        <div class="clearfix"></div>
+
+                        <div class="" id="Response_Box">
+                            <label class="col-sm-3 control-label">Response:</label>
+                            <div class="tabbable col-sm-9">
+                                <ul class="nav nav-tabs" id="myTab">
+                                    <input type="hidden" name="ResponseMsgType" id="ResponseMsgType" data-bind="value: ButtonReturnType.ResponseMsgType" />
+                                    <li class="">
+                                        <a data-toggle="tab" href="#news" aria-expanded="false" data-type="News">
+                                            <i class="orange ace-icon fa fa-newspaper-o bigger-120"></i>
+                                            News
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a data-toggle="tab" href="#text" aria-expanded="false" data-type="Text">
+                                            <i class="blue ace-icon fa fa-file-word-o bigger-120"></i>
+                                            Text
+                                        </a>
+                                    </li>
+
+                                    @*<li class="">
+                                            <a data-toggle="tab" href="#image" aria-expanded="false" data-type="Image">
+                                                <i class="green ace-icon fa fa-image bigger-120"></i>
+                                                Image
+                                            </a>
+                                        </li>
+                                    *@
+                                </ul>
+
+                                <div class="tab-content">
+                                    <div id="news" class="tab-pane fade in">
+                                        <p>如果选择此类型，则会从此类型对应的文章里拉取发布状态下的6篇推送给用户.</p>
+                                    </div>
+                                    <div id="text" class="tab-pane fade">
+                                        <textarea type="text" id="Content" name="Content" class="form-control" placeholder="Please write response message here.."
+                                                  data-bind="value: ButtonReturnType.Content"></textarea>
+                                    </div>
+
+                                    @*<div id="image" class="tab-pane fade">
+                                            <div class="col-sm-6">
+                                                <div id="uploader" class="wu-example">
+                                                    <div class="queueList" style="margin: 0px;">
+
+                                                        <div id="dndArea" class="placeholder" style="min-height: 130px; padding-top: 80px; background-position: center 3px;">
+                                                            <div id="filePicker" class="webuploader-container"></div>
+                                                        </div>
+                                                        <ul class="filelist"></ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    *@
+
+                                </div>
+                                <!--/End tab-content -->
+                            </div>
+                            <!--/End Tabbed-->
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="View_Box">
+                        <label class="col-sm-3 control-label">External Url:</label>
+                        <div class="col-sm-9">
+                            <textarea type="text" id="url" name="url" class="form-control" placeholder="http://" data-bind="value: ButtonReturnType.Button.url"
+                                      validate="{required:false,url:true,messages:{url:'Please check this url format.'}}"></textarea>
+                            <span>成员点击该菜单会跳到以上链接</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">CategoryOrder:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="CategoryOrder" class="form-control" placeholder="Sort Code" data-bind="value: CategoryOrder"
+                                   validate="{required:true,digits:true,messages:{required:'Please input order number.',digits:'This field just support positive integer.'}}" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Role:</label>
+                        <div class="col-sm-8" style="padding-right:18px;">
+                            <div class="input-group">
+                                <input type="text" class="form-control" name="Role" id="Role" data-bind="value: Role" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-sm btn-default" type="button" data-toggle="modal" data-target="#tagModal">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">NoRoleMessage:</label>
+                        <div class="col-sm-9">
+                            <textarea type="text" name="NoRoleMessage" class="form-control" placeholder="No Role Message" data-bind="value: NoRoleMessage"
+                                      validate="{required:false,maxlength:512,messages:{required:'Please input no role message.',maxlength:'This message is too long...'}}"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group controls">
+                        <label class="col-sm-3 control-label">IsAdmin:</label>
+                        <div class="col-sm-9">
+                            <input id="IsAdmin" name="IsAdmin" class="ace ace-checkbox-2" type="checkbox" data-bind="value: IsAdmin">
+                            <span class="lbl"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times"></i>
+                    Cancel
+                </button>
+
+                <button class="btn btn-sm btn-primary" data-action="save">
+                    <i class="ace-icon fa fa-check"></i>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<div id="mm" class="easyui-menu" style="width: 120px; display: none">
+    <div onclick="append()" data-options="iconCls:'icon-add'">Append</div>
+    <div onclick="removeit()" data-options="iconCls:'icon-remove'">Remove</div>
+    <div onclick="editit()" data-options="iconCls:'icon-remove'">Edit</div>
+</div>
+
+<!--Tag Modal Begain-->
+<div class="modal fade" role="dialog" aria-labelledby="myLabel" id="tagModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myLabel">Choose Tag</h4>
+            </div>
+            <div class="modal-body">
+                <div class="taglist">
+                    @foreach (var item in ViewBag.taglist)
+                    {
+                        <div class="checkbox col-sm-6">
+                            <label>
+                                <input class="ace ace-checkbox-2" data-id="@item.tagid" data-name="@item.tagname" name="form-field-checkbox" type="checkbox" />
+                                <span class="lbl">@item.tagname</span>
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer" style="clear:both;">
+                <button type="button" class="btn btn-primary" id="btnConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/End Modal-->
+
+
+@section scripts_Foot
+{
+    <link rel="stylesheet" href="~/styles/ui.jqgrid.css" />
+    <link rel="stylesheet" href="~/styles/jquery-ui.css" />
+
+    <script src="~/Scripts/jqGrid/jquery.jqGrid.src.js"></script>
+    <script src="~/Scripts/EasyUI/jquery.easyui.min.js"></script>
+
+    <script type="text/javascript">
+        var treeEdit;
+        var uploader;
+
+        $(document).ready(function () {
+
+            $('#sync_categoryList').click(function () {
+                $.ajax({
+                    type: "Get",
+                    url: "/AppMenu/Push?id=@ViewBag.appid" + '&time=' + (new Date()).getTime(),
+                    success: function (data) {
+                        artDialog.alert("Synchronous Successful !");
+                        $('.data-table').treegrid('reload');
+                    }
+                });
+            });
+
+            //菜单类型的选择
+            $('#type').on('change', function () {
+                var nodeVal = $(this).val();
+                switch (nodeVal) {
+                    case "":
+                        //如果是0 隐藏所有的盒子
+                        $('#Key_Box').hide();
+                        $('#View_Box').hide();
+                        break;
+
+                    case "click":
+                        //$('#ResponseMsgType').val($('#myTab li.active a').data("type"));
+                        $('#View_Box').hide();
+                        $('#Key_Box').show();
+                        $('#Response_Box').show();
+                        break;
+
+                    case "view":
+                        //其他盒子隐藏掉
+                        $('#Key_Box').hide();
+                        $('#View_Box').show();
+                        break;
+                    case "view-news-list":
+                        $('#Key_Box').hide();
+                        $('#View_Box').hide();
+                        break;
+                    default:
+                        $('#View_Box').hide();
+                        $('#Response_Box').hide();
+                        $('#Key_Box').show();
+                }
+            });
+
+            $('.data-table').treegrid({
+                url: '/appmanage/GetListTree?appid=@ViewBag.appid' + '&time=' + (new Date()).getTime(),
+                method: 'get',
+                animate: true,
+                idField: 'id',
+                treeField: 'name',
+                columns: [[
+                    { title: '类别名称', field: 'name', width: '70%' },
+                    { title: '类别顺序', field: 'CategoryOrder', width: '31.5%' }
+                ]],
+                onContextMenu: function (e, node) {
+                    e.preventDefault();
+                    $(this).treegrid('select', node.id);
+                    $('#mm').menu('show', {
+                        left: e.pageX,
+                        top: e.pageY
+                    });
+                }
+            });
+            //在form表单Post之前，组织JSON结构的数据
+            LEAP.Common.MainPop.options.beforePost = function (e) {
+
+                entity = {};
+                var filter = ['ID', 'AppId', 'CategoryCode', 'CategoryName', 'ParentCode', 'type', 'url',
+                             'ResponseMsgType', 'Content', 'IsAdmin', 'CategoryOrder', 'Role', 'NoRoleMessage'];
+
+                $.each(filter, function (i, property) {
+                    var n = $.grep(e, function (item, index) {
+                        return item.name == property;
+                    });
+
+                    if (n.length > 0) {
+                        entity[property] = n[0].value;
+                    }
+                });
+
+                if ($('#IsAdmin').is(':checked')) {
+                    entity['IsAdmin'] = true;
+                } else {
+                    entity.IsAdmin = false;//如果没有IsAdmin那列 手动添加
+                }
+
+                var obj = {
+                    "ButtonReturnType": {
+                        "Button": {
+                            "key": entity['CategoryCode'],
+                            "name": entity['CategoryName'],
+                            "type": entity['type'],
+                            "url": entity['url']
+                        },
+                        "ResponseMsgType": entity['ResponseMsgType'],
+                        "Content": entity['Content']
+                    }
+                };
+
+                $.extend(entity, obj, true);//将复杂对象扩展到entity上去
+
+                e = entity;
+
+                return entity;
+            };
+
+            //tabbeld 切换时更改responsetype值
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                //var node = $('#ResponseMsgType').val();
+                $('#ResponseMsgType').val($(e.target).data('type'));
+            });
+
+            //实体绑定后执行
+            LEAP.Common.MainPop.options.afterBindData = function (o) {
+                if (o) {
+                    var nodeVal = o.ButtonReturnType.Button.type;//event type
+                    switch (nodeVal) {
+                        case null:
+                            //如果是null 隐藏所有的盒子
+                            //$('#ResponseMsgType').val("");
+                            $('#Key_Box').hide();
+                            $('#View_Box').hide();
+                            break;
+                        case "click":
+                            $('#View_Box').hide();
+                            $('#Key_Box').show();
+                            $('#Response_Box').show();
+                            break;
+                        case "view":
+                            //其他盒子隐藏掉
+                            $('#Key_Box').hide();
+                            $('#View_Box').show();
+                            break;
+                        case "view-news-list":
+                            $('#Key_Box').hide();
+                            $('#View_Box').hide();
+                            break;
+                        default:
+                            $('#View_Box').hide();
+                            $('#Response_Box').hide();
+                            $('#Key_Box').show();
+                            break;
+                    }
+
+                    //反选tab active
+                    var nodeType, aNode;
+                    aNode = $('a[data-toggle="tab"]');
+                    for (var i = 0; i < aNode.length; i++) {
+                        nodeType = aNode.eq(i).data('type');
+                        if (o.ButtonReturnType && o.ButtonReturnType.ResponseMsgType && o.ButtonReturnType.ResponseMsgType == nodeType) {
+                            $('a[href="#' + nodeType.toLowerCase() + '"]').tab('show');
+                        }
+                    }
+                } else {
+                    //如果是添加 则隐藏所有盒子 默认选择News
+                    $('#ResponseMsgType').val("News");
+                    $('a[href="#news"]').tab('show');
+                    $('#Key_Box').hide();
+                    $('#View_Box').hide();
+                }
+
+            };
+
+            LEAP.Common.MainPop.options.fnAfterSuccess = AfterSuccess;
+            treeEdit = LEAP.Common.MainPop;
+
+            $('#tagModal').on('show.bs.modal', function () {
+                var str = $('#Role').val();
+                if (str != null && str != "") {
+                    var tagnames = str.split(',');
+                    var length = $('.taglist .checkbox').length;
+                    for (var i = 0; i < tagnames.length; i++) {
+                        for (var j = 0; j < length; j++) {
+                            var inputNode = $('.checkbox input[name="form-field-checkbox"]').eq(j);
+                            if (inputNode.data('name') == tagnames[i]) {
+                                inputNode.prop('checked', true);
+                            }
+                        }
+                    }
+                }
+            });
+
+            $("#tagModal").on('shown.bs.modal', function () {
+                //保存后做的事儿
+                $('#btnConfirm').click(function () {
+                    //who is check
+                    var taglist = "";
+                    var length = $('.taglist .checkbox').length;
+                    for (var i = 0; i < length; i++) {
+                        var inputNode = $('.checkbox input[name="form-field-checkbox"]').eq(i);
+                        if (inputNode.is(":checked")) {
+                            taglist += inputNode.data("name") + ',';
+                        }
+                    }
+                    //close modal
+                    $('#tagModal').modal('hide');
+                    $('#Role').val(taglist.substring(0, taglist.length - 1));
+
+                });
+            });
+
+            $('#tagModal').on('hidden.bs.modal', function () {
+                $('.checkbox input[name="form-field-checkbox"]').prop('checked', false);
+                $('body').toggleClass('modal-open'); //支持多个模态框重叠
+            });
+
+        });
+
+        function AfterSuccess() {
+
+            //var t = $('.data-table');
+            //t.treegrid('reload');
+            window.location.reload();
+        }
+        function editit() {
+            var t = $('.data-table');
+            var node = t.treegrid('getSelected');
+            treeEdit.ShowUpdateInfo(node.id);
+        }
+
+        function append() {
+            var t = $('.data-table');
+            var node = t.treegrid('getSelected');
+
+            treeEdit.ShowUpdateInfo(0);
+
+        }
+
+        function removeit() {
+            var node = $('.data-table').treegrid('getSelected');
+            // $('#DepartmentTree').tree('remove', node.target);
+
+            treeEdit.fnDelete([{ Id: node.id }], '../Delete?' + (new Date()).getTime());
+        }
+
+
+    </script>
+}
+

@@ -1,0 +1,240 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>ueditor图片对话框</title>
+    <script type="text/javascript" src="../internal.js"></script>
+    <!-- jquery -->
+    <script type="text/javascript" src="../../third-party/jquery-1.10.2.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/styles/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/webuploader/webuploader.css" />
+    <link rel="stylesheet" href="uploadimage.css" type="text/css" />
+    <style type="text/css">
+        label {
+            font-weight: normal;
+        }
+
+        #remote .row label {
+            text-align: left;
+        }
+
+        #remote #width, #remote #height {
+            width: 35px;
+        }
+
+        #simple_upload {
+            width: 240px;
+            height: 270px;
+            border: 3px dashed #e6e6e6;
+            position: relative;
+            overflow: hidden;
+        }
+             #simple_upload .progress {
+                position: absolute;
+                bottom: 5px;
+             }
+        #upload-input {
+            visibility: hidden;
+            position: absolute;
+        }
+
+        #btnUpload {
+            display: block;
+            font-size: 18px;
+            background: #00b7ee;
+            border-radius: 3px;
+            line-height: 44px;
+            padding: 0 30px;
+            color: #fff;
+            /*margin: 10px auto;*/
+            cursor: pointer;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+            position: absolute;
+            bottom: 35px;
+            left: 55px;
+        }
+
+        #watermask {
+            margin-left: 15px;
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+        }
+      
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div id="tabhead" class="tabhead">
+            <span class="tab focus" data-content-id="remote">Insert</span>
+            <!--<span class="tab" data-content-id="upload">Local</span>-->
+        </div>
+        <div class="alignBar">
+            <label class="algnLabel">
+                <var id="lang_input_align"></var>
+            </label>
+            <span id="alignIcon">
+                <span id="noneAlign" class="none-align focus" data-align="none"></span>
+                <span id="leftAlign" class="left-align" data-align="left"></span>
+                <span id="rightAlign" class="right-align" data-align="right"></span>
+                <span id="centerAlign" class="center-align" data-align="center"></span>
+            </span>
+            <input id="align" name="align" type="hidden" value="none" />
+        </div>
+        <div id="tabbody" class="tabbody">
+
+            <!-- 远程图片 -->
+            <div id="remote" class="panel focus">
+                <div class="top">
+                    <div class="row">
+                        <label for="url">Address:</label>
+                        <span>
+                            <input class="text" id="url" type="text" /></span>
+                    </div>
+                </div>
+                <div class="left">
+                    <div class="row">
+                        <label>Size:</label>
+                        <span>Width<input class="text" type="text" id="width" /> %</span>
+                        <span class="hidden">Height<input class="text" type="text" id="height" /></span>
+                        <span class="hidden"><input id="lock" type="checkbox" disabled="disabled"/><span id="lockicon"></span></span>
+                    </div>
+                    <div class="row">
+                        <label>Border:</label>
+                        <span>
+                            <input class="text" type="text" id="border" />px </span>
+                    </div>
+                    <div class="row">
+                        <label>Margins:</label>
+                        <span>
+                            <input class="text" type="text" id="vhSpace" />px </span>
+                    </div>
+                    <div class="row">
+                        <label>Title:</label>
+                        <span>
+                            <input class="text" type="text" id="title" /></span>
+                    </div>
+                    <div class="row">
+                        <label>WaterMask:</label>
+                        <span>
+                            <input type="checkbox" id="watermask" checked="checked"/></span>
+                    </div>
+                </div>
+                <div class="right">
+                    <div id="simple_upload" class="center-block">
+                        <img id="videoImage" title="This is a upload image." src="/Scripts/webuploader/images/image.png" class="center-block" width="200"/>
+                        <button class="btn" type="button" id="btnUpload">Select</button>
+                        <input id="upload-input" type="file" name="file" multiple="multiple" accept="image/*" onchange="return uploadImage(this);">
+                        <div class="progress center-block" style="margin-bottom: 0; width: 100%;">
+                            <div id="progress-bar1" class="progress-bar" style="width: 0">0</div>
+                        </div>
+                        <input type="hidden" name="thumbImgId" id="thumbImgId" />
+                        <input type="hidden" name="thumbImgSrc" id="thumbImgSrc" />
+                    </div>
+                   
+                    <!--<div id="preview"></div>-->
+                </div>
+            </div>
+
+            <!-- 上传图片 -->
+            <!--<div id="upload" class="panel focus">
+                    <div id="queueList" class="queueList">
+                        <div class="statusBar element-invisible">
+                            <div class="progress">
+                                <span class="text">0%</span>
+                                <span class="percentage"></span>
+                            </div><div class="info"></div>
+                            <div class="btns">
+                                <div id="filePickerBtn"></div>
+                                <div class="uploadBtn"><var id="lang_start_upload"></var></div>
+                            </div>
+                        </div>
+                        <div id="dndArea" class="placeholder">
+                            <div class="filePickerContainer">
+                                <div id="filePickerReady"></div>
+                            </div>
+                        </div>
+                        <ul class="filelist element-invisible">
+                            <li id="filePickerBlock" class="filePickerBlock"></li>
+                        </ul>
+                    </div>
+                </div>-->
+
+        </div>
+    </div>
+
+    <script type="text/javascript" src="/Scripts/webuploader/webuploader.min.js"></script>
+    <script type="text/javascript" src="/Scripts/Common/Common.Form.js"></script>
+    <script type="text/javascript" src="uploadimage.js"></script>
+    <script type="text/javascript" src="customplugin.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#btnUpload').click(function () {
+                $('#upload-input').click();
+            });
+
+            //如果在上传之后点击了checkbox
+            $('#watermask').click(function () {
+                var imgPath = "";
+                var id = $('#thumbImgId').val() == "" ? "" : $('#thumbImgId').val();
+                var src = $('#thumbImgSrc').val() == "" ? "" : $('#thumbImgSrc').val();
+                //考虑在上传前点击
+                if (id == "" && src == "") {
+                    return;
+                }
+                if ($('#watermask').is(":checked")) {
+                    imgPath = createImgPath(id, src, true);
+                } else {
+                    imgPath = createImgPath(id, src, false);
+                }
+                //设置最终path
+                $('#url').val(imgPath);
+                $('#videoImage').attr('src', imgPath);
+            });
+        });
+
+        function uploadImage(obj) {
+            //如果取消上传，则不执行上传事件
+            if ($('#upload-input').val() == "") {
+                artDialog.alert("Please Select a file!");
+                return false;
+            }
+            else {
+                $(obj).FileUpload({
+                    self: obj,
+                    url: "/Common/PostImage",
+                    allowExtension: '.png,.jpg,.jpeg,.JPG,.PNG,.JPEG',
+                    rewriteDocumentId: '',
+                    processBarId: 'progress-bar1',
+                    callBack: function (data) {
+                        if (data!=null)
+                        {
+                            var imgPath = "";
+                            if ($('#watermask').is(":checked")) {
+                                imgPath = createImgPath(data.id, data.result.Src, true);
+                            } else {
+                                imgPath = createImgPath(data.id, data.result.Src, false);
+                            }
+                            //render html and set url
+                            $('#videoImage').prop('src', imgPath);
+                            $('#url').val(imgPath);
+                            $('#thumbImgId').val(data.id);
+                            $('#thumbImgSrc').val(data.result.Src);
+                        }
+                    }
+                });
+            }
+        }
+
+        function createImgPath(id, src, isChecked) {
+
+            var imgPath = isChecked ? "/Common/File?id=" + id + "&filename=" + src :
+                          "/Common/PushFile?id=" + id + "&filename=" + src;
+
+            return imgPath;
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,989 @@
+﻿@using System.Web.Script.Serialization
+@using Innocellence.WeChat.Domain.Common;
+
+@model Innocellence.WeChat.Domain.ModelsView.AutoReplyView
+
+@section easyui_css
+{
+    <link rel="stylesheet" href="~/Styles/EasyUI/easyui.css" type="text/css" />
+
+}
+<link href="/styles/BMain.css" rel="stylesheet" type="text/css">
+<link href="/styles/Sendmessage.css" rel="stylesheet" type="text/css">
+<script src="/Scripts/materialControl/materialControl.js"></script>
+
+<!-- jqueryUpload------->
+<script src="/Scripts/jQuery-File-Upload-9.12.5/js/jquery.iframe-transport.js"></script>
+<script src="/Scripts/jQuery-File-Upload-9.12.5/js/vendor/jquery.ui.widget.js"></script>
+<link rel="stylesheet" href="/Scripts/jQuery-File-Upload-9.12.5/css/jquery.fileupload.css">
+<script src="/Scripts/jQuery-File-Upload-9.12.5/js/jquery.fileupload.js"></script>
+<!--script(src='/Scripts/jQuery-File-Upload-9.12.5/js/jquery.fileupload-image.js')-->
+<!--<script src="/Scripts/jQuery-File-Upload-9.12.5/js/jquery.fileupload-video.js"></script>-->
+<!--jqueryUpload end-------->
+<script src="/Scripts/wechatab/lib/layer/layer.js"></script>
+<!-- ueditor -->
+<script src="/Scripts/ueditor/lang/zh-cn/zh-cn.js" type="text/javascript" defer="defer"></script>
+<link href="/Scripts/ueditor/themes/default/css/ueditor.css" type="text/css" rel="stylesheet">
+<script src="/Scripts/ueditor/third-party/codemirror/codemirror.js" type="text/javascript" defer="defer"></script>
+<link rel="stylesheet" type="text/css" href="/Scripts/ueditor/third-party/codemirror/codemirror.css">
+<!--<script src="/Scripts/ueditor/third-party/webuploader/webuploader.min.js"></script>-->
+<!-- 配置文件-->
+<!--<script type="text/javascript" src="/Scripts/ueditor/ueditor.config.js"></script>-->
+<!-- 编辑器源码文件-->
+<!--<script type="text/javascript" src="/Scripts/ueditor/ueditor.all.js"></script>-->
+<script src="/Scripts/app_autoReply.js"></script>
+<style>
+    li {
+        list-style: none;
+    }
+
+    hr {
+        border-top: 1px dotted black;
+    }
+
+    .reply-area {
+        padding-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .btn-del-content {
+    }
+
+    .mod-send-message__audio-timeimage-wrap {
+        width: 128px;
+        height: 31px;
+        background-image: url(images/style-old-global_801b41ce.png);
+        background-position: -106px -503px;
+        display: inline-block;
+        position: relative;
+        margin: 5px 5px 5px 20px;
+        float: left;
+    }
+
+    .mod-send-message__audio-time {
+        width: 30px;
+        display: inline-block;
+        vertical-align: 6px;
+        color: #75777A;
+    }
+
+    .icon_filetype {
+        width: 80px;
+        height: 80px;
+        display: inline-block;
+    }
+
+    .filetype_doc, .filetype_docx {
+        background-image: url(/images/style-old-global_801b41ce.png);
+        background-position: -450px -320px;
+    }
+
+    .filetype_zip {
+        background-image: url(/images/style-old-global_801b41ce.png);
+        background-position: -160px -160px;
+        background-size: 278px;
+    }
+
+    .filetype_txt {
+        background-image: url(/images/style-old-global_801b41ce.png);
+        background-position: -450px -160px;
+    }
+
+    .filetype_video {
+        background-image: url(/images/style-old-global_801b41ce.png);
+        background-position: 0 -80px;
+        background-size: 278px;
+    }
+
+    .filetype_ppt {
+        background-image: url(/images/style-old-global_801b41ce.png);
+        background-position: -160px 0;
+        background-size: 278px;
+    }
+
+    .filetype_xls.filetype_xlsx {
+        background-image: url(/images/style-old-global_801b41ce.png);
+        background-position: -160px -80px;
+        background-size: 278px;
+    }
+
+    .filetype_pdf {
+        background-image: url(/images/style-old-global_801b41ce.png);
+        background-position: 0 -160px;
+        background-size: 278px;
+    }
+
+    .filetype_others, .filetype_psd, .filetype_xml {
+        background-image: url(/images/style-old-global_801b41ce.png);
+        background-position: -80px -160px;
+        background-size: 278px;
+    }
+
+    .mod-send-message__audio-timeimage-wrap {
+        width: 128px;
+        height: 31px;
+        background-image: url(images/style-old-global_801b41ce.png);
+        background-position: -106px -503px;
+        display: inline-block;
+        position: relative;
+        margin: 5px 5px 5px 20px;
+        float: left;
+    }
+
+    .mod-send-message__audio-timeimage {
+        width: 12px;
+        height: 17px;
+        position: absolute;
+        background-image: url(images/style-old-global_801b41ce.png);
+        background-position: -578px -228px;
+        display: inline-block;
+        left: 20px;
+        top: 7px;
+    }
+
+    .mod-send-message__audio-time {
+        width: 30px;
+        display: inline-block;
+        vertical-align: 6px;
+        color: #75777A;
+    }
+
+    .formlist .form-group label, input, textarea, select {
+        float: left;
+    }
+
+    .formlist .form-group label {
+        line-height: 34px;
+        margin-right: 30px;
+    }
+
+    .formlist .form-group select {
+        margin-right: 20px;
+        height: 34px;
+    }
+
+    .formlist .form-group textarea {
+        min-width: 300px;
+    }
+
+    #isSecurityPost {
+        display: inline-block;
+        margin-top: 12px;
+    }
+
+    .key-title {
+        position: absolute;
+        left: 35px;
+    }
+
+    .key-content {
+        padding-left: 113px;
+    }
+
+    .main_textMatchType {
+        margin-left: -12px;
+    }
+
+    .tab-content {
+        border: none;
+        background: #fff;
+    }
+
+    .box-part {
+        box-shadow: none;
+    }
+
+    .nav-tabs > li {
+        margin-right: 5px;
+    }
+
+        .nav-tabs > li > a, .nav-tabs > li > a {
+            background-color: #333;
+            padding: 10px;
+            color: #e1dfdf;
+        }
+
+            .nav-tabs > li > a:hover {
+                color: #ffffff;
+            }
+
+    .msgPictitle, .msgVideoTitle {
+        width: 397px;
+    }
+
+    .preview-add {
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+        margin: 0 auto;
+    }
+</style>
+
+@{
+
+    const int enumTextVal = (int)AutoReplyKeywordEnum.TEXT;
+    const int enumMenuVal = (int)AutoReplyKeywordEnum.MENU;
+    const int enumCropSubscribe = 998;//(int)AutoReplyKeywordEnum.SubscribeEvent;
+    const int enumNormalMenuVal = (int)AutoReplyMenuEnum.NORMAL;
+    const int enumScanVal = (int)AutoReplyMPKeywordEnum.SCAN;
+    const int enumFocusWithScanVal = (int)AutoReplyMPKeywordEnum.SubscribeWithScan;
+    const int enumFocusVal = (int)AutoReplyMPKeywordEnum.SubscribeEvent;
+    const int enumReplyLinkVal = (int)AutoReplyContentEnum.LINK;
+    const int enumReplyTextVal = (int)AutoReplyContentEnum.TEXT;
+    const int enumArticleTextVal = (int)AutoReplyContentEnum.NEWS;
+
+    const int enumReplyNewsLatest = (int)AutoReplyNewsEnum.LATEST;
+    const int enumReplyNewsManual = (int)AutoReplyNewsEnum.MANUAL;
+
+    var jsonModel = new JavaScriptSerializer().Serialize(Model);
+
+    // 编辑Flag
+    bool isEdit = Model.Id > 0;
+
+    // 编辑：菜单型时使用
+    var isEditMenu = false;
+    var menuTypeVal = 0;
+    var menuKey = "";
+    if (Model.KeywordType == enumMenuVal && Model.Keywords.Any())
+    {
+        isEditMenu = true;
+        menuTypeVal = Model.Keywords[0].SecondaryType;
+        menuKey = Model.Keywords[0].Keyword;
+    }
+    var scanKey = "";
+    if (Model.KeywordType == enumScanVal || Model.KeywordType == enumFocusWithScanVal)
+    {
+        scanKey = Model.Keywords[0].Keyword;
+    }
+    var cropSubscribeKey = "";
+    if (Model.KeywordType == enumCropSubscribe)
+    {
+        cropSubscribeKey = Model.Keywords[0].Keyword;
+    }
+}
+
+<div id="ModalTable" class="formlist">
+
+
+
+    <!--------------------------------- 口令名称及描述 ----------------------------------->
+    <input type="hidden" name="ID" value="@Model.Id" id="hiddenId" />
+    <input type="hidden" name="AppId" value="@ViewBag.AppId" id="hiddenAppId" />
+
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label class="control-label">口令名称 :</label>
+            <input id="main_name" type="text" placeholder="口令名称" value="@Model.Name" maxlength="100"  width="500"/>
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label class="control-label">口令描述 :</label>
+            <textarea id="main_decription" type="text" name="decription" placeholder="口令描述" maxlength="100">@Model.Description</textarea>
+        </div>
+    </div>
+
+
+
+    <!--------------------------------- 口令类型 ----------------------------------->
+    <div class="row">
+        <div class="form-group col-md-6">
+            <label class="control-label">口令类型 :</label>
+            <select id="main_keywordType" name="keywordType" value="@Model.KeywordType" data-placeholder="Please Select Keyword Type">
+                @foreach (var item in ViewBag.KeywordTypes)
+            {
+                if (@Model.KeywordType == item.Value)
+                {
+                <option value="@item.Value" selected="selected">@item.Description</option>
+                    }
+                    else
+                    {
+                <option value="@item.Value">@item.Description</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- 口令是文本类型时显示 -->
+    <!-- 添加，或者编辑但类型不是文本时 -->
+    @if (!isEdit || Model.KeywordType != (int)AutoReplyKeywordEnum.TEXT
+                                                                                                                        || (Model.KeywordType == (int)AutoReplyKeywordEnum.TEXT && Model.Keywords.Count == 0))
+    {
+        var keyword = Model.Keywords.Count > 0 ? Model.Keywords[0].Keyword : "";
+        <div id="divTxt">
+            <div class="row">
+                <div class="form-group">
+                    <label class="control-label key-title">关键词 :</label>
+                    <div class="key-content">
+                        <select class="main_MatchType" name="textMatchType" data-placeholder="Please Select Text Match Type">
+                            @foreach (var item in ViewBag.TextMatchTypes)
+                            {
+                            <option value="@item.Value">@item.Description</option>
+                            }
+                        </select>
+
+                        <input type="text" name="textKeyword" class="main_textMatchType" placeholder="关键词" value="@keyword" maxlength="20" />
+                        &nbsp;
+                        <a class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="增加">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                        <a class="btn btn-default btn-sm" data-toggle="tooltip" style="display: none" data-placement="top" title="Remove">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <!-- 编辑，且类型是文本时 -->
+    @if (Model.KeywordType == (int)AutoReplyKeywordEnum.TEXT && Model.Keywords.Count > 0)
+            {
+        <div id="divTxt">
+            @{
+                int index = 0;
+                foreach (var keyword in Model.Keywords)
+                {
+            <div class="row">
+                <div class="form-group">
+                    @if (index == 0)
+                            {
+                            <label class="control-label key-title">关键词 :</label>
+                            }
+                    <div class="key-content">
+                        <select class="main_MatchType" name="textMatchType" data-placeholder="Please Select Text Match Type">
+                            @foreach (var item in ViewBag.TextMatchTypes)
+                                    {
+                                        if (keyword.SecondaryType == item.Value)
+                                        {
+                                    <option value="@item.Value" selected="selected">@item.Description</option>
+                                        }
+                                        else
+                                        {
+                                    <option value="@item.Value">@item.Description</option>
+                                        }
+                                    }
+                        </select>
+
+                        <input type="text" name="textKeyword" class="main_textMatchType" placeholder="关键词" value="@keyword.Keyword" maxlength="20" />
+                        &nbsp;
+                        <a href="javascript:AddMatchRule()" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="增加">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                        <a class="btn btn-default btn-sm" data-toggle="tooltip" style="display: none" data-placement="top" title="Remove">
+                            <i class="fa fa-minus"></i>
+                        </a>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            </div>
+                    index++;
+                }
+            }
+        </div>
+                }
+
+
+
+    <!-- 口令是菜单类型时显示 -->
+    <div class="row" id="divMenu" style="display: none">
+        <div class="form-group col-md-6">
+            <label class="control-label">菜单类型 :</label>
+
+            <select id="menuTypes" name="menuType" data-placeholder="Please Select Menu Type">
+                @foreach (var item in ViewBag.MenuTypes)
+            {
+                if (isEditMenu && menuTypeVal == item.Value)
+                {
+                <option value="@item.Value" selected="selected">@item.Description</option>
+                    }
+                    else
+                    {
+                <option value="@item.Value">@item.Description</option>
+                    }
+                }
+            </select>
+            <input type="text" id="divMenuKeyword" name="menuKey" placeholder="菜单匹配关键词" value="@menuKey" maxlength="20" />
+        </div>
+    </div>
+
+    <!-- 企业号关注事件 -->
+    <div class="row" id="divCropSubscribe" style="display: none">
+        <div class="form-group col-md-6">
+            <label class="control-label">关键词 :</label>
+            <input id="cropSubscribe" type="text" name="cropSubscribeKeyword" class="form-control" placeholder="关键词" value="@cropSubscribeKey"  />
+        </div>
+    </div>
+
+    <!-- 扫码 -->
+    <div class="row" id="divScan" style="display: none">
+        <div class="form-group col-md-6">
+            <label class="control-label">关键词 :</label>
+
+            <input id="scanCode" type="text" name="scanKeyword" class="form-control" placeholder="关键词" value="@scanKey" maxlength="20" />
+        </div>
+    </div>
+    @if (ViewBag.IsCorp != 0)
+    {
+        <div class="row">
+            <div class="form-group col-md-6">
+                <label class="control-label">加密推送 :</label>
+                <span><input id="isSecurityPost" type="checkbox" /></span>
+            </div>
+        </div>
+    }
+
+
+
+
+
+    <!--------------------------------- 回复内容 ----------------------------------->
+    <div id="replyContentArea">
+        <div class="reply-area">
+            <div class="view">
+                <div id="autoReplay" class="tabbable">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a data-toggle="tab" href="#drop_0_content">自动回复</a>
+                        </li>
+                        <li class="hidden">
+                            <a data-toggle="tab" href="#drop_1_content">
+                                关联用户标签 <span class="glyphicon glyphicon-trash"
+                                             aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="hidden">
+                            <a data-toggle="tab" href="#drop_2_content">
+                                远程接口获取 <span class="glyphicon glyphicon-trash"
+                                             aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="hidden">
+                            <a data-toggle="tab" href="#drop_3_content">
+                                关联用户分组 <span class="glyphicon glyphicon-trash"
+                                             aria-hidden="true"></span>
+                            </a>
+                        </li>
+                        <li class="hidden">
+                            <a data-toggle="tab" href="#drop_4_content">
+                                关联消息标记 <span class="glyphicon glyphicon-trash"
+                                             aria-hidden="true"></span>
+                            </a>
+                        </li>
+
+
+                        <li class="dropdown">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                添加其他操作 <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="hidden">
+                                    <a id="drop_0" href="javascript:void(0)">自动回复</a>
+                                </li>
+                                <li>
+                                    <a id="drop_1" href="javascript:void(0)">关联用户标签</a>
+                                </li>
+                                <li class="dropdown-hidden-crop">
+                                    <a id="drop_2" href="javascript:void(0)">远程接口获取</a>
+                                </li>
+                                <li class="dropdown-hidden-crop">
+                                    <a id="drop_3" href="javascript:void(0)">关联用户分组</a>
+                                </li>
+                                <li class="dropdown-hidden-crop">
+                                    <a id="drop_4" href="javascript:void(0)">关联消息标记</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="drop_0_content" class="tab-pane active">
+                            <div id="semdMsg-content" class="row-fluid sortable">
+                                <input id="hiddenType" type="hidden" name="msgtype" value="0">
+                                <div id="tabMsgType" class="box-part">
+                                    <!-- 类型区域-->
+                                    <ul id="msgType" class="nav tab-menu nav-tabs pull-left">
+                                        <li class="active"><a href="#msgType-link" class="msgType-link">链接</a></li>
+                                        <li><a href="#msgType-word" class="msgType-word">文字</a></li>
+                                        <li><a href="#msgType-wordpic">图文</a></li>
+                                        <li><a href="#msgType-pic">图片</a></li>
+                                        <li style="display:none"><a href="#msgType-file">文件</a></li> <!--被动回复不支持该类型-->
+                                        <li><a href="#msgType-video">视频</a></li>
+                                        <li><a href="#msgType-sound">语音</a></li>
+                                    </ul>
+                                    <div class="clearfix"></div>
+                                    <div id="myTabContent" class="tab-content active" style="min-height: 400px; border-top:1px solid #d7dae3;">
+                                        <!--链接-->
+                                        <div id="msgType-link-div" data-msg-type="0" class="tab-pane active">
+                                            <div class="control-group">
+                                                <div style="display:none" class="controls">
+                                                    <textarea style="height: 200px;" class="span6"></textarea><span class="errorMsg type1ErrorText">请输入链接</span>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <label class="col-sm-2 control-label no-padding-right" for="msgType-link" style="width:6%">链接地址</label>
+                                                    <input type="text" id="msgType-link" name="msgType-link" style="width:380px;" class="form-control">
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <label class="col-sm-2 control-label no-padding-right" for="msgType-link-title" style="width:6%">文本内容</label>
+                                                    <input type="text" id="msgType-link-title" name="msgType-link-title" style="width:380px;">
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--文字-->
+                                        <div id="msgType-word" data-msg-type="1" class="tab-pane">
+                                            <div class="control-group">
+                                                <div style="display:none" class="controls">
+                                                    <textarea id="msgType-text" name="msgType-text" style="height: 200px;"
+                                                              class="span6"></textarea><span class="errorMsg type1ErrorText">请输入文字</span>
+                                                </div>
+                                                <div class="controls">
+                                                    <div class="comment">
+                                                        <div class="com_form">
+                                                            <textarea id="saytext" name="saytext" class="input"></textarea>
+                                                            <div class="com_info">
+                                                                <p id="count"></p>
+                                                                <p><span class="emotion">表情</span></p>
+                                                            </div>
+                                                            <div class="em_wrap">
+                                                                <div class="em_nr">
+                                                                    <a title="微笑" href="javascript:;"></a><a title="撇嘴"
+                                                                                                             href="javascript:;"></a><a title="色" href="javascript:;"></a><a title="发呆" href="javascript:;"></a><a title="得意" href="javascript:;"></a><a title="流泪"
+                                                                                                                                                                                                                                                         href="javascript:;"></a><a title="害羞" href="javascript:;"></a><a title="闭嘴"
+                                                                                                                                                                                                                                                                                                                          href="javascript:;"></a><a title="睡" href="javascript:;"></a><a title="大哭" href="javascript:;"></a><a title="尴尬" href="javascript:;"></a><a title="发怒"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                      href="javascript:;"></a><a title="调皮" href="javascript:;"></a><a title="呲牙"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       href="javascript:;"></a><a title="惊讶" href="javascript:;" class="borderRightNone"></a><a title="难过"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                href="javascript:;"></a><a title="酷" href="javascript:;"></a><a title="冷汗" href="javascript:;"></a><a title="折磨" href="javascript:;"></a><a title="吐" href="javascript:;"></a><a title="偷笑" href="javascript:;"></a><a title="愉快"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       href="javascript:;"></a><a title="白眼" href="javascript:;"></a><a title="傲慢"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        href="javascript:;"></a><a title="饥饿" href="javascript:;"></a><a title="困" href="javascript:;"></a><a title="惊恐" href="javascript:;"></a><a title="流汗"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    href="javascript:;"></a><a title="憨笑" href="javascript:;"></a><a title="悠闲" href="javascript:;"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     class="borderRightNone"></a><a title="奋斗" href="javascript:;"></a><a title="咒骂"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          href="javascript:;"></a><a title="疑问" href="javascript:;"></a><a title="嘘" href="javascript:;"></a><a title="晕" href="javascript:;"></a><a title="抓狂" href="javascript:;"></a><a title="衰" href="javascript:;"></a><a title="骷髅" href="javascript:;"></a><a title="敲打" href="javascript:;"></a><a title="再见"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            href="javascript:;"></a><a title="擦汗" href="javascript:;"></a><a title="抠鼻"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             href="javascript:;"></a><a title="鼓掌" href="javascript:;"></a><a title="糗大了"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              href="javascript:;"></a><a title="坏笑" href="javascript:;" class="borderRightNone"></a><a title="左哼哼" href="javascript:;"></a><a title="右哼哼"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              href="javascript:;"></a><a title="哈欠" href="javascript:;"></a><a title="鄙视"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               href="javascript:;"></a><a title="委屈" href="javascript:;"></a><a title="快哭了"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                href="javascript:;"></a><a title="阴险" href="javascript:;"></a><a title="亲亲"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 href="javascript:;"></a><a title="吓" href="javascript:;"></a><a title="可怜" href="javascript:;"></a><a title="菜刀" href="javascript:;"></a><a title="西瓜"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             href="javascript:;"></a><a title="啤酒" href="javascript:;"></a><a title="篮球"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              href="javascript:;"></a><a title="乒乓" href="javascript:;" class="borderRightNone"></a><a title="咖啡"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       href="javascript:;"></a><a title="饭" href="javascript:;"></a><a title="猪头" href="javascript:;"></a><a title="玫瑰" href="javascript:;"></a><a title="凋谢"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   href="javascript:;"></a><a title="嘴唇" href="javascript:;"></a><a title="爱心"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    href="javascript:;"></a><a title="心碎" href="javascript:;"></a><a title="蛋糕"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     href="javascript:;"></a><a title="闪电" href="javascript:;"></a><a title="炸弹"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      href="javascript:;"></a><a title="刀" href="javascript:;"></a><a title="足球" href="javascript:;"></a><a title="瓢虫" href="javascript:;"></a><a title="便便" href="javascript:;"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  class="borderRightNone"></a><a title="月亮" href="javascript:;"></a><a title="太阳"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       href="javascript:;"></a><a title="礼物" href="javascript:;"></a><a title="拥抱"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        href="javascript:;"></a><a title="强" href="javascript:;"></a><a title="弱"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        href="javascript:;"></a><a title="握手" href="javascript:;"></a><a title="胜利"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         href="javascript:;"></a><a title="抱拳" href="javascript:;"></a><a title="勾引"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          href="javascript:;"></a><a title="拳头" href="javascript:;"></a><a title="差劲"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           href="javascript:;"></a><a title="爱你" href="javascript:;"></a><a title="NO"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            href="javascript:;"></a><a title="OK" href="javascript:;" class="borderRightNone"></a><a title="爱情"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     href="javascript:;"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     class="borderBottomNone"></a><a title="飞吻" href="javascript:;" class="borderBottomNone"></a><a title="跳跳" href="javascript:;" class="borderBottomNone"></a><a title="发抖" href="javascript:;" class="borderBottomNone"></a><a title="怄火" href="javascript:;" class="borderBottomNone"></a><a title="转圈" href="javascript:;" class="borderBottomNone"></a><a title="磕头" href="javascript:;" class="borderBottomNone"></a><a title="回头" href="javascript:;" class="borderBottomNone"></a><a title="跳绳" href="javascript:;" class="borderBottomNone"></a><a title="投降" href="javascript:;" class="borderBottomNone"></a><a title="激动" href="javascript:;" class="borderBottomNone"></a><a title="乱舞" href="javascript:;" class="borderBottomNone"></a><a title="献吻" href="javascript:;" class="borderBottomNone"></a><a title="左太极" href="javascript:;" class="borderBottomNone"></a><a title="右太极" href="javascript:;"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         class="borderRightNone borderBottomNone"></a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--图文-->
+                                        <div id="msgType-wordpic" data-msg-type="2" class="tab-pane">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <div id="img_material"></div>
+                                                    <script>
+                                                        $('#img_material').materialControl({
+                                                            category: 'AUTO_NEWS'
+                                                        });
+                                                    </script>
+                                                    <input type="hidden" id="news_content" value="[]">
+                                                </div>
+                                            </div>
+                                            <!--新增-->
+                                            <div style="display:none; margin-top: -64px;" class="preview-add preview-box type2Preview">
+                                                <div class="preview-list">
+
+                                                    <ul id="news_list">
+                                                        <li class="default-item">
+                                                            <div class='first_title'>标题</div>
+                                                            <div class="default-img-box">
+
+                                                                <img class="first_img">
+                                                            </div>
+                                                            <p class="first_comment">摘要</p>
+                                                        </li>
+                                                        <li id="fi-item" class="first-item" style="display: none;">
+                                                            <a href="javascript:void(0)">
+                                                                <div class="default-img-box">
+
+                                                                    <img class="first_img">
+                                                                </div>
+                                                                <div class="order" style="display: none;"><b class="arrow fa fa-angle-down"></b></div>
+                                                                <p class="first_title" style="padding: 5px;"></p>
+                                                                <button class="rep-del"><i class="ace-icon glyphicon glyphicon-remove"></i></button>
+
+
+                                                            </a>
+                                                        </li>
+
+                                                        <li class="last-item"><a href="javascript:void(0)"><span style="color: #000;"><i class="ace-icon glyphicon glyphicon-plus"></i></span></a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <!--新增 end-->
+                                        </div>
+                                        <!--图片-->
+                                        <div id="msgType-pic" data-msg-type="3" class="tab-pane">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <div id="img3_material"></div>
+                                                    <script>
+                                                        $('#img3_material').materialControl({
+                                                            category: 'image_3'
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div>
+                                            <div class="controls">
+                                                <input id="image3-src" readonly="readonly" ng-model="type3_msgImg" style="width:280px"
+                                                       type="text" name="" placeholder="点击上传图片，此处自动填写上传图片地址。" class="form-control">
+                                            </div>
+                                        </div>
+                                        <!--文件-->
+                                        <div id="msgType-file" data-msg-type="6" class="tab-pane">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <div id="file_material"></div>
+                                                    <script>
+                                                        $('#file_material').materialControl({
+                                                            category: 'file'
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+
+
+                                                    <input id="image6-src" readonly="readonly" ng-model="type6_msgFileSrc"
+                                                           style="width:280px;display:none;" type="text" name="" class="form-control">
+                                                    <input id="image6-src_type" readonly="readonly" ng-model="type6_msgFileType"
+                                                           style="width:280px;display:none;" type="text" name="" class="form-control">
+                                                    <input id="image6-src_title" readonly="readonly" ng-model="type6_msgFileTitle"
+                                                           style="width:280px;display:none;" type="text" name="" class="form-control">
+                                                    <input id="image6-src_size" readonly="readonly" ng-model="type6_msgFileSize"
+                                                           style="width:280px;display:none;" type="text" name="" class="form-control">
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--视频-->
+                                        <div id="msgType-video" data-msg-type="4" class="tab-pane">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <div id="video_material"></div>
+                                                    <script>
+                                                        $('#video_material').materialControl({
+                                                            category: 'Video'
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="control-group">
+                                                <div class="controls">
+
+
+                                                    <input id="image4-src" readonly="readonly" ng-model="type4_msgVideoSrc"
+                                                           style="width:280px;display:none" type="text" name=""
+                                                           placeholder="点击视频，此处自动填写上传的视频地址。" class="form-control">
+
+
+                                                    <input id="image7-src" readonly="readonly" ng-model="type4_msgVideoSrc"
+                                                           style="width:280px;display:none" type="text" name="" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <p class="help-block">标题<sup>*</sup></p>
+                                                    <input id="msgVideoTitle" readonly="readonly" type="text" name="msgVideoTitle" ng-model="type4_msgVideoTitle"
+                                                           class="msgVideoTitle">
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <p class="help-block">简介(选填)</p>
+                                                    <textarea id="msgVideoDesc" readonly="readonly" name="msgVideoDesc" style="width:400px;height:100px"
+                                                              ng-model="type4_msgVideoDesc"></textarea>
+                                                    <div style="clear:both;"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!--语音-->
+                                        <div id="msgType-sound" data-msg-type="5" class="tab-pane">
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <div id="audio_material"></div>
+                                                    <script>
+                                                        $('#audio_material').materialControl({
+                                                            category: 'Audio'
+                                                        });
+                                                    </script>
+                                                </div>
+                                            </div>
+                                            <div class="control-group">
+                                                <div class="controls">
+                                                    <input id="image5-src" readonly="readonly" ng-model="type5_SoundSrc"
+                                                           style="width:280px;display:none" type="text" name="" class="form-control">
+                                                    <input id="image5-src_duration" readonly="readonly" ng-model="type5_duration"
+                                                           style="width:280px;display:none" type="text" name="" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="drop_1_content" class="tab-pane">
+                            <div>
+                                <select id="drop_1_content_selection" multiple="multiple" name="UserTags">
+                                    @{
+                                        foreach (var item in ViewBag.UserTagMap)
+                                        {
+                                            <option value="@item.Key">@item.Value</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div id="drop_2_content" class="tab-pane">
+                            <div>
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label no-padding-right" for="message_link">远程调用链接</label>
+
+                                    <div class="col-sm-9">
+                                        <input id="message_link" class="col-xs-10 col-sm-5" type="text">
+                                    </div>
+                                    <div style="clear:both"></div>
+                                </div>
+                                @*<div class="form-group">
+                                        <label class="col-sm-2 control-label no-padding-right" for="message_function">过滤规则</label>
+
+                                        <div class="col-sm-9">
+                                            <input id="message_function" disabled="disabled" class="col-xs-10 col-sm-5" type="text">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-2 control-label no-padding-right" for="message_type">消息类型</label>
+
+                                        <div class="col-sm-9">
+                                            <select id="message_type" disabled="disabled"  class="col-xs-10 col-sm-5" ></select>
+                                        </div>
+                                    </div>*@
+                            </div>
+                        </div>
+                        <div id="drop_3_content" class="tab-pane">
+                            <div>
+                                <select id="drop_3_content_selection" name="UserGroups">
+                                    @if (ViewBag.IsCorp == 0)
+                                    {
+                                        foreach (var item in ViewBag.GroupMap)
+                                        {
+                                            <option value="@item.Key">@item.Value</option>
+                                        }
+                                    }
+                                </select>
+                                <div style="clear:both"></div>
+                            </div>
+                        </div>
+                        <div id="drop_4_content" class="tab-pane">
+                            <div>
+                                <select id="drop_4_content_selection" name="MessageTags">
+                                    @if (ViewBag.IsCorp == 0)
+                                    {
+                                        foreach (var item in ViewBag.MessageTagMap)
+                                        {
+                                            <option value="@item.Key">@item.Value</option>
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div style="clear:both"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a class="btn btn-default btn-sm btn-del-content" data-toggle="tooltip" style="display: none" data-placement="top" title="Remove">
+                <i class="fa fa-minus"></i>
+            </a>
+        </div>
+
+        @*<div class="row" style="margin-left: auto">
+                <button id="addReply" type="button" class="btn btn-success btn-sm">添加回复</button>
+            </div>*@
+    </div>
+    <!--------------------------------- 关联内容 ----------------------------------->
+
+    <div class="row" style="margin:15px 0 0">
+        <button id="autoReply_submit" type="submit" class="btn btn-success pull-right">保存</button>
+    </div>
+
+
+    <!-- Modal: 图文消息一览 -->
+    <div id="ModalArticleList" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="blue bigger">请选择图文消息</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="widget-box">
+                        <div class="widget-content nopadding">
+                            <table class="table table-bordered data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:5%;text-align:center;"></th>
+                                        <th style="width:10%;text-align:center;">@T("ID")</th>
+                                        <th style="width:45%">@T("Title")</th>
+                                        <th style="width:15%">@T("Category")</th>
+                                        <th style="width:25%">@T("Published")</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-sm" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times"></i>
+                        关闭
+                    </button>
+                    @*
+                        <button class="btn btn-sm btn-primary" data-action="save">
+                            <i class="ace-icon fa fa-check"></i>
+                            确定
+                        </button>*@
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: 文件一览(图片，音频，视频，文件) -->
+    <div id="ModalFileList" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="blue bigger">请选择文件</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div id="ImageList" class="table-box" style="margin-top: 0px;">
+                        <div>
+                            <table class="table table-striped table-bordered table-hover data-table">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%;text-align:center;">@T("ID")</th>
+                                        <th style="width:39%">@T("文件名")</th>
+                                        <th style="width:18%">@T("文件类型")</th>
+                                        <th style="width:18%">@T("文件大小")</th>
+                                        <th style="width:15%">@T("选择")</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody_image"></tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6"></div>
+                            <div class="col-xs-6">
+                                <div class="dataTables_paginate paging_simple_numbers" id="data_table_test_paginate">
+                                    <ul class="pagination" id="page_image"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-sm" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times"></i>
+                        关闭
+                    </button>
+
+                    @*                    <button class="btn btn-sm btn-primary" data-action="save">
+                            <i class="ace-icon fa fa-check"></i>
+                            确定
+                        </button>*@
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- 图片预览 -->
+<div class="modal fade" id="ImageReviewModal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-title">Picture Review</h4>
+            </div>
+            <div class="modal-body">
+                <div id="picUploader" class="wu-example">
+                    <div id="picReview" class="uploader-list">
+                        <div class="file-item thumbnailreview">
+                            <img id="picReviewSrc" onerror="this.src = '/Content/img/smiley.png'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 以下参数为js所用 -->
+<input type="hidden" value="null" id="materialId" />
+<input type="hidden" value="null" id="NewsID" />
+<input type="hidden" value="@Model.KeywordType" id="hiddenPrimaryType" />
+<input type="hidden" value="@enumTextVal" id="hiddenEnumTextVal" />
+<input type="hidden" value="@enumMenuVal" id="hiddenEnumMenuVal" />
+<input type="hidden" value="@enumNormalMenuVal" id="hiddenEnumNormalMenuVal" />
+<input type="hidden" value="@enumReplyLinkVal" id="hiddenEnumReplyLinkVal" />
+<input type="hidden" value="@enumReplyTextVal" id="hiddenEnumReplyTextVal" />
+<input type="hidden" value="@enumArticleTextVal" id="hiddenEnumReplyArticleVal" />
+<input type="hidden" value="@enumScanVal" id="hiddenEnumScanVal" />
+<input type="hidden" value="@enumFocusWithScanVal" id="hiddenEnumFocusWithScanVal" />
+<input type="hidden" value="@enumFocusVal" id="hiddenEnumFocusVal" />
+<input type="hidden" value="@enumCropSubscribe" id="enumCropSubscribeVal" />
+<input type="hidden" value="@enumReplyNewsLatest" id="hiddenEnumReplyNewsLatestVal" />
+<input type="hidden" value="@enumReplyNewsManual" id="hiddenEnumReplyNewsManualVal" />
+
+<input type="hidden" value="@ViewBag.IsCorp" id="hiddenIsCorp">
+<!-- Modal data -->
+<input type="hidden" value="@jsonModel" id="hiddenJsonModel" />
+
+@*</div>*@
+
+@section scripts_Foot
+{
+    <script src="/Scripts/p.list.bind.js"></script>
+    <script src="/Scripts/pages.js"></script>
+    <script src="/Scripts/jsviews.min.js"></script>
+    <script src="~/Plugins/Innocellence.WechatMain/Scripts/autoreply.edit.js"></script>
+}
+

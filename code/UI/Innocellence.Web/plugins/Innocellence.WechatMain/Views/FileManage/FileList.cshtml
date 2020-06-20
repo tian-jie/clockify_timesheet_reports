@@ -1,0 +1,22 @@
+﻿
+<h2>file list</h2>
+
+<link href="~/Plugins/Innocellence.WechatMain/Content/FileManage.css" rel="stylesheet" />
+<div class="message_list">
+
+    <div class="message_bar" style="padding: 0 10px;">
+        <div class="float-right js_create"><a class="btn mb_btn float-right btn-sm btn-success" data-toggle="modal" data-placement="top" id="UploadBtn" href="#">新建素材</a></div>
+        <!-- <div class="float-right"><a id="js_upload_material" class="btn mb_btn float-right" href="javascript:;">上传素材</a></div> -->
+        <ul class="js_toolbar message_filetype_items">
+            <li data-type="image" class=""><a href="javascript:;">图片</a></li>
+            <li data-type="audio" class=""><a href="javascript:;">语音</a></li>
+            <li data-type="video" class=""><a href="javascript:;">视频</a></li>
+            <li data-type="file" class="active"><a href="javascript:;">文件</a></li>
+        </ul>
+    </div>
+</div>
+@section scripts_Foot
+        {
+    <script src="~/Plugins/Innocellence.WechatMain/Scripts/filemanage.js"></script>
+
+}

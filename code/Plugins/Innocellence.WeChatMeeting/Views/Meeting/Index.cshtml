@@ -1,0 +1,381 @@
+﻿@using Innocellence.WeChatMeeting.Domain.ViewModel;
+@using Innocellence.WeChatMeeting.Domain.Entity;
+@model Innocellence.WeChatMeeting.Domain.ViewModel.MeetingView
+@using Infrastructure.Web.Domain.Service;
+@using System.Linq;
+@section easyui_css
+{
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" type="text/css" />
+    <script src="~/Scripts/ZeroClipboard/ZeroClipboard.js"></script>
+    <script src="/Scripts/wechatab/lib/layer/layer.js"></script>
+
+    <style>
+        .exclamations {
+            color: #ff0000;
+            margin-right: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .modal-body p {
+            word-wrap: break-word;
+        }
+
+        .lineHeight {
+            padding: 5px;
+            text-align: center;
+            text-decoration: underline;
+            color: rgba(0,0,0,0.6);
+        }
+
+        .modal-header h3 {
+            text-align: center;
+        }
+
+        #modalEx .modal-header span {
+            font-size: 21px;
+        }
+
+        #modalEx .modal-header .close {
+            font-size: 21px;
+        }
+        #modalEx .modal-body{
+            max-height:450px;
+            overflow-y:auto;
+            padding:7px 2px;
+        }
+    </style>
+}
+
+
+<div class="subpage-title">
+    <div class="pull-left">
+        会议管理
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="row" style="margin-top: 65px;">
+    <div class="col-sm-12">
+
+        <form class="form-inline" id="SearchForm" method="post">
+            <div class="form-group">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="txtTitle" placeholder="会议主题">
+                </div>
+                @*<div data-date-format="yyyy-mm-dd" class="input-append date date-picker" style="display:inline-block;">
+                        <div class="input-group">
+                            <input data-date-format="yyyy-mm-dd" readonly="readonly" type="datetime" name="txtStartDateTime" class="form-control" placeholder="会议开始时间" />
+                            <span class="input-group-addon">
+                                →
+                            </span>
+                            <input data-date-format="yyyy-mm-dd" readonly="readonly" type="datetime" name="txtEndDateTime" class="form-control" placeholder="会议结束时间" />
+                        </div>
+                    </div>*@
+                <select class="form-control" name="select_time">
+                    <option value="all">全部</option>
+                    <option value="tmonth">最近三个月</option>
+                    <option value="smonth">最近半年</option>
+                    <option value="year">最近一年</option>
+                </select>
+
+
+                <a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="重置">
+                    <i class="fa fa-remove"></i>
+                </a>
+                <a href="javascript:void(0);" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索">
+                    <i class="fa fa-search"></i>
+                </a>
+            </div>
+
+            <div class="form-group pull-right">
+                <a href="@(Request["iType"] == ((int)CategoryType.HongtuCate).ToString() ?"#" : "javascript:Edit()")"
+                   class="btn btn-white btn-primary"
+                   id="btnAdd@(Request["iType"] == ((int)CategoryType.HongtuCate).ToString() ? "" : "1")"
+                   data-toggle="tooltip" data-placement="top" title="创建会议">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+        </form>
+
+        <div class="table-box">
+            <table class="table table-bordered data-table">
+                <thead>
+                    <tr>
+                        <th style="width:18%">@T("会议主题")</th>
+                        <th style="width:15%">@T("会议地点")</th>
+                        <th style="width:17%">@T("会议开始时间")</th>
+                        <th style="width:15%">@T("会议结束时间")</th>
+                        <th style="width:8%">@T("主持人")</th>
+                        @*<th style="width:8%">@T("是否需要报名")</th>*@
+                        <th style="width:8%;">@T("状态")</th>
+                        <th style="width:22%">@T("操作")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="hidden">
+
+        @if (Request["iType"] == ((int)CategoryType.HongtuCate).ToString())
+        {
+            @Html.Partial("Edit_HT")
+        }
+
+    </div>
+
+</div>
+
+<div class="modal fade bs-example-modal-sm" role="dialog" id="modalEx">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">会议时间</h4>
+            </div>
+            <div class="modal-body">
+                <div></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section scripts_Foot
+{
+    <script src="~/Scripts/EasyUI/jquery.easyui.min.js"></script>
+    <script>
+        saveclip = new Array();
+        $(document).ready(function () {
+
+            $('#clear_condition').click(function () {
+
+                $('input[name=txtTitle]').val('');
+                $('select[name=select_time]').val('all');
+                $('#btnSearch').click();
+                
+
+            });
+
+            var url = "GetList", appid = '@ViewBag.AppId';
+            if (appid != '') {
+                url += "?where=" + JSON.stringify({ Rules: [{ Field: 'EnterpriseAppId', value: appid }] });
+            }
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+
+                "ajax": { "url": url },
+                "aoColumns": [
+                  {
+                      "mData": "Title",
+                      "bSearchable": false,
+                      "bSortable": false
+                  },
+                  { "mData": "Location" },
+                  {
+                      "mData": "StartDateTime",
+                      "sClass": "center"
+
+                  },
+                  { "mData": "EndDateTime", "sClass": "center" },
+                  { "mData": "Owner" },
+                  //{ "mData": "IsSignUp", "sClass": "center" },
+                  { "mDate": "Operation" }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+               
+                {
+                    "targets": 1,
+                    "render": function (data, type, full, meta) {
+                        return data;
+                    }
+                },
+                {
+                    "targets": 2,
+                    "render": function (data, type, full, meta) {
+                        if (full.TimeSlot && full.TimeSlot.length>154) {
+                            return "<i class='fa fa-exclamation-circle exclamations'   data-toggle='tooltip' data-placement='bottom' title='点击此图标显示时间段详情'></i>" + full.StartDateTime + "<input type='hidden' value='" + full.TimeSlot + "'>";
+                        }
+                        else {
+                            return full.StartDateTime;
+                        }
+                    }
+                },
+                //{
+                //    "targets": 6,
+                //    "render": function (data, type, full, meta) {
+                //        if (full.IsSignUp == true) {
+                //            return "是";
+                //        }
+                //        else {
+                //            return "否";
+                //        }
+                //    }
+                //},
+                {
+                    "targets": 5,
+                    "render": function (data, type, full, meta) {
+                        var status = "";
+                        var now = new Date();
+                        if (full.EndDateTime < now.pattern('yyyy-MM-dd HH:mm')) {
+                            status = "已结束";
+                        } else if (full.StartDateTime > now.pattern('yyyy-MM-dd HH:mm')) {
+                            status = "未开始";
+                        } else {
+                            status = "进行中";
+                        }
+                        return status;
+                    }
+                },
+            {
+
+                "targets": 6,
+                "render": function (data, type, full, meta) {
+                    var now = new Date();
+                    return '<a href="Edit?Id=' + full.Id + '&appid=@ViewBag.AppId" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>' +
+                              '<a href="ShowQRCodeImg?appid=@ViewBag.AppId&meetingId=' + full.Id + '" target="_blank" class="artDailog btn btn-warning  btn-xs"  title="生成二维码" ><i class="fa fa-qrcode"></i></a>' +
+                              '<a href="Detail?appid=@ViewBag.AppId&meetingId=' + full.Id + '"  target="_blank" title="人员信息" class="artDailog btn btn-success  btn-xs"  data-placement="top"><i class="fa fa-user"></i></a>' +
+                              '<a href="TravelInfo?appid=@ViewBag.AppId&meetingId=' + full.Id + '"  target="_blank" title="出行信息" class="artDailog btn btn-success  btn-xs"  data-placement="top"><i class="fa fa-plane"></i></a>' +
+                              '<a href="#" onclick="LEAP.Common.MainPop.RowClick(\'' + full.Id + '\',2)" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除"><i class="fa fa-trash-o"></i></a>';
+                }
+            }]),
+                fnDrawCallback: function () {
+                    $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    //先清空clipboard
+                    $.each(saveclip, function (index) {
+                        saveclip[index].destroy();
+                    });
+                    saveclip.splice(0);
+                    $('ul.pagination').append("<li class='paginate_button'><input type='text' style='width:30px;float:left' id='go_page'></li><li class='paginate_button'><a class='gotopage'>Go</a></li>")
+                    $('.gotopage').click(function () {
+                        var gopage = (/^[0-9]+$/).test($('#go_page').val()) ? $('#go_page').val() : "1";
+                        $('.data-table').dataTable().api().page(parseInt(gopage) - 1).draw(false)
+
+                    })
+                    $('.btn-clip').each(function () {
+                        var text = $(this).attr("data-text");
+                        var clip = new ZeroClipboard.Client(); // 新建一个对象
+
+                        saveclip.push(clip);
+
+                        clip.setHandCursor(true); // 设置鼠标为手型
+                        clip.setText(text); // 设置要复制的文本。
+                        clip.recoverActive = true;
+                        // 注册一个 button，参数为 id。点击这个 button 就会复制。
+                        //这个 button 不一定要求是一个 input 按钮，也可以是其他 DOM 元素。
+                        clip.glue($(this).attr("id"));
+                        clip.addEventListener("complete", function () {
+                            artDialog.alert("Copy success.");
+
+                        });
+
+                    });
+                }
+
+            }));
+
+
+            LEAP.Common.MainPop.options.beforeShowModal = function () {
+                $('#preview').prop('src', '');
+                $('#Download').prop('href', '#');
+            };
+
+            LEAP.Common.MainPop.options.afterShowModal = function () {
+
+            };
+
+            LEAP.Common.MainPop.options.afterBindData = function (o) {
+                if (o == null || o.ArticleStatus == null || o.ArticleStatus == 'Saved') {
+                    $('#labelSubmit').hide();
+                    $('#btnSave').prop('disabled', false);
+                } else {
+                    $('#labelSubmit').show();
+                    $('#btnSave').prop('disabled', true);
+                    var timeout = setTimeout(function () {
+                        $('span.msg').hide();
+                    }, 3000);
+                }
+
+            };
+
+
+
+            //datepicker plugin
+            $('input[type="datetime"]').datepicker({
+                autoclose: true,
+                todayHighlight: true,
+                dateFormat: 'yyyy-mm-dd',
+                minDate: -10,
+                maxDate: "+1M +10D",
+                todayBtn: "linked",
+                clearBtn: true
+            });
+
+
+
+        });
+
+
+        function Edit() {
+            window.location.href = "Edit?appid=@ViewBag.AppId";
+        }
+
+
+
+
+
+
+
+        //Array.forEach implementation for IE support..
+        //https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/forEach
+        if (!Array.prototype.forEach) {
+            Array.prototype.forEach = function (callback, thisArg) {
+                var T, k;
+                if (this == null) {
+                    throw new TypeError(" this is null or not defined");
+                }
+                var O = Object(this);
+                var len = O.length >>> 0; // Hack to convert O.length to a UInt32
+                if ({}.toString.call(callback) != "[object Function]") {
+                    throw new TypeError(callback + " is not a function");
+                }
+                if (thisArg) {
+                    T = thisArg;
+                }
+                k = 0;
+                while (k < len) {
+                    var kValue;
+                    if (k in O) {
+                        kValue = O[k];
+                        callback.call(T, kValue, k, O);
+                    }
+                    k++;
+                }
+            };
+        }
+
+        //exclamations
+        function sx(data) {
+            var timestr = "";
+            $.each(JSON.parse(data), function (index, item) {
+
+                timestr += "<div class='lineHeight'>" + item.StartDateTime + "&nbsp;→&nbsp;" + item.EndDateTime + "</div>";
+            });
+            $('#modalEx').modal().find('.modal-body div').html(timestr);
+
+        }
+
+        var $body = $('body');
+        $body.off('click', '.exclamations', function () {
+            var data = $(this).next('input').val();
+            sx(data);
+
+        }).on('click', '.exclamations', function () {
+            var data = $(this).next('input').val();
+
+            sx(data);
+
+        });
+    </script>
+}

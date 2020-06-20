@@ -1,0 +1,188 @@
+﻿@{
+    ViewBag.Title = "员工填写Timesheet查询";
+}
+<script type="text/javascript" src="/Scripts/wechatab/lib/layer/layer.js"></script>
+<div class="row">
+
+    <div class="col-xs-12">
+
+        <form class="form-inline" id="SearchForm" method="post">
+            <div class="form-group">
+                <div class="form-group">
+                    <select id="Group" class="form-control" name="GroupId" data-placeholder="Please Select Group">
+                        <option value="" selected="selected">Please Choose Group</option>
+                        @foreach (var item in ViewBag.Groups)
+                        {
+                            <option value="@item.Gid">@item.Name</option>
+                        }
+                    </select>
+                    <select id="Year" class="form-control" name="Year1" data-placeholder="Select Year">
+                        <option value="0" selected="selected">Choose Year</option>
+                        <option value="2019">2019</option>
+                        <option value="2020">2020</option>
+                        <option value="2021">2021</option>
+                        <option value="2022">2022</option>
+                        <option value="2023">2023</option>
+                        <option value="2024">2024</option>
+                        <option value="2025">2025</option>
+                    </select>
+                    <select id="Week" class="form-control" name="Week1" data-placeholder="Select Week">
+                        <option value="0" selected="selected">Choose Year</option>
+                        @for (var i = 1; i < 52; i++)
+                        {
+                            <option value="@i">@i</option>
+                        }
+                    </select>
+
+                </div>
+
+                @*<a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="清除条件">
+                        <i class="fa fa-remove"></i>
+                    </a>*@
+                <a href="javascript:initTable();" class="btn  btn-sm" id="btnSearch1" data-toggle="tooltip" data-placement="top" title="按条件搜索">
+                    <i class="fa fa-search"></i>
+                </a>
+            </div>
+            <div class="form-group pull-right" style="margin-left:5px">
+                @*<a href="/plugins/innocellence.wx.tools/content/PollingAcountingTemplate.xlsx" id="downloadTemplateBtn" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="下载得分统计模板">
+                        <i class="fa fa-file-excel-o"></i>
+                    </a>*@
+                @*<a href="Create?appid=@ViewBag.AppId" id="addBtn" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="添加">
+                        <i class="fa fa-plus"></i>
+                    </a>*@
+            </div>
+        </form>
+
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered data-table" id="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 8%; text-align: center;">Employee Id</th>
+                            <th style="width: 30%">Employee</th>
+                            <th style="width: 10%">MON</th>
+                            <th style="width: 10%">TUE</th>
+                            <th style="width: 10%">WED</th>
+                            <th style="width: 10%">THU</th>
+                            <th style="width: 10%">FRI</th>
+                            <th style="width: 10%">SAT</th>
+                            <th style="width: 10%">SUN</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            initTable();
+        });
+
+        function initTable() {
+            
+            $('#table').bootstrapTable('destroy');
+
+            $('#table').bootstrapTable({
+                url: "GetTimesheetThisweekByGroup",
+                method: "post",
+                queryParams: {
+                    groupId: $('#Group').val(),
+                    year: $('#Year').val(),
+                    week: $('#Week').val()
+                },
+                toolbar: "#toolbar",
+                striped: true,                      //是否显示行间隔色
+                cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                pagination: true,                   //是否显示分页（*）
+                sortable: true,                     //是否启用排序
+                sortOrder: "asc",                   //排序方式
+                sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+                pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+                pageSize: 10,                       //每页的记录行数（*）
+                pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+                search: false,                      //是否显示表格搜索
+                strictSearch: true,
+                showColumns: true,                  //是否显示所有的列（选择显示的列）
+                showRefresh: true,                  //是否显示刷新按钮
+                minimumCountColumns: 2,             //最少允许的列数
+                clickToSelect: true,                //是否启用点击选中行
+                //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                //uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+                showToggle: false,                   //是否显示详细视图和列表视图的切换按钮
+                cardView: false,                    //是否显示详细视图
+                detailView: true,                  //是否显示父子表
+                "columns": [{
+                    field: 'UserId',
+                }, {
+                    field: 'EmployeeName',
+                }, {
+                    field: 'MondayTotalHours',
+                }, {
+                    field: 'TuesdayTotalHours',
+                }, {
+                    field: 'WednesdayTotalHours',
+                }, {
+                    field: 'ThursdayTotalHours',
+                }, {
+                    field: 'FridayTotalHours',
+                }, {
+                    field: 'SaturdayTotalHours',
+                }, {
+                    field: 'SundayTotalHours',
+                }
+                ],
+                //注册加载子表的事件。注意下这里的三个参数！
+                onExpandRow: function (index, row, $detail) {
+                    initSubTable(index, row, $detail);
+                }
+            });
+        }
+
+        //初始化子表格(无限循环)
+        initSubTable = function (index, row, $detail) {
+            var parentid = row.MENU_ID;
+            var cur_table = $detail.html('<table></table>').find('table');
+            $(cur_table).bootstrapTable({
+                url: 'GetTimesheetThisweekByEmployee',
+                method: 'get',
+                queryParams: {
+                    employeeId: row.UserId,
+                    year: $('#Year').val(),
+                    week: $('#Week').val()
+                },
+                clickToSelect: true,
+                detailView: false, //父子表
+                pageSize: 100,
+                //pageList: [10, 25],
+                "columns": [{
+                    field: 'ProjectName',
+                },{
+                    field: 'TaskName',
+                }, {
+                    field: 'MondayTotalHours',
+                }, {
+                    field: 'TuesdayTotalHours',
+                }, {
+                    field: 'WednesdayTotalHours',
+                }, {
+                    field: 'ThursdayTotalHours',
+                }, {
+                    field: 'FridayTotalHours',
+                }, {
+                    field: 'SaturdayTotalHours',
+                }, {
+                    field: 'SundayTotalHours',
+                }
+                ]
+            });
+        };
+
+
+    </script>
+}

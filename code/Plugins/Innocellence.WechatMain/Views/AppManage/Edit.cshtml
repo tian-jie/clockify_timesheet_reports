@@ -1,0 +1,368 @@
+﻿@model Innocellence.Weixin.QY.AdvancedAPIs.App.GetAppInfoResult
+@{
+    Script.Include("~/Scripts/fuelux/fuelux.tree.js");
+    Script.Include("~/Scripts/EasyUI/jquery.easyui.min.js");
+}
+@section easyui_css{
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" type="text/css" />
+    <link rel="stylesheet" href="~/Plugins/Innocellence.WechatMain/Content/tag.css" />
+}
+<div id="ModalTable">
+    <form method="POST" id="ff" class="form-horizontal" action="/WeChatMain/AppManage/SetAppInfo">
+        <input type="hidden" id="ID" name="ID" value="@Model.agentid" />
+        <input type="hidden" id="ConfigID" name="ConfigID" value="@ViewBag.configid" />
+        <input type="hidden" id="MediaID" name="MediaID" />
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-sm-3 control-label">App标识：</label>
+                <div class="col-sm-4">
+                    <div id="uploader" class="wu-example">
+                        <div class="queueList" style="margin: 0px;">
+                            <div id="dndArea" class="placeholder" style="min-height: 130px; padding-top: 80px;background-position:center 3px;">
+                                <div id="filePicker" class="webuploader-container"></div>
+                                <p>或拖动你的照片在这里</p>
+                            </div>
+                            <ul class="filelist"></ul>
+                        </div>
+                    </div>
+                    @*<p>(Suggest Pixel Aspect Ratio: 16/9.)</p>*@
+                </div>
+                <div class="col-sm-5">
+                    <img id="preview" src="@Model.square_logo_url" class="img-responsive" />
+
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-lg-3 control-label">AppID:</label>
+                <div class="col-lg-9">
+                    <input type="text" name="agentid" class="form-control" placeholder="AppID" value="@Model.agentid" readonly="true" />
+
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0;">
+                    <label class="col-lg-4 control-label">App名字:</label>
+                    <div class="col-lg-8">
+                        <input type="text" name="name" class="form-control" placeholder="应用名称长度为2-16个字符" value="@Model.name"
+                               validate="{required:true,maxlength:16,messages:{required:'应用名称长度为2-16个字符',maxlength:'应用名称长度太长'}}" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-lg-3 control-label">域名:</label>
+                <div class="col-lg-9">
+                    <input type="text" name="redirect_domain" id="redirect_domain" class="form-control" placeholder="请使用二级或二级以上域名，如weixin.qq.com" value="@Model.redirect_domain"
+                           validate="{required:false,maxlength:50,messages:{maxlength:'域名长度太长'}}" />
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <label class="col-lg-4 control-label">App介绍:</label>
+                <div class="col-lg-8">
+                    <input type="text" name="description" class="form-control" placeholder="功能介绍长度为4-120个字" value="@Model.description"
+                           validate="{required:true,maxlength:120,messages:{required:'功能介绍长度为4-120个字',maxlength:'功能介绍长度太长'}}" />
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0; margin-bottom: 15px;">
+                    <label class="col-lg-3 control-label">部门:</label>
+                    <div class="col-lg-9">
+
+                        @{
+                            var departname = "";
+                            if (ViewBag.depatlist != null && ((List<string>)ViewBag.depatlist).Count > 0)
+                            {
+
+                                foreach (var item in ViewBag.depatlist)
+                                {
+                                    departname += item + '|';
+                                }
+                                <input type="text" class="form-control" name="toDepartment" id="toDepartment" value="@departname.Substring(0, departname.Length - 1)" readonly="true" />
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" name="toDepartment" id="toDepartment" value="" placeholder="department" readonly="true" />
+                            }
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0; margin-bottom: 15px;">
+                    <label class="col-lg-4 control-label">标签 :</label>
+                    <div class="col-lg-8">
+
+                        @{
+                            var tagname = "";
+                            if (ViewBag.tagname != null && ((List<string>)ViewBag.tagname).Count > 0)
+                            {
+                                foreach (var item in ViewBag.tagname)
+                                {
+                                    tagname += item + '|';
+                                }
+                                <input type="text" class="form-control" name="toTag" id="toTag" value="@tagname.Substring(0, tagname.Length - 1)" readonly="true" />
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" name="toTag" id="toTag" value="" placeholder="tag" readonly="true" />
+                            }
+
+                        }
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0;">
+                    <label class="col-sm-3 control-label">用户 :</label>
+                    <div class="col-sm-9" style="padding-right:35px;">
+                        @{
+                            var username = "";
+                            if (ViewBag.userlist != null && ((Dictionary<string, string>)ViewBag.userlist).Count > 0)
+                            {
+                                <div class="form-control" style="overflow: auto; min-height: 200px;">
+                                    @foreach (var item in (Dictionary<string, string>)ViewBag.userlist)
+                                    {
+                                        <div class="user-item">
+                                            @if (!string.IsNullOrEmpty(item.Value))
+                                            {
+                                                <img src="@item.Value" class="img-responsive" name="userImg" width="28" height="28" style="display:inline-block" readonly="true" />
+
+                                            }
+                                            else
+                                            {
+                                                <img src="/images/icon_avatar_default.png" class="img-responsive" name="userImg" width="28" height="28" style="display:inline-block" readonly="true" />
+
+                                            }
+                                            <span class="user-name">@item.Key</span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" name="User" id="User" value="" placeholder="user" readonly="true" />
+                            }
+
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                @*<label class="col-lg-3 control-label">欢迎留言:</label>
+                    <div class="col-lg-9">
+
+                        <textarea name="Welcome" id="Welcome" class="form-control" placeholder="WelcomeMessage" style="min-height: 110px;text-align: left;padding-left: 4px;" validate="{required:false,maxlength:1400,messages:{maxlength:'欢迎语长度太长.'}}">@ViewBag.welcomemessage</textarea>
+                    </div>*@
+            </div>
+        </div>
+        <div class="row">
+            <input type="hidden" id="isreportuser" name="isreportuser" value="@Model.isreportuser" />
+            <input type="hidden" id="isreportenter" name="isreportenter" value="@Model.isreportenter" />
+            <div class="form-group col-lg-6">
+                <label class="col-lg-3 control-label">报告用户:</label>
+                <div class="col-lg-9" style="margin-top:8px">
+                    <input type="radio" name="optionsRadio" id="reportuser" value="option1">
+                    接收用户变更通知
+
+                    <input type="radio" name="optionsRadio" id="reportuserno" value="option2">
+                    不接收用户变更通知
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0;">
+                    <label class="col-sm-4 control-label">报告:</label>
+                    <div class="col-sm-8" style="margin-top:8px">
+                        <input type="radio" name="optionsRadio1" id="reportenter" value="option1">
+                        上报用户进入应用
+
+                        <input type="radio" name="optionsRadio1" id="reportenterno" value="option2">
+                        不上报用户进入应用
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-lg-3 control-label">CorpID:</label>
+                <div class="col-lg-9">
+
+                    <input type="text" name="CorpID" class="form-control" placeholder="公司ID为必填项" value="@ViewBag.corpid"
+                           validate="{required:true,maxlength:150,messages:{required:'请填写CorpID',maxlength:'CorpID长度太长'}}" />
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0;">
+                    <label class="col-sm-4 control-label">CorpSecret:</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="Secret" class="form-control" placeholder="Secret为必填项" value="@ViewBag.secret"
+                               validate="{required:true,maxlength:150,messages:{required:'请填写密码',maxlength:'密码长度太长'}}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-lg-3 control-label">Token:</label>
+                <div class="col-lg-9">
+
+                    <input type="text" name="Token" class="form-control" placeholder="回调用Token" value="@ViewBag.token"
+                           validate="{maxlength:100,messages:{maxlength:'标记长度太长'}}" />
+                </div>
+            </div>
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0;">
+                    <label class="col-sm-4 control-label">EncodingAESKey:</label>
+                    <div class="col-sm-8">
+                        <input type="text" name="EncodingAESKey" class="form-control" placeholder="回调用EncodingAESKey" value="@ViewBag.encodingAESKey"
+                               validate="{maxlength:100,messages:{required:'EncodingAESKey',maxlength:'编码的AESKey长度太长'}}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" style="margin: 0 35px; margin-top: 15px;">
+            <button type="submit" id="btnSubmit" class="btn btn-success pull-right">保存</button>
+        </div>
+    </form>
+</div>
+
+
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            var pathName = window.location.pathname.split('/');
+
+            LEAP.Common.MainPop.options.fnAfterSuccess = function() {
+                artDialog.alert("保存成功");
+                window.location.href = pathName[pathName.length - 1];
+            };
+            if ($("#isreportuser").val() == '1') {
+                $("#reportuser").attr("checked", "true");
+                $("#reportuserno").removeAttr("checked", "true");
+            }
+            else if ($("#isreportuser").val() == "0") {
+                $("#reportuserno").attr("checked", "true");
+                $("#reportuser").removeAttr("checked", "true");
+            }
+            if ($("#isreportenter").val() == '1') {
+                $("#reportenter").attr("checked", "true");
+                $("#reportenterno").removeAttr("checked", "true");
+            }
+            else if ($("#isreportenter").val() == "0") {
+                $("#reportenterno").attr("checked", "true");
+                $("#reportenter").removeAttr("checked", "true");
+            }
+        });
+        $("#reportuser").click(function () {
+            $("#isreportuser").val("1");
+        });
+        $("#reportuserno").click(function () {
+            $("#isreportuser").val("0");
+        });
+        $("#reportenter").click(function () {
+            $("#isreportenter").val("1");
+        });
+        $("#reportenterno").click(function () {
+            $("#isreportenter").val("0");
+        });
+        $("#redirect_domain").change(function() {
+            var reg = new RegExp(/^([0-9a-z_!~*'()-]+\.)*([0-9a-z][0-9a-z-]{0,61})?[0-9a-z]\.[a-z]{2,6}$/);
+            var domin = $("#redirect_domain").val();
+            if (domin == null || domin.length == 0) {
+                return true;
+            } else {
+                if (domin.match(reg) == null) {
+                    artDialog.alert("请填写正确的域名地址");
+                    return false;
+                } else {
+                    return true;
+                }
+
+            }
+
+        });
+
+
+        var validator = $('#ff').validate();
+        var uploader;
+
+        $(function() {
+            $('#btnSubmit').attr('disabled', false);
+
+            LEAP.Common.MainPop.options.fnAfrerPostError = function() { 
+                artDialog.alert("保存失败,请联系管理员或查看日志.");
+                $('#btnSubmit').attr('disabled', false); 
+            }
+
+            $('#ff').submit(function() {
+                if (!validator.form()) {
+                    return false;
+                }
+
+                $('#btnSubmit').attr('disabled', true); //防止重复提交多次
+            });
+
+
+            //Using webuoloader
+            if (uploader) {
+                uploadFileObj.clear();
+            } else {
+                var thumbnailWidth = "100px";
+                var thumbnailHeight = "100px";
+                // 创建缩略图
+                // 如果为非图片文件，可以不用调用此方法。
+                // thumbnailWidth x thumbnailHeight 为 100 x 100
+
+
+                uploader = uploadFileObj.uploadFile({
+                    auto: true,
+                    pick: {
+                        id: '#filePicker',
+                        label: '选择'
+                    },
+                    server: '/wechatmain/AppManage/PostImage?appid=' + @ViewBag.AppId,
+                    accept: {
+                        title: 'Images',
+                        extensions: 'gif,jpg,jpeg,bmp,png',
+                        mimeTypes: 'image/jpg,image/jpeg,image/png'
+                    },
+                    fileNumLimit: 1,
+                    fileSingleSizeLimit: 2048 * 2048,
+                    onSuccess: function(file, response) {
+
+                        $('#preview').attr('src', $('#uploader .imgWrap > img').attr('src'));
+                        $('#MediaID').val(response.media_id);
+                    },
+                    onUploadFinished: function() {
+                        uploadFileObj.clear();
+                    }
+                });
+
+            }
+
+        })
+
+
+    </script>
+}

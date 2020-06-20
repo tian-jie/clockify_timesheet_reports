@@ -1,0 +1,288 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+
+<script src="~/Scripts/third-party/highcharts/highcharts.js"></script>
+
+<style>
+    .report-table {
+        background:#fff;
+        margin-bottom:30px;
+        text-align:left;
+        border:1px solid #efefef;
+        padding:20px;
+    }
+    .table > thead > tr {
+        background:#fff;
+        color:#000;
+
+    }
+    .table td,
+    .table th {
+            border: 1px solid #efefef !important
+    }
+    .input-group {
+        float:left;
+    }
+    .textcenter {
+        text-align:center;
+    }
+    .dataTable .title {
+        color: white;
+        background: #ee4a46;
+    }
+
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <input type="hidden" id="iscorp" value="@ViewBag.IsCorp">
+        <input type="hidden" id="appid" value="@ViewBag.Appid">
+
+        
+
+@if (ViewBag.IsCorp != null && ViewBag.IsCorp)
+{
+        <input  type="checkbox" name="isSyncMenu" id="isSyncMenu" checked/><span>是否同步微信菜单 &nbsp; &nbsp; </span> <button id="SyncApps">同步应用</button>
+        <div class="report-table">
+            <table class="dataTable table">
+                <tbody></tbody>
+            </table>
+        </div>
+
+}
+else
+{
+
+    <div class="report-table">
+        <table class="dataTable table">
+            <tbody></tbody>
+        </table>
+    </div>
+
+        <div class="report-chart">
+            <div class="form-group pull-left">
+                <div data-date-format="yyyy-mm-dd" class="input-daterange input-group">
+                    <input type="datetime" name="BeginDate" id="BeginDate" class="form-control" placeholder="开始日期" />
+                    <span class="input-group-addon">
+                        <i class="fa fa-exchange"></i>
+                    </span>
+                    <input type="datetime" name="EndDate" id="EndDate" class="form-control" placeholder="结束日期" />
+                </div>
+                <button type="button" class="btn btn-sm" id="reportSearch"><i class="fa fa-search"></i></button>
+            </div>
+            <div class="form-group pull-right">
+                <button type="button" class="btn btn-sm btn-success" id="reportExport">
+                    <i class="fa fa-download"></i>输出
+                </button>
+            </div>
+            <div class="highchart"></div>
+        </div>
+
+}
+        
+    </div>
+</div>
+<script>
+    $(function () {
+
+        $("#reportExport").on("click", function () {
+            window.location.href = "/WeChatMain/Home/MpExportCSV?appId=" + $("#appid").val() + "&BeginDate=" + $("#BeginDate").val() + "&EndDate=" + $("#EndDate").val();
+        })
+
+        getData($("#BeginDate").val(), $("#EndDate").val(), true)
+        $("#reportSearch").on('click', function () {
+            var start = $("#BeginDate").val();
+            var end = $("#EndDate").val();
+
+            if (checkdate(start,end)) {
+                getData(start, end,false)
+            }
+
+        })        
+        //日期控件
+        $('.input-daterange').datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'yyyy-mm-dd',
+            minDate: -10,
+            maxDate: "+1M +10D",
+            todayBtn: "linked",
+            clearBtn: true
+        });      
+        $("#SyncApps").on("click", function () {
+            $.ajax({
+                url: "/AppManage/GetAppInfoList",
+                type: "post",
+                data:  JSON.stringify({ "isSyncMenu": $("#isSyncMenu").is(':checked') }),
+                contentType: "application/json",
+                success: function success(data) {
+                    alert("同步成功！");
+                }
+            });
+        });
+
+    });
+
+    var getData = function (start, end, defaultval) {
+        var iscorp = $('#iscorp').val();
+        if (iscorp === "") {
+            $.ajax({
+                url: "/WeChatMain/Home/GetMpReportList",
+                type: "get",
+                data: {
+                    "appid": $("#appid").val(),
+                    "BeginDate": start,
+                    "EndDate": end
+                },
+                contentType: "application/json",
+                success: function (data) {
+                    var newdata = JSON.parse(data);
+                    if (defaultval) {
+                        drawMpTable(newdata.data, newdata.total);
+                    }
+                    drawHighchart(newdata.data);
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: "/WeChatMain/Home/GetQyReportList",
+                type: "get",
+                contentType: "application/json",
+                success: function (data) {
+                    var newdata = JSON.parse(data);
+                    drawQyTable(newdata.data);
+                }
+            });
+
+        }
+    }
+
+    var drawQyTable = function (data) {
+        $(".report-table table tbody").append("<tr><th colspan='5' class='textcenter title'>企业号概括 </th></tr><tr class='title'><td></td><td>总员工人数</td><td>当前关注人数</td><td>本月新增关注</td><td>未关注</td></tr>"
+            + "<tr><td class='title'>企业号关注人数</td><td>" + data.TotalMember + "</td><td>" + data.SubMember + "</td><td>" + data.SubMemberThisMonth + "</td><td>" + data.UnSubMember + "</td></tr>"
+            + "<tr><td colspan='5'></tr><tr class='title'><td></td><td>通讯录人数</td><td>本月新增 </td></tr>"
+            + "<tr><td class='title'>企业号员工数据更新</td><td>" + data.TotalMember + "</td><td>" + data.AddThisMonth + "</td></tr>"
+            + "<tr><td colspan='5'></tr><tr class='title'><td></td><td>本月新增</td><td>总应用数</td></tr>"
+            + "<tr><td class='title'>企业号应用数</td><td>" + data.AddAppThisMonth + "</td><td>" + data.TotalApp + "</td></tr>"
+             + "<tr><td colspan='5'></tr><tr class='title'><td></td><td>本月条数</td><td>总条数</td><td>本月互动</td><td>累计互动</td></tr>"
+             + "<tr><td class='title'>企业号消息推送</td><td>" + data.MsgThisMonth + "</td><td>" + data.TotalMsg + "</td><td>" + data.InteractThisMonth + "</td><td>" + data.TotalInteract + "</td></tr>"
+             + "<tr><td colspan='5'></tr><tr class='title'><td></td><td>本月阅读人数 </td><td>平均月阅读人数 </td><td>总阅读人数 </td></tr>"
+             + "<tr><td class='title'>企业号消息推送</td><td>" + data.ReadCountThisMonth + "</td><td>" + data.AverageMonth + "</td><td>" + data.ReadCountTotal + "</td></tr>")
+    }
+
+    var drawMpTable = function (data, total) {
+        var xdata = 0
+        var ydataSubscribe = 0
+        $(".report-table table tbody").append("<tr><th></th><th>关注</th><th>取消关注</th><th>累计关注</th></tr>")    
+        ///今天关注数
+        var todaySub = parseInt(data[data.length - 1].Subscribe) + parseInt(data[data.length - 1].SubscribeWithScan)
+        var todayUnsub = data[data.length - 1].UnSubscribe
+        $(".report-table table tbody").append("<tr><td>今日</td><td>" + todaySub + "</td><td>" + todayUnsub + "</td><td rowspan='3' class='total'>" + total + "</td></tr>")
+
+        ///昨日关注数
+        var yesterdaySub = parseInt(data[data.length - 2].Subscribe) + parseInt(data[data.length - 2].SubscribeWithScan)
+        var yesterdayUnsub = data[data.length - 2].UnSubscribe
+        $(".report-table table tbody").append("<tr><td>昨日</td><td>" + yesterdaySub + "</td><td>" + yesterdayUnsub + "</td></tr>")
+
+        ///近30天关注数
+        var Subdata = 0
+        var Unsubdata = 0
+        for (var i = 0; i < data.length; i++) {
+            xdata = parseInt(data[i].Subscribe) + parseInt(data[i].SubscribeWithScan) + xdata
+            ydataSubscribe = parseInt(data[i].UnSubscribe) + ydataSubscribe
+        }
+        $(".report-table table tbody").append("<tr><td>近30天</td><td>" + xdata + "</td><td>" + ydataSubscribe + "</td></tr>")
+
+    }
+    var drawHighchart = function (data) {
+
+        var xdata = []
+        var ydataSubscribe = []
+        var ydataUnSubscribe = []
+        var steps = Math.floor(data.length / 6);
+
+        for (var i = 0; i < data.length; i++) {
+            xdata[i] = data[i].TimeInReport
+            ydataSubscribe[i] = parseInt(data[i].Subscribe) + parseInt(data[i].SubscribeWithScan)
+            ydataUnSubscribe[i] = parseInt(data[i].UnSubscribe)
+        }
+
+        $('.highchart').highcharts({
+            title: {
+                text: '新增关注人数曲线图',
+                x: 0 //center
+            },
+            chart: {
+                height: 500,
+            },
+            exporting: {
+                enabled: false,
+            },
+            credits: {
+                enabled: false,
+            },
+            xAxis: {
+                categories: xdata,
+                tickInterval: steps,
+                labels: {
+                    y:20
+                }
+            },
+            yAxis: {
+                title: {
+                    text: '人数'
+                },
+                allowDecimals: false,
+                min: 0,
+                plotLines: [{
+                    value: 0,
+                    width: 1,
+                    color: '#808080'
+                }]
+            },
+            legend: {
+                layout: 'vertical',
+                align: 'right',
+                verticalAlign: 'middle',
+                borderWidth: 0
+            },
+            series: [{
+                type: 'line',
+                name: '关注',
+                data: ydataSubscribe,
+
+            }, {
+                type: 'line',
+                name: '取消关注',
+                data: ydataUnSubscribe,             
+            }]
+
+        })
+
+
+    }
+    var checkdate = function (start, end) {
+        if (start == null || start.length == 0) {
+            artDialog.alert("起始日期不能为空");
+            return false;
+        }
+        if (end == null || end.length == 0) {
+            artDialog.alert("截止日期不能为空");
+            return false;
+        }
+
+        var startime = new Date(start);
+        var endtime = new Date(end);
+        if (startime.getTime() > endtime.getTime()) {
+            artDialog.alert("截止日期不能早于起始日期。");
+            return false;
+            //Math.floor(date3 / (24 * 3600 * 1000))
+        } else if (Math.floor((endtime.getTime() - startime.getTime()) / (24 * 3600 * 1000)) > 60) {
+            artDialog.alert("间隔时间不能超过两个月。");
+            return false;
+        }
+        return true;
+    }
+</script>

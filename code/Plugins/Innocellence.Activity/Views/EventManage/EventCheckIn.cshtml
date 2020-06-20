@@ -1,0 +1,48 @@
+﻿@model Innocellence.Activity.ModelsView.EventCheckInResultView
+@{
+    ViewBag.Title = "签到结果";
+    Layout = "~/plugins/Innocellence.CA/Views/Shared/_wxLayout.cshtml";
+}
+@section Header{
+    <link rel="stylesheet" href="~/Plugins/Innocellence.CA/Content/style.css" />
+}
+<div class="content col-xs-12">
+    <div class="event-hd">
+        <div class="event-status col-xs-12 text-center">签到成功</div>
+        <div class="text-center"><img src="@Model.UserLogoUrl" onerror="this.src = '/Content/img/icon_avatar_default.png'" class="headImage" /></div>
+        <div class="event-tag text-center">@Model.LillyId <span><i class="fa fa-check-square"></i></span></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="text-center">
+        <h3>@Model.EventName</h3>
+    </div>
+
+    <div class="event-detail nopadding-lr">
+        <div class="col-xs-12 titles nopadding-lr">
+            <h4 class="pull-left">活动时间</h4>
+            <span class="pull-right"><i class="glyphicon glyphicon-calendar"></i></span>
+        </div>
+        <p>@Model.EventStartTime <i class="glyphicon glyphicon-resize-horizontal"></i> @Model.EventEndTime</p>
+        <div class="col-xs-12 titles nopadding-lr">
+            <h4 class="pull-left">活动地点</h4>
+            <span class="pull-right"><i class="glyphicon glyphicon-map-marker"></i></span>
+        </div>
+        <p>@Model.Address</p>
+        <div class="col-xs-12 titles nopadding-lr">
+            <h4 class="pull-left">活动内容</h4>
+            <span class="pull-right"><i class="glyphicon glyphicon-list-alt"></i></span>
+        </div>
+        <p>@Model.EventDescription</p>
+    </div>
+</div>
+@section scripts_Foot{
+    <script type="text/javascript">
+        $(function() {
+            setTimeout(function() {
+                $('.event-status').css('opacity', 0);
+            }, 500);
+        });
+    </script>
+}

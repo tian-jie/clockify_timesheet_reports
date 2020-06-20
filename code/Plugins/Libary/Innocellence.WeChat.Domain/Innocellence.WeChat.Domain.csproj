@@ -1,0 +1,492 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E95F23B9-C1D9-4AF3-8E12-A5CC13492AC9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Innocellence.WeChat.Domain</RootNamespace>
+    <AssemblyName>Innocellence.WeChat.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Innocellence.WeChat.Domain.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=3.3.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="AutoMapper.Net4, Version=3.3.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\AutoMapper.3.3.1\lib\net40\AutoMapper.Net4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Binbin.Linq.PredicateBuilder, Version=1.0.3.26645, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Binbin.Linq.PredicateBuilder.1.0.3.26645\lib\net45\Binbin.Linq.PredicateBuilder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.BulkInsert, Version=6.0.2.8, Culture=neutral, PublicKeyToken=630a17433349cb76, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\EntityFramework.BulkInsert-ef6.6.0.2.8\lib\Net45\EntityFramework.BulkInsert.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.MappingAPI, Version=6.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\EntityFramework.MappingAPI.6.2.0\lib\net45\EntityFramework.MappingAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Infrastructure.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e7429fb96767d50d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Library\Infrastructure.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Infrastructure.Core.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e7429fb96767d50d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Library\Infrastructure.Core.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Infrastructure.Utility, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e7429fb96767d50d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Library\Infrastructure.Utility.dll</HintPath>
+    </Reference>
+    <Reference Include="Infrastructure.Web, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Library\Infrastructure.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="Infrastructure.Web.Domain, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Library\Infrastructure.Web.Domain.dll</HintPath>
+    </Reference>
+    <Reference Include="Innocellence.Weixin, Version=4.5.17.42289, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Library\Innocellence.Weixin.dll</HintPath>
+    </Reference>
+    <Reference Include="Innocellence.Weixin.MP">
+      <HintPath>..\..\..\Library\Innocellence.Weixin.MP.dll</HintPath>
+    </Reference>
+    <Reference Include="Innocellence.Weixin.QY, Version=3.3.4.42290, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Library\Innocellence.Weixin.QY.dll</HintPath>
+    </Reference>
+    <Reference Include="Interop.Shell32">
+      <HintPath>..\..\..\Library\Interop.Shell32.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Spatial, Version=6.13.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Spatial.6.13.0\lib\portable-net40+sl5+wp8+win8+wpa\Microsoft.Spatial.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WebBackgrounder, Version=0.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\WebBackgrounder.0.2.0\lib\net40\WebBackgrounder.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CommonWeb\APIBaseController.cs" />
+    <Compile Include="CommonWeb\BaseController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CommonWeb\WeChatBaseController.cs" />
+    <Compile Include="Common\AttachmentsType.cs" />
+    <Compile Include="Common\AutoReplyEnum.cs" />
+    <Compile Include="Common\BizLogService.cs" />
+    <Compile Include="Common\EnumUtil.cs" />
+    <Compile Include="Common\MessageEnum.cs" />
+    <Compile Include="Common\NewsTypeEnum.cs" />
+    <Compile Include="Common\WebServiceAgent.cs" />
+    <Compile Include="Common\WeChatCommonServiceQY.cs" />
+    <Compile Include="Common\WeChatCommonServiceMP.cs" />
+    <Compile Include="Common\WeChatCommonService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\WechatFollowReportCommon.cs" />
+    <Compile Include="Common\WechatMessageLogType.cs" />
+    <Compile Include="Common\WechatUserMessageLogContentType.cs" />
+    <Compile Include="Common\WeChatUserRequestMessageLogHandler.cs" />
+    <Compile Include="Contracts\IAccountManageService.cs" />
+    <Compile Include="Contracts\IArticleCommentService.cs" />
+    <Compile Include="Contracts\IArticleCommentThumbupService.cs" />
+    <Compile Include="Contracts\IArticleInfoReadHistoryService.cs" />
+    <Compile Include="Contracts\IFocusHistoryService.cs" />
+    <Compile Include="Contracts\IMessageLogService.cs" />
+    <Compile Include="Contracts\IQrCodeService.cs" />
+    <Compile Include="Contracts\ISysMenuServiceEx.cs" />
+    <Compile Include="Contracts\IAddressBookService.cs" />
+    <Compile Include="Contracts\IAttachmentsItemService.cs" />
+    <Compile Include="Contracts\IAutoReplyKeywordService.cs" />
+    <Compile Include="Contracts\IAutoReplyContentService.cs" />
+    <Compile Include="Contracts\IAutoReplyService.cs" />
+    <Compile Include="Contracts\ISystemUserTagMappingService.cs" />
+    <Compile Include="Contracts\ISystemUserTagService.cs" />
+    <Compile Include="Contracts\ISysWechatConfigService.cs" />
+    <Compile Include="Contracts\IWechatMessageLogService.cs" />
+    <Compile Include="Contracts\IWechatMPUserService.cs" />
+    <Compile Include="Contracts\IWechatPreviewMessageLogService.cs" />
+    <Compile Include="Contracts\IWeChatUserRequestMessageLogHandler.cs" />
+    <Compile Include="Contracts\IWechatUserRequestMessageLogService.cs" />
+    <Compile Include="Contracts\IWechatUserRequestMessageTagService.cs" />
+    <Compile Include="Entity\AccountManage.cs" />
+    <Compile Include="Entity\AddressBookMemberTemplateModel.cs" />
+    <Compile Include="Entity\ArticleComment.cs" />
+    <Compile Include="Entity\ArticleInfoReadHistory.cs" />
+    <Compile Include="Entity\AticleCommentThumbUp.cs" />
+    <Compile Include="Entity\AttachmentsItem.cs" />
+    <Compile Include="Entity\AutoReply.cs" />
+    <Compile Include="Entity\AutoReplyContent.cs" />
+    <Compile Include="Entity\AutoReplyKeyword.cs" />
+    <Compile Include="Entity\BusinessEntity\WeChatEmotion.cs" />
+    <Compile Include="Entity\DXYQRCodeItem.cs" />
+    <Compile Include="Entity\BusinessEntity\EmployeeInfoWithDept.cs" />
+    <Compile Include="Entity\MessageLog.cs" />
+    <Compile Include="Entity\MpFollowReport.cs" />
+    <Compile Include="Entity\QrCodeMP.cs" />
+    <Compile Include="Entity\FocusHistory.cs" />
+    <Compile Include="Entity\SysAddressBookMember.cs" />
+    <Compile Include="Entity\SysAddressBookMemberTemp.cs" />
+    <Compile Include="Entity\SystemUserTag.cs" />
+    <Compile Include="Entity\SystemUserTagMapping.cs" />
+    <Compile Include="Entity\SysWechatConfig.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Entity\WechatMessageLog.cs" />
+    <Compile Include="Entity\WechatMPUser.cs" />
+    <Compile Include="Entity\WechatPreviewMessageLog.cs" />
+    <Compile Include="Entity\WechatUserRequestMessageLog.cs" />
+    <Compile Include="Entity\WechatUserRequestMessageTag.cs" />
+    <Compile Include="ModelMap.cs" />
+    <Compile Include="Service\AccessDashboardService.cs" />
+    <Compile Include="Service\AccountManageService.cs" />
+    <Compile Include="Service\AddressBookService.cs" />
+    <Compile Include="Service\AppUserService.cs" />
+    <Compile Include="Service\ArticleCommentService.cs" />
+    <Compile Include="Service\ArticleCommentThumbUpService.cs" />
+    <Compile Include="Service\ArticleInfoReadHistoryService.cs" />
+    <Compile Include="Service\ArticleThumbsUpService.cs" />
+    <Compile Include="Service\AttachmentsItemService.cs" />
+    <Compile Include="Service\BatchJobLogService.cs" />
+    <Compile Include="CommonEntity\ResultResponse.cs" />
+    <Compile Include="Common\EncryptionHelper.cs" />
+    <Compile Include="Contracts\IAccessDashboardService.cs" />
+    <Compile Include="Contracts\IAppAccessReportService.cs" />
+    <Compile Include="Contracts\IAppUserService.cs" />
+    <Compile Include="Contracts\IArticleImagesService.cs" />
+    <Compile Include="Contracts\IArticleInfoService.cs" />
+    <Compile Include="Contracts\IArticleReportService.cs" />
+    <Compile Include="Contracts\IArticleThumbsUpService.cs" />
+    <Compile Include="Contracts\IBatchJobLogService.cs" />
+    <Compile Include="Contracts\ICommonService.cs" />
+    <Compile Include="Contracts\ICourseDateRangeService.cs" />
+    <Compile Include="Contracts\IDataPermissionCheck.cs" />
+    <Compile Include="Contracts\IFaqInfoService.cs" />
+    <Compile Include="Contracts\IFeedbackService.cs" />
+    <Compile Include="Contracts\IFileManageService.cs" />
+    <Compile Include="Contracts\IFinanceService.cs" />
+    <Compile Include="Contracts\IFlexBenefitService.cs" />
+    <Compile Include="Contracts\IImageInfoService.cs" />
+    <Compile Include="Contracts\IManualStartJobService.cs" />
+    <Compile Include="Contracts\IMenuReportService.cs" />
+    <Compile Include="Contracts\IMessageService.cs" />
+    <Compile Include="Contracts\INewsPublishHistoryService.cs" />
+    <Compile Include="Contracts\IPageReportGroupService.cs" />
+    <Compile Include="Contracts\IPageReportService.cs" />
+    <Compile Include="Contracts\IQuestionImagesService.cs" />
+    <Compile Include="Contracts\IQuestionManageService.cs" />
+    <Compile Include="Contracts\IReportJobLogService.cs" />
+    <Compile Include="Contracts\IReportService.cs" />
+    <Compile Include="Contracts\ISearchKeywordService.cs" />
+    <Compile Include="Contracts\ISmartPhoneMenuService.cs" />
+    <Compile Include="Contracts\IThumbsUpService.cs" />
+    <Compile Include="Contracts\IToolsService.cs" />
+    <Compile Include="Contracts\IUserBehaviorService.cs" />
+    <Compile Include="Contracts\IUserInfoService.cs" />
+    <Compile Include="Contracts\IVoteService.cs" />
+    <Compile Include="Contracts\IWeChatAppUserService.cs" />
+    <Compile Include="Contracts\IWechatFollowReportService.cs" />
+    <Compile Include="Contracts\IWechatUserService.cs" />
+    <Compile Include="Entity\AccessDashboard.cs" />
+    <Compile Include="Entity\AppAccessReport.cs" />
+    <Compile Include="Entity\ArticleImages.cs" />
+    <Compile Include="Entity\ArticleInfo.cs" />
+    <Compile Include="Entity\ArticleReport.cs" />
+    <Compile Include="Entity\ArticleThumbsUp.cs" />
+    <Compile Include="Entity\BatchJobLog.cs" />
+    <Compile Include="Entity\DictionaryEntity.cs" />
+    <Compile Include="Entity\FaqInfo.cs" />
+    <Compile Include="Entity\Feedback.cs" />
+    <Compile Include="Entity\FeedBackEntity.cs" />
+    <Compile Include="Entity\FileManage.cs" />
+    <Compile Include="Entity\FinanceQueryEntity.cs" />
+    <Compile Include="Entity\FlexBenefit.cs" />
+    <Compile Include="Entity\ImageInfo.cs" />
+    <Compile Include="Entity\MenuReport.cs" />
+    <Compile Include="Entity\Message.cs" />
+    <Compile Include="Entity\NewsPublishHistoryEntity.cs" />
+    <Compile Include="Entity\PageReport.cs" />
+    <Compile Include="Entity\PageReportGroup.cs" />
+    <Compile Include="Entity\QuestionImages.cs" />
+    <Compile Include="Entity\QuestionManage.cs" />
+    <Compile Include="Entity\ReportExtention.cs" />
+    <Compile Include="Entity\ReportJobLog.cs" />
+    <Compile Include="Entity\SearchKeyword.cs" />
+    <Compile Include="Entity\sereisData.cs" />
+    <Compile Include="Entity\ThumbsUp.cs" />
+    <Compile Include="Entity\Tools.cs" />
+    <Compile Include="Entity\UserBehavior.cs" />
+    <Compile Include="Entity\UserInfo.cs" />
+    <Compile Include="Entity\VoteAnswerEntity.cs" />
+    <Compile Include="Entity\VoteEntity.cs" />
+    <Compile Include="Entity\VoteQuestionEntity.cs" />
+    <Compile Include="Entity\VoteResultEntity.cs" />
+    <Compile Include="Entity\WeChatAppUser.cs" />
+    <Compile Include="Entity\WechatFollowReport.cs" />
+    <Compile Include="Entity\WechatUser.cs" />
+    <Compile Include="Service\AutoReplyService.cs" />
+    <Compile Include="Service\AutoReplyKeywordService.cs" />
+    <Compile Include="Service\AutoReplyContentService.cs" />
+    <Compile Include="Service\FocusHistoryService.cs" />
+    <Compile Include="Service\MessageLogService.cs" />
+    <Compile Include="Service\QrCodeService.cs" />
+    <Compile Include="Service\SysMenuServiceEx.cs" />
+    <Compile Include="Service\FileManageService.cs" />
+    <Compile Include="Service\FinanceService.cs" />
+    <Compile Include="Job\AppAccessReportJob.cs" />
+    <Compile Include="Job\ArticleReportJob.cs" />
+    <Compile Include="Job\CustomerJobManager.cs" />
+    <Compile Include="Job\ICustomerJob.cs" />
+    <Compile Include="Job\ManuallyJobManager.cs" />
+    <Compile Include="Job\ManualStartJobService.cs" />
+    <Compile Include="Job\MenuReportJob.cs" />
+    <Compile Include="Job\PageReportJob.cs" />
+    <Compile Include="Job\WechatFollowReportJob.cs" />
+    <Compile Include="Service\MessageService.cs" />
+    <Compile Include="Service\NewsPublishHistoryService.cs" />
+    <Compile Include="Service\PageReportGroupService.cs" />
+    <Compile Include="Service\PageReportService.cs" />
+    <Compile Include="Service\AppDataPermissionService.cs" />
+    <Compile Include="Service\ArticleReportService.cs" />
+    <Compile Include="Service\FeedbackService.cs" />
+    <Compile Include="Service\FlexBenefitService.cs" />
+    <Compile Include="Service\MenuReportService.cs" />
+    <Compile Include="Service\DictionaryService.cs" />
+    <Compile Include="Service\QuestionImagesService.cs" />
+    <Compile Include="Service\ArticleImagesService.cs" />
+    <Compile Include="Common\WinXinTagEnum.cs" />
+    <Compile Include="Service\QuestionManageService.cs" />
+    <Compile Include="Service\ImageInfoService.cs" />
+    <Compile Include="Common\WebRequestPost.cs" />
+    <Compile Include="Service\FaqInfoService.cs" />
+    <Compile Include="Service\ReportJobLogService.cs" />
+    <Compile Include="Service\SearchKeywordService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\SmartPhoneMenuService.cs" />
+    <Compile Include="Service\SystemUserTagMappingService.cs" />
+    <Compile Include="Service\SystemUserTagService.cs" />
+    <Compile Include="Service\SysWechatConfigService.cs" />
+    <Compile Include="Service\ThumbsUpService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Service\ReportService.cs" />
+    <Compile Include="Service\UserInfoService.cs" />
+    <Compile Include="Service\UserBehaviorService.cs" />
+    <Compile Include="Service\WechatMessageLogService.cs" />
+    <Compile Include="Service\WechatMPUserService.cs" />
+    <Compile Include="Service\WechatPreviewMessageLogService.cs" />
+    <Compile Include="Service\WechatUserRequestMessageLogService.cs" />
+    <Compile Include="Service\WechatUserRequestMessageTagService.cs" />
+    <Compile Include="ViewModelFront\AccessDepartmentView.cs" />
+    <Compile Include="ViewModelFront\AccessJsonView.cs" />
+    <Compile Include="ViewModelFront\AccessStaffInfoView.cs" />
+    <Compile Include="ViewModelFront\FaqInfoSearchResultView.cs" />
+    <Compile Include="ViewModelFront\SearchUserMPView.cs" />
+    <Compile Include="ViewModel\AccessDashboardConditionView.cs" />
+    <Compile Include="ViewModel\AccessDashboardView.cs" />
+    <Compile Include="ViewModelFront\AccessUserInfoView.cs" />
+    <Compile Include="ViewModel\AccountManageView.cs" />
+    <Compile Include="ViewModel\AddressBookMemberView.cs" />
+    <Compile Include="ViewModel\AppAccessReportView.cs" />
+    <Compile Include="ViewModel\AppMenuView.cs" />
+    <Compile Include="ViewModel\AppUserView.cs" />
+    <Compile Include="ViewModel\ArticleCommentView.cs" />
+    <Compile Include="ViewModel\ArticleContentView.cs" />
+    <Compile Include="ViewModel\ArticleImagesView.cs" />
+    <Compile Include="ViewModel\ArticleInfoReadHistoryView.cs" />
+    <Compile Include="ViewModel\ArticleInfoView.cs" />
+    <Compile Include="ViewModel\ArticleReportView.cs" />
+    <Compile Include="ViewModel\ArticleThumbsUpView.cs" />
+    <Compile Include="ViewModel\AticleCommentThumbUpView.cs" />
+    <Compile Include="ViewModel\AttachmentsItemView.cs" />
+    <Compile Include="ViewModel\AutoReplyNewView.cs" />
+    <Compile Include="ViewModel\BatchJobLogView.cs" />
+    <Compile Include="ViewModel\AutoReplyView.cs" />
+    <Compile Include="ViewModel\AutoReplyKeywordView.cs" />
+    <Compile Include="ViewModel\AutoReplyContentView.cs" />
+    <Compile Include="ViewModel\CategoryButtonView.cs" />
+    <Compile Include="ViewModel\EmployeeInfoView.cs" />
+    <Compile Include="ViewModel\DXYImagesRootView.cs" />
+    <Compile Include="ViewModel\EventCheckInResultView.cs" />
+    <Compile Include="ViewModel\FaqInfoView.cs" />
+    <Compile Include="ViewModel\FeedBackView.cs" />
+    <Compile Include="ViewModel\FileManageView.cs" />
+    <Compile Include="ViewModel\FinanceEntityView.cs" />
+    <Compile Include="ViewModel\FlexBenefitView.cs" />
+    <Compile Include="ViewModel\GroupTagView.cs" />
+    <Compile Include="ViewModel\ImageInfoView.cs" />
+    <Compile Include="ViewModel\MenuReportView.cs" />
+    <Compile Include="ViewModel\MessageLogView.cs" />
+    <Compile Include="ViewModel\MessageView.cs" />
+    <Compile Include="ViewModel\NewsInfoView.cs" />
+    <Compile Include="ViewModel\PageReportGroupView.cs" />
+    <Compile Include="ViewModel\PageReportView.cs" />
+    <Compile Include="ViewModel\PersonGroup.cs" />
+    <Compile Include="ViewModel\QrCodeView.cs" />
+    <Compile Include="ViewModel\QuestionImagesView.cs" />
+    <Compile Include="ViewModel\QuestionManageView.cs" />
+    <Compile Include="ViewModel\ReimbursementSimpleView.cs" />
+    <Compile Include="ViewModel\ReimbursementView.cs" />
+    <Compile Include="ViewModel\ReportJobLogView.cs" />
+    <Compile Include="ViewModel\ScheduleSendTimeView.cs" />
+    <Compile Include="ViewModel\SearchKeywordView.cs" />
+    <Compile Include="ViewModel\SystemUserTagMappingView.cs" />
+    <Compile Include="ViewModel\SystemUserTagView.cs" />
+    <Compile Include="ViewModel\SysWechatConfigView.cs" />
+    <Compile Include="ViewModel\TagView.cs" />
+    <Compile Include="ViewModel\ThumbsUpCountView.cs" />
+    <Compile Include="ViewModel\ToolsView.cs" />
+    <Compile Include="ViewModel\UserBehaviorView.cs" />
+    <Compile Include="ViewModel\UserInoView.cs" />
+    <Compile Include="ViewModel\VoteView.cs" />
+    <Compile Include="ViewModel\WeChatAppUserView.cs" />
+    <Compile Include="ViewModel\WechatFollowReportView.cs" />
+    <Compile Include="ViewModel\WechatMessageLogView.cs" />
+    <Compile Include="ViewModel\WechatMPUserView.cs" />
+    <Compile Include="ViewModel\WechatUserRequestMessageLogView.cs" />
+    <Compile Include="ViewModel\WechatUserView.cs" />
+    <Compile Include="Service\VoteService.cs" />
+    <Compile Include="Service\WeChatAppUserService.cs" />
+    <Compile Include="Service\ArticleInfoService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\AppAccessReportService.cs" />
+    <Compile Include="Service\WechatFollowReportService.cs" />
+    <Compile Include="ViewModel\WechatUserRequestMessageTagView.cs" />
+    <Compile Include="WebService\FishFlow.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。启用“NuGet 程序包还原”可下载这些程序包。有关详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <Import Project="..\..\..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets" Condition="Exists('..\..\..\packages\AutoMapper.3.3.1\tools\AutoMapper.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

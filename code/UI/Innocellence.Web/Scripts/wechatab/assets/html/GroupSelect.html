@@ -1,0 +1,39 @@
+﻿<html>
+<head>
+    <link href="../font/font-awesome.min.css" rel="stylesheet" />
+    <link href="../css/groupselect.css" rel="stylesheet" />
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="../../lib/jquery-2.0.3.min.js"></script>
+    <script src="../js/app.js"></script>
+    <!--<script src="../../lib/require/require.js" data-main="../../dist/app"></script>-->
+</head>
+<body>
+    <div class="list_show">
+        <input type="hidden" value="" id="groupArr">
+
+        <h4 id="switchTab"><a class='active' data-tab="#wechatab_people" href="#">可见范围</a><a id="showTag" style="display:none;" data-tab="#wechatab_tags" href="#">标签</a></h4>
+        <div id="check_out" class="check_out"></div>
+        <div class="wechatabTabs active" id="wechatab_people" >
+            <h1 class="list_show_bt"><a href="JavaScript:void(0)" id="show_all" class="show_all">全部</a></h1>
+            <ul id="list_ul" class="list_ul">
+
+            </ul>
+        </div>
+        <div class="wechatabTabs" id="wechatab_tags">
+            <ul id="list_ul_tags" class="list_ul">
+
+            </ul>
+        </div>
+        <div class="date_whole">
+            <div class="date_all"></div>
+            <div class="date_group"></div>
+            <div class="date_person"></div>
+        </div>
+    </div>
+
+<script>
+  $.WeChatAddressList();
+</script>
+
+</body>
+</html>

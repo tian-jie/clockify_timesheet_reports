@@ -1,0 +1,50 @@
+﻿@{
+    Layout = "~/Plugins/Innocellence.WeChatMP/Views/Shared/_wxLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <input type="hidden" id="phone" value="@ViewBag.Mobile" />
+    <input type="hidden" id="url" value="@ViewBag.Url">
+    <input type="hidden" id="registerUrl" value="@ViewBag.RegisterUrl" />
+
+
+    <div id="message" style="display:none;width:96%;margin-left:2%;margin-top:10%;font-size:16px;">
+
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function () {
+        var mobile = $("#phone").val();
+        if (mobile == "") {
+            //window.location.href = "http://wentangu.yey666.com/wtsq/login?flag=doctor";
+            window.location.href = $("#registerUrl").val();
+            $("#message").hide();
+
+        } else if (mobile == "3") {
+            $("#message").show();
+            $("#message").html("查询到多个会员");
+        } else if (mobile == "-99") {
+            $("#message").show();
+            $("#message").html("系统异常");
+        } else if (mobile == "-1") {
+            $("#message").show();
+            $("#message").html("参数不正确");
+        }
+        else {
+            // window.location.href = "http://wechat.comvee.cn/wechatdoctor/wechatdoc/doctorOnline/sure_index.jsp?tel=" + mobile;
+            window.location.href = $("#url").val();
+            $("#message").hide();
+        }
+
+    });
+
+</script>

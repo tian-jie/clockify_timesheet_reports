@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "AccountManage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>AccountManage</h2>
+<div id="list" class="row">
+    <h3>企业号</h3>
+    @{
+        if (ViewBag.Company != null && ViewBag.Company.Count > 0)
+        {
+            foreach (var item in ViewBag.Company)
+            {
+                <div style="border:1px solid #999;padding:3px;float:left;width:310px;margin:5px; height:150px; display:block">
+                    Name : @item.AccountName;
+                    Description : @item.AccountDescription;
+                    <br/>
+                    Logo: <img style="width:100px;" src="@item.AccountLogo" />
+                    QrCode: <img style="width:100px;" src="@item.AccountLogo" />
+                </div>
+
+            }
+        }
+
+    }
+
+    
+</div>
+<div class="float-right js_create row">
+    <a class="btn mb_btn float-right btn-sm btn-success " data-toggle="modal" data-placement="top" id="UploadBtn" data-AccountType="1" href="#adds">Add Company Account</a>
+</div>
+<div id="list" class="row">
+    <h3>服务号</h3>
+    @{
+        if (ViewBag.Service != null && ViewBag.Service.Count > 0)
+        {
+            foreach (var item in ViewBag.Service)
+            {
+                <div style="border:1px solid #999;padding:3px;float:left; width:310px;margin:5px; height:150px">
+                    Name : @item.AccountName;
+                    Description : @item.AccountDescription;
+                    <br />
+                    Logo: <img style="width:100px;" src="@item.AccountLogo" />
+                    QrCode: <img style="width:100px;" src="@item.QrCode" />
+                </div>
+            }
+        }
+
+    }
+    
+</div>
+<div class="float-right js_create row">
+    <a class="btn mb_btn float-right btn-sm btn-success account-type-data" data-toggle="modal" data-placement="top" id="UploadBtn" data-AccountType="1" href="#adds">Add Service Account</a>
+</div>
+<script>
+   
+    $(function () {
+        $(".account-type-data").on('click', function () {
+            var value = $(this).attr('data-AccountType');
+            $("#AccountType").val(value);
+        });
+    })
+</script>
+<div id="adds" class="modal" tabindex="-1" role="dialog" aria-labelledby="myLabel">
+    <div class="modal-dialog">
+        @using (Html.BeginForm("AddAccountManages", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+        { <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="blue bigger" id="myLabel">Please fill the followings</h4>
+                </div>
+
+                <div class="modal-body">
+                    AccountName
+
+                    <input id="AccountName" name="AccountName" type="text" />
+                    AccountDescription<input id="AccountDescription" name="AccountDescription" type="text" />
+                    AccountLogo@*<input id="AccountLogo" name="AccountLogo" type="text" />*@
+                    <input name="AccountLogo" type="file" />
+                    QrCode@*<input id="QrCode" name="QrCode" type="text" />*@
+                    <input name="QrCode" type="file" />
+                    <input id="AccountType" hidden="hidden" name="AccountType" value="" />
+                    
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit">确认</button>
+                </div>
+            </div>
+            }
+
+        </div>
+
+
+    </div>
+
+
+<script>
+    function uploadPicture() {
+
+        $.ajax({
+           url: "@Url.Action("UploadPicture","Home")",
+            async: false,
+            type: "GET",
+            data: {
+               file: speakerId,
+                meetingId: meetingId,
+            },
+            success: function (data) {
+               var obj = eval(data);
+               var textSpeakerId = document.getElementById("SpeakerIdCurrent");
+               textSpeakerId.setAttribute("value", obj.Id);
+
+               var SpeakerId = document.getElementById("SpeakerId");
+               var textSpeakerName = document.getElementById("SpeakerName");
+               if (textSpeakerId == SpeakerId) {
+                   textSpeakerName.setAttribute("value", "Select a speaker or fill details manually");
+               }
+               else {
+                   textSpeakerName.setAttribute("value", obj.Name);
+               }
+
+
+               var textSpeakerHospitalName = document.getElementById("SpeakerHospitalName");
+               textSpeakerHospitalName.setAttribute("value", obj.HospitalName);
+
+               var textSpeakerUrl = document.getElementById("SpeakerUrl");
+               textSpeakerUrl.setAttribute("value", obj.Url);
+
+               //var textSpeakerDescription = document.getElementById("SpeakerDescription");
+               //textSpeakerDescription.setAttribute("value", obj.Description);
+               var textSpeakerDescription = document.getElementById("SpeakerDescription");
+               textSpeakerDescription.innerText = obj.Description == null ? "" : obj.Description;
+
+               var textSpeakerImageUrl = document.getElementById("SpeakerImageUrl");
+               textSpeakerImageUrl.setAttribute("value", obj.ImageUrl);
+
+               var textSpeakerImageUrl = document.getElementById("img");
+               textSpeakerImageUrl.setAttribute("src", obj.ImageUrl);
+           }
+       });
+       return result;
+   }
+</script>

@@ -1,0 +1,152 @@
+﻿<!--Action boxes-->
+  <div class="row">
+      <div class="col-sm-12">
+          <div>
+              <h3 class="header smaller lighter blue"></h3>
+          </div>
+          <div>
+              <form class="form-inline" id="SearchForm">
+                  <input type="hidden" name="DeptId" id="DeptId" />
+                  <div class="form-group">
+                      <div class="form-group">
+                          <input class="input-small" type="text" name="txtSurveyTitle" placeholder="调查标题">
+                      </div>
+                      <div class="form-group">
+                          <select class="form-control" name="txtSurveyCate">
+                              <option value="">请选择分类</option>
+                               @foreach (var cat in ViewBag.lstCate)
+                                {
+                                    <option value="@cat.Id">@cat.CategoryName</option>
+                                }
+                          </select>
+                      </div>
+                      <a href="#" class="btn  btn-sm" id="btnSearch">Search</a>
+                  </div>
+                  <div class="form-group" style="float: right;">
+                      <a href="#" class="btn btn-success btn-sm" id="btnAdd">Add</a>
+                      <a href="#" class="btn btn-info btn-sm" id="btnDelete">Delete</a>
+                  </div>
+              </form>
+
+          </div>
+          <div class="widget-box">
+              <div class="widget-content nopadding">
+                  <table class="table table-bordered table-hover data-table">
+                      <thead>
+                          <tr>
+                              <th style="width:5%;text-align:center"><input type="checkbox" id="title-table-checkbox" name="title-table-checkbox" /></th>
+                              <th>@T("调查标题")</th>
+                              <th>@T("调查类型")</th>
+                              <th>@T("调查URL")</th>
+                          </tr>
+                      </thead>
+                  </table>
+              </div>
+          </div>
+
+          <div style="display:none;" class="">
+            <div class="row" id="SurveyEdit">
+                <div class="widget-box" style="width:500px">
+                    <div class="widget-header">
+                        <span class="icon"> <i class="icon-align-justify"></i> </span>
+                        <h5>Survey-info</h5>
+                    </div>
+                    <div class="widget-body">
+                        <form action="Post" id="ff" method="get" class="form-horizontal" datasource="Get">
+                            <input type="hidden" id="ID" name="ID" data-bind="value: Id" />
+                            <input type="hidden" id="IdEN" name="IdEN" data-bind="value: IdEN" />
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Survey Title:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="SurveyTitle" class="form-control" placeholder="Survey Title" data-bind="value: SurveyTitle" 
+                                    validate="{required:true,messages:{required:'请填写调查标题!'}}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Survey Title(EN):</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="SurveyTitleEN" class="form-control" placeholder="Survey Title" data-bind="value: SurveyTitleEN" 
+                                    validate="{required:true,messages:{required:'请填写调查英文标题!'}}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label">Survey Type:</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" name="SurveyCateEN" data-bind="value: SurveyCateEN"
+                                    validate="{required:true,messages:{required:'请选择分类!'}}">
+                                        <option value="">Please select category</option>
+                                        @foreach (var cat in ViewBag.lstCate)
+                                        {
+                                            <option value="@cat.CategoryCode">@cat.CategoryName</option>
+                                        }
+                                    </select>
+                                </div>
+                           </div>
+                           <div class="form-group">
+                                <label class="col-sm-3 control-label">Survey URL:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="SurveyURL" class="form-control" placeholder="Survey URL" data-bind="value: SurveyURL"
+                                     validate="{required:true,messages:{required:'请填写链接地址!'}}" />
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-success pull-right">Save</button>
+                                <div class="clearfix"></div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div><!--/End surveyEdit-->
+      </div>
+ </div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": {
+                    "url": "GetList"
+                },
+                "aoColumns": [
+                   {
+                       "mData": 'Id',
+                       "bSortable": false,
+                       "sClass": "sTdCheckbox"
+                   },
+                   {
+                       "mData": "SurveyTitle",
+                       "bSearchable": false,
+                       "bSortable": false //自定义列的样式
+                   },
+                   { "mData": "SurveyCate" },
+                   { "mData": "SurveyURL" }
+                ],
+                "columnDefs": [
+                {
+                    "targets": 0,
+                    "render": function (data, type, full, meta) {
+                        return '<input type="checkbox" value="' + data.Id + '" title="' + data + '" id="checkbox" />';
+                    }
+                },
+                {
+                    "targets": 1,
+                    "render": function (data, type, full, meta) {
+                        return '<a href="#" onclick="LEAP.Common.MainPop.ShowUpdateInfo(\'' + full.SurveyCode + '\');return false;" class="artDailog">' + data + '</a>';
+                    }
+                },
+                //{
+                //    "targets": 2,
+                //    "render": function (data, type, full, meta) {
+                //        return '';
+                //    }
+                //}
+               ]
+            }));
+
+        });
+
+    </script>
+}
+

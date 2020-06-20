@@ -1,0 +1,378 @@
+﻿@using Innocellence.WeChat.Domain.ModelsView;
+@using Innocellence.WeChat.Domain.Entity;
+@model Innocellence.WeChat.Domain.ModelsView.ArticleInfoView
+@using Innocellence.WeChat.Domain.Common;
+@using Infrastructure.Web.Domain.Service;
+@using System.Linq;
+@section easyui_css
+{
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" type="text/css" />
+    <script src="~/Scripts/ZeroClipboard/ZeroClipboard.js"></script>
+}
+<div class="row">
+    <div class="col-sm-12">
+        <div>
+            <form class="form-inline" id="SearchForm" method="post">
+                <div class="form-group">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="txtArticleTitle" placeholder="Title">
+                    </div>
+                    <div data-date-format="yyyy-mm-dd" class="input-append date date-picker" style="display:inline-block;">
+                        <div class="input-group">
+                            <input type="datetime" name="txtDate" class="form-control" placeholder="发布时间" />
+                            <span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @{
+                            if (ViewBag.AppId != null)
+                            {
+                                @*<input type="hidden" value="@ViewBag.AppId" name="appId" id="appId" />*@
+                                <select id="txtSubCate" name="txtSubCate" class="easyui-combotree" style="width:180px" data-placeholder="Please Select Category" data-options="url:'GetTreeData?appId=@ViewBag.AppId',method:'get'"></select>
+                            }
+                            else
+                            {
+                                <select id="txtSubCate" name="txtSubCate" class="easyui-combotree" style="width:180px" data-placeholder="Please Select Category" data-options="url:'GetTreeData',method:'get'"></select>
+                            }
+                        }
+                        @*<select id="txtSubCate" name="txtSubCate" class="easyui-combotree" style="width:180px" data-placeholder="Please Select Category" data-options="url:'GetTreeData?appId=@ViewBag.AppId',method:'get'"></select>*@
+                    </div>
+                    <a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="Clear Condition">
+                        <i class="fa fa-remove"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+                </div>
+                <div class="form-group pull-right">
+                    <a href="#" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="导出" id="btnExport">
+                        <i class="fa fa-download"></i>输出
+                    </a>
+                    @*<button type="button" class="btn btn-sm btn-success" data-target="#batchModal" data-toggle="modal" id="btnPublish">
+                            <i class="fa fa-cloud-upload"></i> Batch Publish
+                        </button>*@
+                    <a href="@(Request["iType"] == ((int)CategoryType.HongtuCate).ToString() ?"#" : "javascript:Edit()")"
+                       class="btn btn-success btn-sm"
+                       id="btnAdd@(Request["iType"] == ((int)CategoryType.HongtuCate).ToString() ? "" : "1")"
+                       data-toggle="tooltip" data-placement="top" title="增加">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                </div>
+            </form>
+        </div>
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+
+                            <th style="width:4%;text-align:center;">@T("ID")</th>
+                            <th style="width:14%">@T("APPName")</th>
+                            <th style="width:22%">@T("Title")</th>
+                            <th style="width:8%">@T("Category")</th>
+                            <th style="width:4%">@T("Read Count")</th>
+                            <th style="width:4%">@T("Thumb Count")</th>
+                            <th style="width:12%">@T("Published")</th>
+                            <th style="width:8%">@T("Copy Url")</th>
+                            <th style="width:14%">@T("Status")</th>
+                            <th style="width:7%">@T("Operation")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="hidden">
+        @if (Request["iType"] == ((int)CategoryType.HongtuCate).ToString())
+        {
+            @Html.Partial("Edit_HT")
+        }
+    </div>
+    <div class="modal fade" role="dialog" aria-labelledby="myLabel" id="batchModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myLabel">Batch Publish</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="dd" id="nestable">
+                        <ol class="dd-list"></ol>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnConfrim">Confirm</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- /.modal -->
+</div>
+@section scripts_Foot
+{
+    <script src="~/Scripts/EasyUI/jquery.easyui.min.js"></script>
+    <script>
+        function ChangeArticleStatus(id, obj, url) {
+
+            var bol = false;
+
+            if ($(obj).prev('span').html() == "Published") {
+                bol = true;
+            }
+
+            var d = dialog({
+                title: 'message',
+                content: 'Sure you want to' + (bol ? ' cancel ' : '') + ' publish?',
+                okValue: 'Confirm',
+                ok: function() {
+                    $.ajax({
+                        type: 'Get',
+                        url: url + '?Id=' + id + '&ispush=false&appid=1',
+                        cache: false,
+                        success: function(data) {
+                            if (ReturnValueFilter(data)) {
+                                $(obj).toggleClass('btn-success');
+                                $(obj).toggleClass('btn-danger');
+
+                                if ($(obj).html() == '<i class="fa fa-cloud-download"></i>') {
+                                    $(obj).html('<i class="fa fa-cloud-upload"></i>');
+                                    $(obj).prev().html('Saved');
+                                } else {
+                                    $(obj).html('<i class="fa fa-cloud-download"></i>');
+                                    $(obj).prev().html('Published');
+                                }
+                                if (LEAP.Common.MainPop && LEAP.Common.MainPop.options.dataTable) {
+                                    LEAP.Common.MainPop.options.dataTable.fnDraw(true);
+                                }
+                            }
+                        }
+                    });
+                    return true;
+                },
+                cancelValue: 'Cancel',
+                cancel: function() {}
+            });
+            d.showModal();
+
+        }
+    </script>
+    <script>
+        var uploader;
+        $(document).ready(function() {
+
+            $('#clear_condition').click(function() {
+                $('input[name=txtArticleTitle]').val('');
+                $('input[name=txtDate]').val('');
+                $('#txtSubCate').combotree('setValue', '');
+
+            });
+
+            var url = "GetList", appid = '@ViewBag.AppId';
+            if (appid != '') {
+                url += "?where=" + JSON.stringify({ Rules: [{ Field: 'AppId', value: appid }] });
+            }
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": url },
+                "aoColumns": [
+                {
+                    "mData": "Id",
+                    "bSortable": false,
+                    "sClass": "sTdCheckbox"
+                },
+                { "mData": "APPName" },
+                {
+                    "mData": "ArticleTitle",
+                    "bSearchable": false,
+                    "bSortable": false
+                },
+                { "mData": "ArticleCateSub" },
+                { "mData": "ReadCount" },
+                { "mData": "ThumbsUpCount" },
+                { "mData": "PublishDate"
+            },
+            { "mData": "ArticleStatus" },
+            { "mDate": "Operation" }],
+            "columnDefs":
+            jQuery.extend(true, datatableSetting.columnDefs, [
+                {
+                    "targets": 3,
+                    "render": function(data, type, full, meta) {
+                        return data;
+                    }
+                },
+                {
+                    "targets": 7,
+                    "render": function(data, type, full, meta) {
+                        return '<button class="artDailog btn btn-info  btn-xs btn-clip" data-text="/News/ArticleInfo/wxdetail/' + full.Id + '" id=clipR' + full.Id + ' >Copy URL</button>';
+                    }
+                },
+                {
+                    "targets": 8,
+                    "render": function(data, type, full, meta) {
+                        if (full.ArticleStatus == 'Published') {
+                            return "<span class=\"col-md-8\">Published</span><span class=\"btn btn-danger btn-xs pull-right\" onclick=\"javascript:ChangeArticleStatus('" + full.Id + "',this,'ChangeStatus')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Cancel Publish\"><i class=\"fa fa-cloud-download\"></span>";
+                        } else if (full.ArticleStatus == null || full.ArticleStatus == 'Saved') {
+                            return "<span class=\"col-md-8\">Saved</span><span class=\"btn btn-success btn-xs pull-right\" onclick=\"javascript:ChangeArticleStatus('" + full.Id + "',this,'ChangeStatus')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Publish\"><i class=\"fa fa-cloud-upload\"></i></span>";
+                        }
+                    }
+                },
+                {
+                    "targets": 9,
+                    "render": function(data, type, full, meta) {
+                        if (full.ArticleStatus == 'Published') {
+                            return '<a href="javascript:void(0);" onclick="editCourse();return false;" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>' +
+                                '<a href="#" onclick="deleteCourse()" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">' +
+                                '<i class="fa fa-trash-o"></i></a>';
+                        } else if (full.ArticleStatus == null || full.ArticleStatus == 'Saved') {
+
+                            return '<a href="Edit?Id=' + full.Id + '&appid=@ViewBag.AppId" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>' +
+                                    '<a href="#" onclick="LEAP.Common.MainPop.RowClick(\'' + full.Id + '\',2)" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">' +
+                                    '<i class="fa fa-trash-o"></i></a>';
+                            }
+                        }
+                    }
+                ]),
+                fnDrawCallback:  function() {
+                $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                $('.btn-clip').each(function() {
+                    var text = $(this).attr("data-text");
+                    var clip = new ZeroClipboard.Client(); // 新建一个对象
+                    clip.setHandCursor(true); // 设置鼠标为手型
+                    clip.setText(text); // 设置要复制的文本。
+                    // 注册一个 button，参数为 id。点击这个 button 就会复制。
+                    //这个 button 不一定要求是一个 input 按钮，也可以是其他 DOM 元素。
+                    clip.glue($(this).attr("id"));
+                    clip.addEventListener("complete", function() {
+                        artDialog.alert("Copy success.");
+                    });
+
+                });
+                $('ul.pagination').append("<li class='paginate_button'><input type='text' style='width:30px;float:left' id='go_page'></li><li class='paginate_button'><a class='gotopage'>Go</a></li>")
+                $('.gotopage').click(function () {
+                   var gopage = (/^[0-9]+$/).test($('#go_page').val()) ? $('#go_page').val() : "1";
+                   $('.data-table').dataTable().api().page(parseInt(gopage) - 1).draw(false)
+                })
+            }
+
+        }));
+
+        BeforeExport = function(inputs) {
+            inputs.push({ name: 'appid', value: '@ViewBag.AppId' });
+            return true;
+        };
+
+        LEAP.Common.MainPop.options.beforeShowModal = function() {
+            $('#preview').prop('src', '');
+            $('#Download').prop('href', '#');
+        };
+
+        LEAP.Common.MainPop.options.afterShowModal = function() {
+
+        };
+
+        LEAP.Common.MainPop.options.afterBindData = function(o) {
+            if (o == null || o.ArticleStatus == null || o.ArticleStatus == 'Saved') {
+                $('#labelSubmit').hide();
+                $('#btnSave').prop('disabled', false);
+            } else {
+                $('#labelSubmit').show();
+                $('#btnSave').prop('disabled', true);
+                var timeout = setTimeout(function() {
+                    $('span.msg').hide();
+                }, 3000);
+            }
+
+            $('#preview').prop('src', '/Common/File?id=' + o.ArticleContentViews[0].ImageID + '&FileName=/temp/' + o.ArticleContentViews[0].ImageUrl + '&ImgType=1');
+            $('#Download').prop('href', '/Common/File?id=' + o.ArticleContentViews[1].ImageID + '&FileName=/temp/' + o.ArticleContentViews[1].ImageUrl + '&ImgType=1');
+        };
+
+        //datepicker plugin
+        $('.date-picker').datepicker({
+                autoclose: true,
+                todayHighlight: true,
+                dateFormat: 'yyyy-mm-dd',
+                minDate: -10,
+                maxDate: "+1M +10D",
+                todayBtn: "linked",
+                clearBtn: true
+            })
+            .next().on(ace.click_event, function() {
+                // $(this).prev().focus();
+            });
+
+        $('#btnConfrim').click(function() {
+            //将列表里的数据都组织起来传到后台
+            var item = $('.dd-list .dd-item');
+            if (item.length <= 0) {
+                $('#batchModal').modal('hide');
+                return false;
+            }
+
+
+            var arrayList = new Array();
+            for (var i = 0; i < item.length; i++) {
+                arrayList.push(item.eq(i).data('id'));
+            }
+
+            $.ajax({
+                type: 'Post',
+                url: 'ChangeStatusBatch',
+                data: { "Ids": arrayList },
+                cache: false,
+                success: function(data) {
+                    if (ReturnValueFilter(data)) {
+                        //关闭modal
+                        $('#batchModal').modal('hide');
+                        if (LEAP.Common.MainPop && LEAP.Common.MainPop.options.dataTable) {
+                            LEAP.Common.MainPop.options.dataTable.fnDraw(true);
+                        }
+                    }
+                }
+            });
+
+        });
+        });
+
+        function deleteCourse() {
+            artDialog.alert("You can't delete the published article.<br/>If you want to do it,Please cancel publish first!");
+        }
+
+        function editCourse() {
+            artDialog.alert("You can't edit the published article.<br/>If you want to do it,Please cancel publish first!");
+        }
+
+        function Edit() {
+
+            window.location.href = "Edit?appid=@ViewBag.AppId";
+        }
+
+        //Array.forEach implementation for IE support..
+        //https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array/forEach
+        if (!Array.prototype.forEach) {
+            Array.prototype.forEach = function(callback, thisArg) {
+                var T, k;
+                if (this == null) {
+                    throw new TypeError(" this is null or not defined");
+                }
+                var O = Object(this);
+                var len = O.length >>> 0; // Hack to convert O.length to a UInt32
+                if ({}.toString.call(callback) != "[object Function]") {
+                    throw new TypeError(callback + " is not a function");
+                }
+                if (thisArg) {
+                    T = thisArg;
+                }
+                k = 0;
+                while (k < len) {
+                    var kValue;
+                    if (k in O) {
+                        kValue = O[k];
+                        callback.call(T, kValue, k, O);
+                    }
+                    k++;
+                }
+            };
+        }
+    </script>
+}

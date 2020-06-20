@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html" />
+    <meta name="viewport" content="width=device-width,height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="format-detection" content="telephone=no" />
+    <title>@ViewBag.Title </title>
+    @Scripts.Render("https://res.wx.qq.com/open/js/jweixin-1.1.0.js")
+    @RenderSection("Header", required: false)
+
+    <!-- basic scripts -->
+    <!--[if !IE] -->
+    <script src="//cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <!--[endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='/Scripts/jquery1x.js'>"+"<"+"/script>");
+    </script>
+    <![endif]-->
+    <script type="text/javascript">
+        if ('ontouchstart' in document.documentElement) document.write("<script src='/Scripts/jquery.mobile.custom.js'>" + "<" + "/script>");
+    </script>
+    <link rel='shortcut icon' href="~/Content/img/logo_icon.ico" />
+    <!-- bootstrap & fontawesome -->
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"><!--bootstrap cdn-->
+    <link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"><!--font-awesome cdn-->
+    <link rel="stylesheet" href="~/Style/ui-dialog.css" />
+    <link rel="stylesheet" href="https://res.wx.qq.com/open/libs/weui/0.4.3/weui.min.css" /><!--weui cdn-->
+    <script src="~/plugins/Innocellence.CA/Content/js/WeChatHelper.js"></script>
+</head>
+<body>
+    <div id="wx_div" style="position: absolute; width: 100%;height: 100%;">
+        <div style="width: 100%; height: 100%; position: absolute; z-index: 999; left: 0; top: 0; pointer-events: none; background: url(/marks/@(ViewBag.LillyId).png?ver=201509041); opacity: 0.4"></div>
+        <div class="body-content" id="top" data-activemenu="@ViewBag.Activemenu">
+            <div class="page-content">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <!--引入JS-->
+    <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script><!--bootstrap cdn-->
+    <script src="~/Scripts/Common/dialog-min.js"></script>
+
+    @RenderSection("scripts_Foot", required: false)
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            setTimeout("PerformanceLogging()", 3000);
+        });
+
+
+        //添加代码，发送信息到performance
+        function PerformanceLogging() {
+            $.post('/caaccount/PerformanceLogging/Performance',
+                {
+                    performanceLoggingView: window.performance.timing.toJSON()
+                },
+                function (text, status) {
+                    // currently do nothing
+                }
+            );
+        }
+    </script>
+</body>
+</html>

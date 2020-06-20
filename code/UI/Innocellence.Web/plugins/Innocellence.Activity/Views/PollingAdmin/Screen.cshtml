@@ -1,0 +1,411 @@
+﻿@model Innocellence.Activity.Contracts.ViewModel.PollingView
+@{
+    ViewBag.Title = "投票大屏幕";
+    Layout = "~/Plugins/Innocellence.Activity/Views/Shared/_ScreenLayout.cshtml";
+}
+@section easyui_css{
+
+    <link rel="stylesheet" href="~/Plugins/Innocellence.Activity/Content/style.css" />
+}
+
+<div id="ModalTable">
+
+    <input type="hidden" id="ID" name="ID" value="@Model.Id" />
+    <input type="hidden" id="AppId" name="AppId" value="@ViewBag.AppId" />
+
+    <div class="col-lg-12 polling-hd">
+        <div class="col-lg-10 polling-name text-center">@Model.Name</div>
+        <div class="col-lg-2 polling-member">
+            <div class="btn-group pull-left" data-toggle="buttons">
+                <label class="btn btn-info btn-sm active">
+                    <input type="radio" name="options" id="bar_chart" autocomplete="off" checked /><i class="fa fa-bar-chart"></i>
+                </label>
+                <label class="btn btn-info btn-sm">
+                    <input type="radio" name="options" id="pie_chart" autocomplete="off" />
+                    <i class="fa fa-pie-chart"></i>
+                </label>
+            </div>
+            <div class="pull-right"><span class="fa fa-user-plus"></span><span class="js-polling-total">@Model.PollingTotal</span></div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+
+    <div class="chart-title">
+        <h4></h4>
+    </div>
+
+    <div id="mychart" style="width: 960px; height: 400px; margin: 0 auto; clear: both;"></div>
+    <div id="mychart2" style="width: 960px; height: 400px; margin: 0 auto; clear: both; display: none;"></div>
+
+    <div class="btn-opreation text-center">
+        <a href="javascript:void(0);" id="btn-prev" class="btn btn-info btn-prev disabled" disabled="disabled"><i class="fa fa-chevron-left"></i></a>
+        <span class="page-number">1</span>
+        <a href="javascript:void(0);" id="btn-next" class="btn btn-info btn-next"><i class="fa fa-chevron-right"></i></a>
+    </div>
+
+    <span id="word-cal" style="visibility: hidden; white-space: nowrap;"></span>
+
+    <div class="col-lg-8 hidden" id="qusetions">
+        @if (Model.PollingQuestions == null || Model.PollingQuestions.Count == 0)
+        {
+
+            <p>没有任何投票记录.</p>
+        }
+        else
+        {
+            for (int i = 0; i < Model.PollingQuestions.Count; i++)
+            {
+                var typeStr = "";
+                var isHidden = i > 0 ? "hidden" : "";
+                var text = Model.PollingQuestions[i].IsRequired ? "*" : "";
+                if (Model.PollingQuestions[i].Type == 99) { continue; }
+
+                switch (Model.PollingQuestions[i].Type)
+                {
+                    case 0:
+                        typeStr = "多选";
+                        break;
+                    case 1:
+                        typeStr = "单选";
+                        break;
+                    case 99:
+                        typeStr = "填空";
+                        break;
+                    default:
+                        typeStr = "最多可选" + Model.PollingQuestions[i].Type + "项";
+                        break;
+                }
+
+                <div class="polling-item @isHidden">
+                    <input type="hidden" name="questionId" value="@Model.PollingQuestions[i].Id" />
+                    <div class="polling-item-hd ">
+                        <h4 class="polling-title">@Model.PollingQuestions[i].Title (@typeStr) @text</h4>
+                    </div>
+                    <!--/End Polling Question-->
+                </div>
+        }
+
+        }
+
+    </div>
+
+</div>
+
+@section scripts_Foot
+{
+
+    <script type="text/javascript">
+        var questionsList = new Array();
+
+        $(document).ready(function () {
+            var total = $('#qusetions .polling-item').length;
+
+            for (var i = 0; i < total; i++) {
+                var obj = new Object();
+                var parentNode = $('.polling-item').eq(i);
+                var strTitle = parentNode.find('.polling-title').text();
+                obj.Title = strTitle.replace("\r\n", "");
+                obj.Id = parentNode.find('input[name="questionId"]').val();
+                questionsList.push(obj);
+            }
+
+            // 基于准备好的dom，初始化echarts实例
+            var myChart = echarts.init(document.getElementById('mychart'));
+            var myChart2 = echarts.init(document.getElementById('mychart2'));
+
+            // 指定图表的配置项和数据
+            var option = {
+                title: {
+                    text: '',
+                    textStyle: {
+                        fontSize: 16
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br>{b} : {c}%"
+                },
+                legend: {
+                    data: []
+                },
+                xAxis: {
+                    type: 'value',
+                    data: ['0', '20', '40', '60', '80', '100'],
+                    position: 'bottom',
+                    splitLine: { lineStyle: { type: 'dashed' } },
+                    axisLabel: { formatter: '{value} %' },
+                },
+                yAxis: {
+                    type: 'category',
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    splitLine: { show: false },
+                    data: [],
+                },
+                series: [
+                    {
+                        name: '占总票数百分比',
+                        type: 'bar',
+                        barWidth: 40,
+                        data: [],
+                        itemStyle: {
+                            normal: {
+                                color: '#31b0d5',
+                                opacity: 0.8,
+                                label: {
+                                    show: true,
+                                    position: 'inside',
+                                    formatter: '{c}%',
+                                    textStyle: {
+                                        fontSize: 12,
+                                        color: "white"
+                                        
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            };
+           
+            var option2 = {
+                backgroundColor: '#ffffff',
+                title: {
+                    text: '',
+                    left: 'center',
+                    top: 20,
+                    textStyle: {
+                        color: '#000',
+                        fontSize: 16,
+                    }
+                },
+                textAlign: 'left',
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br>{b} : {c}%"
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: []
+                },
+                //visualMap: [
+                //{
+                //    type: 'continuous',
+                //    show: false,
+                //    min: 0,
+                //    max: 150,
+                //    inRange: {
+                //        colorLightness: [0, 1]
+                //    }
+                //}],
+                series: [
+                    {
+                        name: '占总票数百分比',
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '50%'],
+                        data: [].sort(function (a, b) { return a.value - b.value; }),
+                        //roseType: 'angle',
+                        label: {
+                            normal: {
+                                textStyle: {
+                                    color: 'rgba(0, 0, 0, 1)'
+                                }
+                            }
+                        },
+                        labelLine: {
+                            normal: {
+                                lineStyle: {
+                                    color: 'rgba(0, 0, 0, .3)'
+                                },
+                                smooth: 0.2,
+                                length: 10,
+                                length2: 20
+                            }
+                        },
+                        itemStyle: {
+                            normal: {
+                                //color: '#31b0d5',
+                                shadowBlur: 10,
+                                shadowColor: 'rgba(0, 0, 0, 0.5)'
+                            }
+                        }
+                    }
+                ]
+            };
+
+            //首次获取数据
+            ajaxData();
+
+            if (questionsList.length > 0) {
+                $('.chart-title h4').text(questionsList[0].Title);
+            }
+
+            //使用刚指定的配置项和数据显示图表
+            var tt = setInterval(function () {
+                ajaxData();
+            }, 5000);
+
+            $('.btn-group label').on('click', function () {
+                var pageNum = $('.page-number').text();
+                if ($(this).find('input').attr('id').indexOf("bar") < 0) {
+                    $('#pie_chart').prop('checked', 'checked');
+                    $('#bar_chart').prop('checked', false);
+                } else {
+                    $('#bar_chart').prop('checked', 'checked');
+                    $('#pie_chart').prop('checked', false);
+                }
+                //刷新标题
+                $('.chart-title h4').text(questionsList[pageNum - 1].Title);
+                $(this).addClass('active').siblings('label').removeClass('active');
+                ajaxData();
+            });
+
+            $('#btn-prev').on('click', function () {
+                $('#btn-next').attr('disabled', false).removeClass('disabled');
+                var type = $('input[name="options"]:checked').attr('id').replace("_chart", "");
+                var pageNum = $('.page-number').text();
+                if (pageNum - 1 == 0) {
+                    $(this).attr('disabled', 'disabled').addClass('disabled');
+                    return false;
+                }
+                //刷新标题
+                $('.chart-title h4').text(questionsList[pageNum - 2].Title);
+                //刷新数字
+                pageNum--;
+                $('.page-number').text(pageNum);
+                //刷新数据
+                ajaxData();
+            });
+
+            $('#btn-next').on('click', function () {
+                $('#btn-prev').attr('disabled', false).removeClass('disabled');
+                var type = $('input[name="options"]:checked').attr('id').replace("_chart", "");
+                var pageNum = $('.page-number').text();
+                if (pageNum == total) {
+                    $(this).attr('disabled', 'disabled').addClass('disabled');
+                    return false;
+                }
+                //刷新标题
+                $('.chart-title h4').text(questionsList[pageNum].Title);
+                //刷新数字
+                pageNum++;
+                $('.page-number').text(pageNum);
+                //刷新数据
+                ajaxData();
+            });
+
+            function ajaxData() {
+                //获取显示图类型
+                var strType = $('input[name="options"]:checked').attr('id').replace("_chart", "");
+                var pageNum = $('.page-number').text();
+                var qId = questionsList[pageNum - 1].Id;
+
+                var ajaxSend = $.ajax({
+                    type: 'Get',
+                    cache: false,
+                    url: 'GetSeriesData',
+                    data: { id: $('#ID').val(), appId: $('#AppId').val(), questionId: qId },
+                    dataType: "json",
+                    success: function (result) {
+                        if (result.SereisData != null) {
+                            var isToolong = false;
+                            $('.js-polling-total').text(result.PollingTotal);
+                            var sData = [];
+                            var yData = [];
+                            var legendData = [];
+                            if (strType == "bar") {
+                                $('#mychart').show();
+                                $('#mychart2').hide();
+                                for (var i = result.SereisData.length - 1; i >= 0; i--) {
+                                    // 测试每个字符串的长度
+                                    $('#word-cal').text(result.SereisData[i].Sereisname);
+                                    if ($('#word-cal').width() > 95) {
+                                        isToolong = true;
+                                        break;
+                                    }
+                                }
+
+                                for (var i = result.SereisData.length - 1; i >= 0; i--) {
+                                    if (!isToolong) {
+                                        sData.push(result.SereisData[i].Sereisvalue);
+                                        yData.push(result.SereisData[i].Sereisname);
+                                    } else {
+                                        sData.push(result.SereisData[i].Sereisvalue);
+                                        yData.push(truncateStringWithPrefix(result.SereisData[i].Sereisname, 95, convertIntToABCD(i) + ": "));
+                                    }
+                                }
+                                option.series[0].data = sData;
+                                option.yAxis.data = yData;
+                                myChart.setOption(option);
+                            } else {
+                                $('#mychart2').show();
+                                $('#mychart').hide();
+                                for (var i = result.SereisData.length - 1; i >= 0; i--) {
+                                    // 测试每个字符串的长度
+                                    $('#word-cal').text(result.SereisData[i].Sereisname);
+                                    if ($('#word-cal').width() > 300) {
+                                        isToolong = true;
+                                        break;
+                                    }
+                                }
+
+                                for (var x = result.SereisData.length - 1; x >= 0; x--) {
+                                    if (!isToolong) {
+                                        sData.push({
+                                            name: result.SereisData[x].Sereisname,
+                                            value: result.SereisData[x].Sereisvalue || 0
+                                        });
+                                        legendData.push(result.SereisData[x].Sereisname + " " + result.SereisData[x].Sereisvalue + "%");
+                                    } else {
+                                        sData.push({
+                                            name: truncateStringWithPrefix(result.SereisData[x].Sereisname, 300, convertIntToABCD(x) + ": "),
+                                            value: result.SereisData[x].Sereisvalue || 0
+                                        });
+                                        legendData.push(truncateStringWithPrefix(result.SereisData[x].Sereisname, 300, convertIntToABCD(x) + ": ") + result.SereisData[x].Sereisvalue + "%");
+                                    }
+                                }
+                                option2.series[0].data = sData;
+                                option2.legend.data = legendData;
+                                myChart2.setOption(option2);
+                            }
+                        }
+                    },
+                    complete: function (xmlHttpRequest, status) {
+                        if (status == 'timeout') {
+                            ajaxSend.abort();
+                        }
+                    }
+                });
+            }
+
+            function truncateStringWithPrefix(str, width, prefix) {
+                var temp_desc_old = "";//存放截断字符串
+                var temp_desc = "";//存放截断字符串
+                var isFullStr = true;
+                for (var j = 0; j < str.length; j++) {
+                    //desc是目标字符串，只能支持像素宽度为width的字符串
+                    temp_desc_old = temp_desc;
+                    temp_desc += str[j];
+                    var temp_desc1 = prefix + temp_desc + "..";
+                    $('#word-cal').text(temp_desc1);
+                    if ($('#word-cal').width() > width) {
+                        isFullStr = false;
+                        break;
+                    }
+                }
+                if (isFullStr) {
+                    return prefix + str;
+                }
+                else {
+                    return prefix + temp_desc_old + "..";
+                }
+            }
+
+            function convertIntToABCD(i) {
+                return String.fromCharCode(i + 65);
+            }
+        });
+    </script>
+}

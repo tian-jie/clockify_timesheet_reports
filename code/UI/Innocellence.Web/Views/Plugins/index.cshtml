@@ -1,0 +1,193 @@
+﻿<!--Action boxes-->
+<div class="row">
+    <div class="col-sm-12">
+        <form class="form-inline" id="SearchForm">
+            <input type="hidden" name="DeptId" id="DeptId" />
+            <div class="form-group pull-right">
+                <a href="#" class="btn btn-success btn-sm" id="btnRestart" data-toggle="tooltip" data-placement="top" title="重启服务">
+                    <i class="fa fa-times">重启服务</i>
+                </a>&nbsp;
+                <a href="#" class="btn btn-success btn-sm" id="btnAdd" data-toggle="tooltip" data-placement="top" title="增加">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+        </form>
+        <div class="clearfix"></div>
+
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered table-hover data-table">
+                    <thead>
+                        <tr>
+                            <th style="width:5%;text-align:center;">@T("Version")</th>
+                            <th>@T("Title")</th>
+                            <th>@T("Author")</th>
+                            <th>@T("Installed")</th>
+                            <th>@T("isEnabled")</th>
+                            <th style="width:10%;">@T("Operation")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="ModalTable" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="blue bigger">Please fill the followings</h4>
+            </div>
+
+            <div class="modal-body">
+                <form action="Post" id="ff" method="get" class="form-horizontal" datasource="Get">
+                    <input type="hidden" id="ID" name="ID" value="0" />
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Title:</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="FriendlyName" class="form-control" placeholder="Role Title" data-bind="value: FriendlyName"
+                                   validate="{required:true}" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Title:</label>
+                        <div class="col-sm-9">
+                            <textarea name="FriendlyName1" class="form-control" placeholder="Role Title" data-bind="value: FriendlyName"
+                                      validate="{required:true}"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Install:</label>
+                        <div class="col-sm-9">
+                            <input id="upload-input" class="form-control " multiple="multiple" type="file" name="file" onchange="return uploadHDFile(this);" />
+                            <input type="hidden" name="ImgUrl" />
+                            <div class="progress" style="margin-bottom: 0px">
+                                <div id="progress-bar" class="progress-bar" style="width:0">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-sm" data-dismiss="modal">
+                    <i class="ace-icon fa fa-times"></i>
+                    Cancel
+                </button>
+
+                <button class="btn btn-sm btn-primary" id="btnSave" data-action="save">
+                    <i class="ace-icon fa fa-check"></i>
+                    Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts_Foot
+{
+
+    <script type="text/javascript">
+        $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+        $(document).ready(function () {
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": {
+                    "url": "GetList"
+                },
+                "aoColumns": [
+                     { "mData": 'Version', },
+                   { "mData": 'FriendlyName', },
+                   { "mData": "Author" },
+                   { "mData": "Installed" },
+                   { "mData": "IsEnabled" },
+                   { "mData": "Operation" }
+                ],
+                "columnDefs": [
+                {
+                    "targets": 5,
+                    "render": function (data, type, full, meta) {
+                        return (full.IsEnabled != true ? ('<a href="#" onclick="Install(\'' + full.SystemName + '\',this);return false;" class="artDailog btn btn-info  btn-xs" style="margin-right:10px;" data-toggle="tooltip" data-placement="top" title="Install"><i class="fa fa-cloud-upload"></i></a>') :
+                               ('<a href="#" onclick="UnInstall(\'' + full.SystemName + '\',this)" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="Uninstall">' +
+                               '<i class="fa fa-cloud-download"></i></a>')) + '  <a href="#" onclick="Zip(\'' + full.SystemName + '\')">ZIP</a>';
+                    }
+                }, {
+                    "targets": 1,
+                    "render": function (data, type, full, meta) {
+                        return '<a href="#" onclick="LEAP.Common.MainPop.ShowUpdateInfo(\'' + full.SystemName + '\');return false;" class="artDailog">' + data + '</a>';
+                    }
+                }, ],
+                fnDrawCallback: function () {
+
+                    $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    $('#DataTables_Table_0_wrapper > .row:first-child').remove();
+                    $('ul.pagination').append("<li class='paginate_button'><input type='text' style='width:30px;float:left' id='go_page'></li><li class='paginate_button'><a class='gotopage'>Go</a></li>")
+                    $('.gotopage').click(function () {
+                        var gopage = (/^[0-9]+$/).test($('#go_page').val()) ? $('#go_page').val() : "1";
+                        $('.data-table').dataTable().api().page(parseInt(gopage) - 1).draw(false)
+                    })
+                }
+            }));
+
+        });
+
+
+        function Install(Name, obj) {
+            $.post("Install", { SystemName: Name }, function (data) {
+                $(obj).parent().prev().html('true');
+                //window.location.reload();
+                LEAP.Common.MainPop.options.dataTable.fnDraw();
+            });
+        }
+
+        function UnInstall(Name, obj) {
+            $.post("UnInstall", { SystemName: Name }, function (data) {
+                $(obj).parent().prev().html('false');
+                // window.location.reload();
+                LEAP.Common.MainPop.options.dataTable.fnDraw();
+            });
+        }
+        function Zip(Name) {
+            $.download('ZipFile', [{ name: 'systemName', value: Name }]);
+        }
+
+        function uploadHDFile(obj) {
+            $('#btnSave').prop("disabled", true);
+            var strUrl = "PostFile?SystemName=" + $('#ID').val();
+            $(obj).FileUpload({
+                self: obj,
+                url: strUrl,
+                allowExtension: '.zip',
+                rewriteDocumentId: '',
+                processBarId: 'progress-bar',
+                callBack: function (data) {
+                    if (data.error) {
+                        bootbox.alert(data.error.message);
+
+                    } else {
+                        $('#btnSave').prop("disabled", false);
+                    }
+                    //$('#preview' + id).prop('src', data.result.Src);
+                    // $('.formZip #ImgUrl').val(data.result.Src);
+                    // $('#Download').prop('href', data.result.Src);
+                    // $('#btnSave').prop("disabled", false);
+
+                }
+            });
+        }
+
+      //  $('#btnRestart').click();
+
+        $('#btnRestart').on('click', function () {
+            $.post("Post", {}, function (data) {
+
+
+            });
+        });
+    </script>
+}
+

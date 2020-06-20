@@ -1,0 +1,353 @@
+﻿@{
+    string title = ViewBag.title != "" ? ViewBag.title : "微信弹幕墙";
+    Layout = "~/plugins/Innocellence.Activity/Views/Shared/_ScreenLayout.cshtml";
+}
+
+@section Header{
+    <link rel="stylesheet" href="~/plugins/Innocellence.Activity/Content/wall.css" />
+    <style>
+        .emotion{
+            width: @(string.IsNullOrEmpty(Request["fontsize"])?"30": Request["fontsize"])px;
+            height: @(string.IsNullOrEmpty(Request["fontsize"])?"30": Request["fontsize"])px;
+        }
+    </style>
+}
+
+<div class="box">
+    <input type="hidden" id="summary_id" value="@ViewBag.keyWord" />
+    <input type="hidden" id="appId" value="@ViewBag.appId" />
+    <input type="hidden" id="maximum" value="1000" />
+    <div class="screen">
+        <div class="s-header container">
+            <div class="header-title col-lg-10 col-md-10 col-sm-10 col-xs-10">
+                <span>@title</span>
+            </div>
+            <div class="logo col-lg-2 col-md-2 col-sm-2 col-xs-2 text-right">
+                <img src="~/plugins/Innocellence.Activity/Content/img/logo_white.png" width="80" height="40" style="margin-top: 15px"/>
+            </div>
+        </div>
+        <div class="s_show">
+            <div class="speed" style="visibility:hidden;font-size:@(string.IsNullOrEmpty(Request["fontsize"])?"30": Request["fontsize"])px" id="testLineHeight">test Height 测试高度</div>
+        </div>
+    </div>
+</div>
+
+@section scripts_Foot{
+    <script type="text/javascript">
+        var b;
+        var index = 0, frequences = 0;
+        var wHeight = $(window).height();
+
+        var lineNum = wHeight < 768 ? 13 : 14;
+        var animateTime = 24000;
+        var stepTime = 10000;
+        var frequence = 800; // 控制屏幕上文字的密度
+
+        var lineHeight = 50;//每行多高
+        var list = [];
+        var displayed = [];
+        var lines = [];
+
+        var markupTemplate = '<div class="speed" id="{0}" style="left:{1}px;top:{2}px;font-size:@(string.IsNullOrEmpty(Request["fontsize"])?"30": Request["fontsize"])px;">{3}</div>';
+
+        var baseTime = new Date().getTime();
+
+        function getCurrentTime() {
+            return new Date().getTime() - baseTime;
+        }
+
+        $(function () {
+            // 加载完后预先计算一些数据：
+            lineHeight = $('#testLineHeight').height() * 1.8;
+            lineNum = Math.ceil((wHeight - 100) * 0.95 / lineHeight);
+            console.info('lineNum=%d', lineNum);
+
+            $('#testLineHeight').remove();
+
+            for (var i = 0; i < lineNum; i++) {
+                lines.push({ questionId: 0, lastTime: 0 });
+            }
+            //如果第一次刷新，则去后台取已显示过且审批通过的数据回来
+            $.ajax({
+                type: "Get",
+                cache: false,
+                url: "GetInitialQuestiones",
+                data: { appId: $('#appId').val(), keyWord: $("#summary_id").val(), maxNum: $('#maximum').val() },
+                success: function (data) {
+                    $.each(data, function (i, item) {
+                        list.push(item);
+                    });
+                    // 开始1秒钟的计时
+                    setInterval(addNewQuestion, frequence);
+                }
+            });
+
+            b = setInterval(function () {
+                //定时刷新，则去后台取未显示过且审批通过的数据回来
+                $.ajax({
+                    type: "Get",
+                    cache: false,
+                    url: "GetQuestiones",
+                    data: { appId: $('#appId').val(), keyWord: $("#summary_id").val() },
+                    success: function (data) {
+                        if (data != null) {
+                            $.each(data, function (i, item) {
+                                list.push(item);
+                            });
+                        }
+                    }
+                });
+
+                //如果后台的数据有未通过审批的，则取出来删除相对应的dom
+                $.ajax({
+                    type: "Get",
+                    cache: false,
+                    url: "GetCancelQuestiones",
+                    data: { appId: $('#appId').val(), keyWord: $("#summary_id").val() },
+                    success: function (data) {
+                        var array = [];
+                        if (data != null && data.length > 0) {
+                            // DOM可以不删，跑完了自然就删了
+                            //for (var i = 0; i < data.length; i++) {
+                            //    var target = "#" + data[i].Id;
+                            //    $(target).remove();
+                            //}
+                            //删除list里面的item 和更新index
+                            console.warn('we are going to remove something');
+                            console.warn(data);
+                            array = $.grep(list, function (n, x) {
+                                var reserve = true;
+                                for (var i = 0; i < data.length; i++) {
+                                    if (data[i].Id == n.Id) {
+                                        if (i < index) {
+                                            index--;
+                                        }
+                                        reserve = false;
+                                        //console.error("index changed: " + index);
+                                        break;
+                                    }
+                                }
+                                return reserve;
+                            });
+
+                            list = array;
+                            console.warn(list);
+                        }
+                    }
+                });
+            }, 5000);
+
+            function render() {
+                var id = 0;
+                var data = list[index];
+                id = data.Id;
+                if (id != 0) {
+                    return init_screen(id, data);
+                }
+            }
+
+            function addNewQuestion() {
+                if (CheckValidation(index)) {
+                    if (render()) {
+                        index++;
+                    }
+                    if (index >= list.length) {
+                        index = 0;
+                    }
+                }
+                frameCount++;
+            }
+
+        });
+
+        //弹幕主函数
+        //function controller() {
+        //    var e = window.event.keyCode;
+        //    //按下空格键则停止
+        //    if (e == 32) {
+        //        clearInterval(b);
+        //        return false;
+        //    }
+        //}
+
+        //初始化弹幕
+        var frameCount = 0;
+        function init_screen(id, data) {
+            var top = 0;
+            var left = $(window).width();
+            var height = $(window).height();
+            var rNumber = -1;
+
+            while (true) {
+                rNumber = Math.ceil(Math.random() * lineNum) - 1;
+                var curTime = getCurrentTime();
+                //console.debug("time span: (%d - (lines[%d].lastTime(%d)))=%d", curTime, rNumber, lines[rNumber].lastTime, (curTime - (lines[rNumber].lastTime)));
+                if ((curTime - (lines[rNumber].lastTime)) > stepTime) {
+                    //console.info("accepted time span: (%d - (lines[%d].lastTime(%d)))=%d - %s", curTime, rNumber, lines[rNumber].lastTime, (curTime - (lines[rNumber].lastTime)), data.FeedBackContent);
+                    lines[rNumber].lastTime = curTime;
+                    lines[rNumber].questionId = data.Id;
+                    break;
+                }
+            }
+            top = rNumber * lineHeight;
+            //left += Math.ceil(Math.random() * Math.ceil(left / 2));
+            if (top > height - 80) {
+                top = lineHeight;
+            }
+            //设定文字的初始化位置
+            var content = data.FeedBackContent;
+            var markup = markupTemplate.format(id, left, top, content, 30);
+
+            displayed.push(id);
+
+            $('.s_show').append(markup);
+
+            var target = $("#" + id);
+
+            setTimeout(function () {
+                var divWidth = target.width();
+
+                if (divWidth == null) {
+                    //console.warn('current width is not get.');
+                    return false;
+                }
+
+                var adjust = 0;
+                if (divWidth > 1200) {
+                    // 超长，+10秒
+                    adjust = 10000;
+                } else if (divWidth > 700) {
+                    // 长，+5秒
+                    adjust = 5000;
+                } else if (divWidth > 500) {
+                    // 长，+2秒
+                    adjust = 5000;
+                } else if (divWidth > 300) {
+                    adjust = 0;
+                } else if (divWidth > 100) {
+                    adjust = -2000;
+                } else if (divWidth > 50) {
+                    adjust = -4000;
+                } else {
+                    adjust = -4300;
+                }
+                lines[rNumber].lastTime += adjust;
+
+                //console.debug('lineNo=' + rNumber + ';width=' + divWidth + ';adjust=' + adjust + ';lasttime=' + (curTime - (lines[rNumber].lastTime)));
+
+            }, 100);
+
+            //console.debug("Width: " + divWidth + ", Adjust: " + adjust + ", question: " + target.html());
+
+            setTimeout(function () {
+                //console.debug(frameCount + " - del - Id: " + id + ", question: " + _this.html());
+                //删除DOM
+                target.remove();
+                //lines[rNumber].lastTime = 0;
+                lines[rNumber].questionId = 0;
+                for (var i = 0; i < displayed.length ; i++) {
+                    if (displayed[i] == id) {
+                        displayed.splice(i, 1);
+                        break;
+                    }
+                }
+            }, animateTime);
+            //console.warn(frameCount + " - add - Id: " + id + " lineNo.: " + rNumber + " question: " + data.FeedBackContent);
+
+            return true;
+        }
+
+        function CheckValidation(index) {
+            var hasSlot = true;
+            if (list.length == 0) {
+                return false;
+            }
+            for (var i = 0; i < displayed.length; i++) {
+                if (displayed[i] == list[index].Id) {
+                    // 正在显示中，返回false
+                    var target = "#" + displayed[i];
+                    console.info(frameCount + " - existing - Id: " + displayed[i] + ", lineNo: " + i + ", question: " + $(target).html());
+                    hasSlot = false;
+                    break;
+                }
+            }
+            return hasSlot;
+        }
+
+        /*
+        两种条件会返回false
+        1. 所有的行全满，并且全不到15秒
+        2. 要添加的这条已经存在了
+        */
+        function RemoveExpired(index) {
+            var hasSlot = false;
+            if (list.length == 0) {
+                return false;
+            }
+            for (var i = 0; i < lines.length; i++) {
+                var curTime = getCurrentTime();
+                if (curTime - lines[i].lastTime > animateTime) {
+                    hasSlot = true;
+                    if (lines[i].questionId == 0) {
+                        continue;
+                    }
+                    var target = "#" + lines[i].questionId;
+                    //console.debug(frameCount + " - del - Id: " + lines[i].questionId + ", lineNo: " + i + ", question: " + $(target).html());
+                    //删除DOM
+                    $(target).remove();
+                    lines[i].questionId = 0;
+                    //lines[i].lastTime = 0;
+                } else if (lines[i].questionId == list[index].Id) {
+                    // 这样时间不够，但是是需要添加的这行，也返回false
+                    var target = "#" + lines[i].questionId;
+                    //console.info(frameCount + " - existing - Id: " + lines[i].questionId + ", lineNo: " + i );
+                    hasSlot = false;
+                    break;
+                }
+            }
+
+            return hasSlot;
+        }
+
+        //随机获取颜色值
+        function getRandomColor() {
+            return '#' + (function (h) { return new Array(7 - h.length).join("0") + h; })((Math.random() * 0x1000000 << 0).toString(16));
+        }
+
+        //表情包
+        function emojiFactory(cont) {
+            return cont;
+        }
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]); return null;
+        }
+
+
+        String.prototype.format = function (args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if (args[key] != undefined) {
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            //var reg = new RegExp("({[" + i + "]})", "g");//这个在索引大于9时会有问题，谢谢何以笙箫的指出
+                            var reg = new RegExp("({)" + i + "(})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+    </script>
+}

@@ -1,0 +1,252 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+body {
+    background: #EFEFEF;
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+    font-family: "Microsoft YaHei", "微软雅黑", "SimSun", "宋体";
+    font-size: 14px;
+    color: #3c3c3c;
+}
+
+div, form, img, ul, ol, li, dl, dt, dd, p {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+}
+
+img, a img {
+    border: 0;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+a:focus {
+    outline: none;
+}
+
+img, .nobor {
+    border: 0;
+}
+
+/* 链接颜色 */
+a:link {
+    color: #3c3c3c;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #3c3c3c;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #6e6e6e;
+    text-decoration: none;
+}
+
+a:active {
+    color: #656464;
+}
+
+.clear {
+    clear: both;
+}
+
+.clearfix {
+    box-sizing: border-box;
+}
+
+.list_show {
+    width: 100%;
+    margin: 0 auto;
+    height: 410px;
+    overflow: auto;
+}
+
+.list_show h4 {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    height: 40px;
+    line-height: 40px;
+}
+
+.list_show h4 a.active {
+    float: left;
+    padding: 0 10px;
+    border-bottom: 1px solid #06F;
+    margin: 0 10px;
+}
+.list_show h4 a {
+    float: left;
+    padding: 0 10px;
+    margin: 0 10px;
+}
+.wechatabTabs{
+    display:none;
+}
+.wechatabTabs.active{
+    display:block;
+}
+
+.list_ul {
+    width: 96%;
+    margin: 10px auto;
+    /*overflow-y: auto;
+    height: 265px;*/
+}
+
+.list_ul li {
+    line-height: 38px;
+    width: 100%;
+    min-height: 38px;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+.list_ul li .list_do {
+    width: 100%;
+    cursor: pointer;
+}
+
+.list_ul li .list_do * {
+    float: left;
+}
+
+.list_ul li .list_do img {
+    margin: 7px 10px;
+    width: 24px;
+    height: 24px;
+}
+
+.list_ul li input {
+    right: 0;
+    margin-top: 10px;
+    margin-right: 10px;
+    position: absolute;
+    z-index: 3;
+}
+
+.list_ul li .list_person {
+    width: 100%;
+    cursor: pointer;
+}
+
+.list_ul li .list_person * {
+    float: left;
+}
+
+.list_ul li .list_person img {
+    margin: 7px 10px;
+    width: 24px;
+    height: 24px;
+}
+
+.list_ul li input {
+    right: 0;
+    margin-top: 10px;
+    margin-right: 10px;
+    position: absolute;
+    z-index: 3;
+}
+
+
+
+.list_show input[type=checkbox]:before {
+    content: url(../images/checkbox_n.png);
+    position: absolute;
+}
+
+.list_show input[type=checkbox]:checked:before {
+    content: url(../images/checkbox_y.png);
+    position: absolute;
+}
+
+.list_show input[type=checkbox]:disabled:before {
+    content: url(../images/checkbox_d.png);
+    position: absolute;
+}
+
+.list_show_bt {
+    width: 96%;
+    margin: 10px auto;
+    font-size: 14px;
+    font-weight: normal;
+    border-bottom: 1px solid #ddd;
+    line-height: 35px;
+}
+
+.list_show_bt b {
+    margin: 0 5px;
+}
+
+a.show_all {
+    color: #09F;
+}
+
+.check_out {
+    width: 96%;
+    padding: 5px 0px;
+    margin: 10px auto;
+    min-height: 25px;
+    background: #FFF;
+    line-height: 20px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.check_out span {
+    display: inline-block;
+    padding: 2px 5px;
+    background: #eee;
+    color: #333;
+    margin: 3px 5px;
+    cursor: pointer;
+}
+
+.check_out span img {
+    height: 20px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 4px;
+    cursor: pointer;
+}
+
+.check_out span i{
+    display: inline-block;
+    margin-left: 8px;
+}
+
+.date_s, .date_whole {
+    width: 96%;
+    margin: 10px auto;
+    padding: 5px;
+}
+
+.group-delbtn {
+    margin-left: 8px;
+    transition: all .3s;
+    -webkit-transition: all .3s;
+    cursor: pointer;
+}
+
+.group-delbtn:hover {
+    color: rgba(243, 112, 33, 0.8);
+    font-size: 1.3em;
+}
+

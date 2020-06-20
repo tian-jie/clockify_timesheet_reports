@@ -1,0 +1,528 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2500866E-03C6-41CB-8C9B-8D90378C0895}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Innocellence.WeChatMain</RootNamespace>
+    <AssemblyName>Innocellence.WeChatMain</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication>enabled</IISExpressAnonymousAuthentication>
+    <IISExpressWindowsAuthentication>disabled</IISExpressWindowsAuthentication>
+    <IISExpressUseClassicPipelineMode />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+    <WebGreaseLibPath>..\..\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <UseGlobalApplicationHostFile />
+    <Use64BitIISExpress />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Autofac">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Autofac.Integration.WebApi">
+      <HintPath>..\..\packages\Autofac.WebApi2.3.4.0\lib\net45\Autofac.Integration.WebApi.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Infrastructure.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e7429fb96767d50d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Library\Infrastructure.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Infrastructure.Core.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e7429fb96767d50d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Library\Infrastructure.Core.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Infrastructure.Utility, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e7429fb96767d50d, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Library\Infrastructure.Utility.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Infrastructure.Web, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Library\Infrastructure.Web.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Infrastructure.Web.Domain, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Library\Infrastructure.Web.Domain.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Innocellence.Weixin">
+      <HintPath>..\..\Library\Innocellence.Weixin.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Innocellence.Weixin.Cache.DB">
+      <HintPath>..\..\Library\Innocellence.Weixin.Cache.DB.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Innocellence.Weixin.MP">
+      <HintPath>..\..\Library\Innocellence.Weixin.MP.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Innocellence.Weixin.QY">
+      <HintPath>..\..\Library\Innocellence.Weixin.QY.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NPOI, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NPOI.2.2.1\lib\net40\NPOI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OOXML, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NPOI.2.2.1\lib\net40\NPOI.OOXML.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OpenXml4Net, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NPOI.2.2.1\lib\net40\NPOI.OpenXml4Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NPOI.OpenXmlFormats, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NPOI.2.2.1\lib\net40\NPOI.OpenXmlFormats.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="WebActivatorEx">
+      <HintPath>..\..\packages\WebActivatorEx.2.0.6\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="WebBackgrounder">
+      <HintPath>..\..\packages\WebBackgrounder.0.2.0\lib\net40\WebBackgrounder.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="WebGrease">
+      <Private>False</Private>
+      <HintPath>..\..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr3.Runtime">
+      <Private>False</Private>
+      <HintPath>..\..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.AspNet.Identity.Core">
+      <HintPath>..\..\packages\Microsoft.AspNet.Identity.Core.2.2.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\..\packages\Microsoft.AspNet.Identity.EntityFramework.2.2.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin">
+      <HintPath>..\..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb">
+      <HintPath>..\..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security">
+      <HintPath>..\..\packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies">
+      <HintPath>..\..\packages\Microsoft.Owin.Security.Cookies.3.0.1\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth">
+      <HintPath>..\..\packages\Microsoft.Owin.Security.OAuth.3.0.1\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\EncryptionHelper.cs" />
+    <Compile Include="Common\ExcelSerializer.cs" />
+    <Compile Include="Common\Job.cs" />
+    <Compile Include="Common\PathFormater.cs" />
+    <Compile Include="Common\WechatCommonMP.cs" />
+    <Compile Include="Common\WechatDBInit.cs" />
+    <Compile Include="Common\WechatCommon.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\CustomMessageHandler\CustomMessageContext.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\CustomMessageHandler\CustomDeviceMessageHandler.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\CustomMessageHandler\CustomMessageHandler.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\CustomMessageHandler\CustomMessageHandler_Events.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\LocationService.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\QyMessageHandler\QyCustomMessageContext.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\CustomMessageCommon.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\QyMessageHandler\QyCustomMessageHandler.cs" />
+    <Compile Include="Common\Wechat\MessageHandlers\Server.cs" />
+    <Compile Include="Common\Wechat\Results\FixWeixinBugWeixinResult.cs" />
+    <Compile Include="Common\Wechat\Results\WeixinResult.cs" />
+    <Compile Include="Controllers\AccountDetailController.cs" />
+    <Compile Include="Controllers\AppReportController.cs" />
+    <Compile Include="Controllers\ArticleCommentController.cs" />
+    <Compile Include="Controllers\ArticleImagesController.cs" />
+    <Compile Include="Controllers\ArticleImagesExtController.cs" />
+    <Compile Include="Controllers\ArticleInfoController.cs" />
+    <Compile Include="Controllers\ArticleInfosExtController.cs" />
+    <Compile Include="Controllers\AutoReplyController.cs" />
+    <Compile Include="Controllers\AppMenuController.cs" />
+    <Compile Include="Controllers\ArticleReportController.cs" />
+    <Compile Include="Controllers\DisclamerController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controllers\FileManageController.cs" />
+    <Compile Include="Controllers\LocalLogsController.cs" />
+    <Compile Include="Controllers\MenuReportController.cs" />
+    <Compile Include="Controllers\MessageController.cs" />
+    <Compile Include="Controllers\MessageLogController.cs" />
+    <Compile Include="Controllers\MessagesExtController.cs" />
+    <Compile Include="Controllers\NewMpReportController.cs" />
+    <Compile Include="Controllers\PageReportGroupController.cs" />
+    <Compile Include="Controllers\PlateformManageController.cs" />
+    <Compile Include="Controllers\QrCodeController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
+    <Compile Include="Controllers\SendMessageLogController.cs" />
+    <Compile Include="Controllers\SsoController.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TextReportController.cs" />
+    <Compile Include="Controllers\UploadController.cs" />
+    <Compile Include="Controllers\UserBehaviorApiController.cs" />
+    <Compile Include="Controllers\UserBehaviorController.cs" />
+    <Compile Include="Controllers\WeChatBaseController.cs" />
+    <Compile Include="Controllers\AppAccessReportController.cs" />
+    <Compile Include="Controllers\WechatFollowReportController.cs" />
+    <Compile Include="Controllers\WechatUserRequestMessageLogController.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\WeChat\MenuController.cs" />
+    <Compile Include="Controllers\WeChat\DepartmentController.cs" />
+    <Compile Include="Controllers\WeChat\AppManageController.cs" />
+    <Compile Include="Controllers\WeChat\SearchBarController.cs">
+      <SubType>
+      </SubType>
+    </Compile>
+    <Compile Include="Controllers\WeChat\TagManageController.cs" />
+    <Compile Include="Controllers\UserMPController.cs" />
+    <Compile Include="Controllers\WeChat\UserWechatController.cs" />
+    <Compile Include="Controllers\WeChat\ATokenController.cs" />
+    <Compile Include="Controllers\WeChat\WeixinController.cs" />
+    <Compile Include="Controllers\WeChat\WeixinBaseController.cs" />
+    <Compile Include="Controllers\WeChat\WeixinMPController.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RouteProvider.cs" />
+    <Compile Include="Starter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\chart.gif" />
+    <Content Include="Content\chart.png" />
+    <Content Include="Content\FileManage.css" />
+    <Content Include="Content\tag.css" />
+    <Content Include="Description.txt" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Scripts\app.js" />
+    <Content Include="Scripts\autoreply.edit.js" />
+    <Content Include="Scripts\autoreply.index.js" />
+    <Content Include="Scripts\filemanage.js" />
+    <Content Include="Scripts\jquery.fileupload-angular.js" />
+    <Content Include="Scripts\jquery.fileupload-audio.js" />
+    <Content Include="Scripts\jquery.fileupload-image.js" />
+    <Content Include="Scripts\jquery.fileupload-jquery-ui.js" />
+    <Content Include="Scripts\jquery.fileupload-process.js" />
+    <Content Include="Scripts\jquery.fileupload-ui.js" />
+    <Content Include="Scripts\jquery.fileupload-validate.js" />
+    <Content Include="Scripts\jquery.fileupload-video.js" />
+    <Content Include="Scripts\jquery.fileupload.css" />
+    <Content Include="Scripts\jquery.fileupload.js" />
+    <Content Include="Scripts\jquery.iframe-transport.js" />
+    <Content Include="Scripts\jquery.ui.widget.js" />
+    <Content Include="Scripts\main.js" />
+    <Content Include="Views\AppAccessReport\AppIndex.cshtml" />
+    <Content Include="Views\ArticleReport\AppIndex.cshtml" />
+    <Content Include="Views\MenuReport\AppIndex.cshtml" />
+    <Content Include="Views\MenuReport\index.cshtml" />
+    <Content Include="Views\PageReportGroup\index.cshtml" />
+    <Content Include="Views\PageReportGroup\ReportDetail.cshtml" />
+    <Content Include="Views\Web.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Contact.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Shared\_LoginPartial.cshtml" />
+    <Content Include="Views\Menu\Index.cshtml" />
+    <Content Include="Views\UserWechat\index.cshtml" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\Localization\" />
+    <Folder Include="Controllers\Manage\" />
+    <Folder Include="Views\MessageLog\" />
+    <Folder Include="Views\SendMessageLog\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+    <Content Include="Views\Common\Error.cshtml" />
+    <Content Include="Views\User\UserIndex.cshtml" />
+    <Content Include="Views\User\RoleIndex.cshtml" />
+    <Content Include="Views\User\DepartmentIndex.cshtml" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\InnoCellence.WeChatMain.pubxml" />
+    <Content Include="Views\Tools\index.cshtml" />
+    <Content Include="Views\Sso\SsoResult.cshtml" />
+    <Content Include="Views\Shared\_AutopostLayout.cshtml" />
+    <Content Include="Views\LocalLogs\getlocallogs.cshtml" />
+    <Content Include="Views\Report\Index.cshtml" />
+    <Content Include="Views\Report\Department.cshtml" />
+    <Content Include="Views\TagManage\index.cshtml" />
+    <Content Include="Views\Report\Statistics.cshtml" />
+    <Content Include="Views\Report\Enterprise.cshtml" />
+    <Content Include="ReferenceDoc\template_batch_user_tag.csv" />
+    <Content Include="Views\AppManage\GetAppList.cshtml" />
+    <Content Include="Views\AppManage\Edit.cshtml" />
+    <Content Include="ReferenceDoc\import_user_sample.xlsx" />
+    <Content Include="Views\AppManage\CategoryManageList.cshtml" />
+    <Content Include="Views\SearchBar\index.cshtml" />
+    <Content Include="Views\WechatFollowReport\index.cshtml" />
+    <Content Include="Views\AppAccessReport\index.cshtml" />
+    <Content Include="ReferenceDoc\batch_user_sample.csv" />
+    <Content Include="Views\ArticleReport\index.cshtml" />
+    <Content Include="Views\TextReport\Index.cshtml" />
+    <Content Include="Views\UserWechat\JobList.cshtml" />
+    <Content Include="Views\ArticleReport\LedIndex.cshtml" />
+    <Content Include="Views\ArticleReport\LedReport.cshtml" />
+    <Content Include="Views\FileManage\Index.cshtml" />
+    <Content Include="Views\ArticleInfo\adminindex.cshtml" />
+    <Content Include="Views\ArticleInfo\Edit.cshtml" />
+    <Content Include="Views\ArticleInfo\Edit_HD.cshtml" />
+    <Content Include="Views\ArticleInfo\Edit_HT.cshtml" />
+    <Content Include="Views\ArticleInfo\index.cshtml" />
+    <Content Include="Views\ArticleImages\index.cshtml" />
+    <Content Include="Views\Message\Edit.cshtml" />
+    <Content Include="Views\Message\GlobalEdit.cshtml" />
+    <Content Include="Views\Message\GlobalIndex.cshtml" />
+    <Content Include="Views\Message\index.cshtml" />
+    <Content Include="Views\AppReport\Report.cshtml" />
+    <Content Include="Views\AutoReply\Index.cshtml" />
+    <Content Include="Views\Message\EditNews.cshtml" />
+    <Content Include="Views\AutoReply\Edit.cshtml" />
+    <Content Include="Views\WechatUserRequestMessageLog\Index.cshtml" />
+    <Content Include="Views\Upload\Uploadfile.cshtml" />
+    <Content Include="Views\FileManage\ImageList.cshtml" />
+    <Content Include="Views\FileManage\VoiceList.cshtml" />
+    <Content Include="Views\FileManage\VideoList.cshtml" />
+    <Content Include="Views\FileManage\FileList.cshtml" />
+    <Content Include="Views\Message\GetNews.cshtml" />
+    <Content Include="Views\UserMP\GroupList.cshtml" />
+    <Content Include="Views\QrCode\Index.cshtml" />
+    <Content Include="Views\Message\WechatServiceMessage.cshtml" />
+    <Content Include="Views\AutoReply\GetNews.cshtml" />
+    <Content Include="Views\AppManage\MenuManagement.cshtml" />
+    <Content Include="Views\WechatUserRequestMessageLog\MPIndex.cshtml" />
+    <None Include="Properties\PublishProfiles\wechatmain.pubxml" />
+    <Content Include="Views\AppMenu\CreateConditionalMPMenu.cshtml" />
+    <Content Include="Views\NewMpReport\MpReport.cshtml" />
+    <Content Include="ReferenceDoc\batch_user_sample.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\ArticleComment\AddComment.cshtml" />
+    <Content Include="Views\UserWechat\SyncUserTagIndex.cshtml" />
+    <Content Include="Views\Admin\Index.cshtml" />
+    <Content Include="Views\AccountDetail\Index.cshtml" />
+    <Content Include="Views\PlateformManage\Index.cshtml" />
+    <Content Include="Views\PlateformManage\PasswordChange.cshtml" />
+    <Content Include="Views\Shared\_LayoutNoMenu.cshtml" />
+    <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Innocellence.Authentication\Innocellence.Authentication.csproj">
+      <Project>{1b9daeae-1477-4a45-bad0-ea53288f2c52}</Project>
+      <Name>Innocellence.Authentication</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Libary\Innocellence.WeChat.Domain\Innocellence.WeChat.Domain.csproj">
+      <Project>{e95f23b9-c1d9-4af3-8e12-a5cc13492ac9}</Project>
+      <Name>Innocellence.WeChat.Domain</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>10069</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:24833/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>这台计算机上缺少此项目引用的 NuGet 程序包。启用“NuGet 程序包还原”可下载这些程序包。有关详细信息，请参阅 http://go.microsoft.com/fwlink/?LinkID=322105。缺少的文件是 {0}。</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
+  </Target>
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

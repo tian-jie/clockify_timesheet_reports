@@ -1,0 +1,96 @@
+﻿
+<!--Action boxes-->
+  <div class="row">
+      <div class="col-sm-12">
+            <form class="form-inline" id="SearchForm">
+                <input type="hidden" name="DeptId" id="DeptId" />
+                <div class="form-group">
+                    <div data-date-format="yyyy-mm-dd" class="input-append date date-picker" style="display:inline-block;">
+                        <div class="input-group">
+                            <input type="datetime" name="txtDate" class="form-control" placeholder="Created Date"/>
+                            <span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+                        </div>
+                   </div>
+                   <select class="form-control" name="txtCateLog">
+                               <option value="">Please Select Logcate</option>
+                               <option value="Wechat">Wechatlogin</option>
+                               <option value="Admin">Adminlogin</option>
+                    </select>
+                    <a href="#" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+                </div>
+            </form>
+
+              <div class="widget-box">
+                  <div class="widget-content nopadding">
+                      <table class="table table-bordered table-hover data-table">
+                          <thead>
+                              <tr>
+                                  <th style="width:5%;text-align:center">@T("ID")</th>
+                                  <th>@T("Content")</th>
+                                  <th>@T("Type")</th>
+                                  <th>@T("Created Date")</th>
+                                  <th>@T("UserID")</th>
+                              </tr>
+                          </thead>
+                      </table>
+                  </div>
+              </div>
+          </div>
+   </div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        $(document).ready(function () {
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": {
+                    "url": "GetList"
+                },
+                "aoColumns": [
+                   {
+                        "mData": 'Id',
+                        "bSortable": false,
+                        "sClass":"sTdCheckbox"
+                   },
+                   {
+                       "mData": "LogContent",
+                       "bSearchable": false,
+                       "bSortable": false 
+                   },
+                   { "mData": "LogCate" },
+                   { "mData": "CreatedDate" },
+                   { "mData": "CreatedUserName" },
+                ], 
+                "columnDefs": [
+                {
+                    "targets": 1,
+                    "render": function (data, type, full, meta) {
+                        return data;
+                    }
+                }],
+                fnDrawCallback: function () {
+                    $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
+                    $('#DataTables_Table_0_wrapper > .row:first-child').remove();
+                    $('ul.pagination').append("<li class='paginate_button'><input type='text' style='width:30px;float:left' id='go_page'></li><li class='paginate_button'><a class='gotopage'>Go</a></li>")
+                    $('.gotopage').click(function () {
+                        var gopage = (/^[0-9]+$/).test($('#go_page').val()) ? $('#go_page').val() : "1";
+                        $('.data-table').dataTable().api().page(parseInt(gopage) - 1).draw(false)
+                    })
+                }
+            }));
+        });
+
+        //datepicker plugin
+        $('.date-picker').datepicker({
+            autoclose: true,
+            todayHighlight: true,
+            dateFormat: 'yyyy-mm-dd',
+            minDate: -10,
+            maxDate: "+1M +10D",
+        })
+        //.next().on(ace.click_event, function () {
+        //    $(this).prev().focus();
+        //});
+       
+    </script>
+}

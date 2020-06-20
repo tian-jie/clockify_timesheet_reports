@@ -1,0 +1,259 @@
+#Message_Tag {
+  padding: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  min-height: 200px;
+  background: #fff; }
+  #Message_Tag .Tag-title {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc; }
+    #Message_Tag .Tag-title h4 {
+      padding: 0;
+      margin: 0; }
+    #Message_Tag .Tag-title a {
+      color: #ee4b46; }
+  #Message_Tag ul {
+    list-style: none;
+    margin: 0; }
+    #Message_Tag ul li {
+      float: left;
+      padding: 5px 31px;
+      margin: 0 10px 10px 0;
+      border: 1px solid #ccc;
+      cursor: pointer; }
+      #Message_Tag ul li:hover {
+        padding: 5px 6px;
+        background: #ee4b46;
+        border: 1px solid #ee4b46;
+        color: #fff; }
+      #Message_Tag ul li h5 {
+        margin: 3px 0;
+        float: left; }
+      #Message_Tag ul li span {
+        display: none;
+        padding-left: 10px; }
+        #Message_Tag ul li span a {
+          padding: 0 3px;
+          text-decoration: none;
+          color: #fff; }
+          #Message_Tag ul li span a:hover {
+            color: #f4f1f1; }
+
+#grouplist select {
+  width: 120px;
+  margin-right: 5px; }
+#grouplist .line-h {
+  line-height: 32px; }
+#grouplist .user-title {
+  margin-top: 15px;
+  margin-bottom: 22px; }
+#grouplist .user {
+  display: block;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  line-height: 1;
+  font-size: 15px;
+  color: #333; }
+#grouplist .user-add {
+  margin-bottom: 5px;
+  margin-top: 50px; }
+#grouplist .tag-manage {
+  width: 100%;
+  text-align: right; }
+#grouplist .user-tag {
+  position: relative;
+  width: 100%;
+  padding: 10px 0 10px 100px;
+  border-bottom: 1px dotted #ccc;
+  min-height: 50px; }
+  #grouplist .user-tag:last-child {
+    border-bottom: none;
+    padding-bottom: 0; }
+  #grouplist .user-tag .tag-title {
+    position: absolute;
+    left: 0;
+    top: 10px;
+    text-align: right;
+    font-weight: bolder;
+    width: 90px;
+    height: 30px;
+    line-height: 30px; }
+#grouplist .tag {
+  margin-left: 0;
+  margin-bottom: 0; }
+  #grouplist .tag li {
+    float: left;
+    list-style: none;
+    padding: 0 29px;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer; }
+    #grouplist .tag li p {
+      float: left; }
+    #grouplist .tag li .import {
+      float: left;
+      display: none; }
+      #grouplist .tag li .import .input-small {
+        width: 103px;
+        height: 24px;
+        margin-top: 3px;
+        padding: 1px 4px 2px !important;
+        border: 1px solid red; }
+    #grouplist .tag li:hover {
+      background: #ee4b46;
+      color: #fff; }
+#grouplist .tag-rename, #grouplist .tag-delete {
+  float: right;
+  padding-left: 5px;
+  display: none; }
+#grouplist .tag-edit-all {
+  margin-top: 20px; }
+#grouplist .tag-class {
+  background: #f6f6f6;
+  min-height: 200px;
+  margin-bottom: 20px;
+  padding: 10px 0 10px 10px; }
+  #grouplist .tag-class .tag-class-add {
+    display: block;
+    color: #ee4b46;
+    text-decoration: none; }
+    #grouplist .tag-class .tag-class-add span {
+      font-size: 20px; }
+    #grouplist .tag-class .tag-class-add:hover {
+      background: #fff; }
+  #grouplist .tag-class ul {
+    list-style: none;
+    margin-left: 0px;
+    margin-top: 5px; }
+    #grouplist .tag-class ul li {
+      padding: 5px;
+      margin-bottom: 5px;
+      cursor: pointer; }
+      #grouplist .tag-class ul li p {
+        float: left;
+        padding: 0;
+        margin: 0; }
+      #grouplist .tag-class ul li a {
+        float: right;
+        display: inline-block;
+        padding-right: 5px; }
+      #grouplist .tag-class ul li:hover, #grouplist .tag-class ul li.active {
+        background: #fff; }
+#grouplist .import {
+  float: left;
+  display: none; }
+  #grouplist .import .input-small {
+    width: 103px;
+    padding: 1px 4px 2px !important; }
+#grouplist .pack-up {
+  position: relative;
+  margin: 0 auto 30px;
+  padding-right: 20px;
+  width: 100px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  background: #fff;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  cursor: pointer; }
+  #grouplist .pack-up i {
+    position: absolute;
+    right: 13px;
+    top: 5px; }
+#grouplist .tag-height .user-tag:not(:first-child) {
+  display: none; }
+#grouplist .marginTop {
+  margin-top: 35px; }
+#grouplist .marginTop1 {
+  margin-top: 20px; }
+#grouplist .edit-tag {
+  margin-right: -20px;
+  line-height: 32px; }
+#grouplist .filter-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  margin: 5px 10px 5px 0;
+  border: 1px solid #ee4b46;
+  background: #fff;
+  color: #e03a35; }
+  #grouplist .filter-tag a {
+    padding-left: 5px;
+    color: #e03a35; }
+#grouplist .add1, #grouplist .add2 {
+  color: #fff; }
+#grouplist .show-tag {
+  font-size: 21px; }
+
+#PlateformManage {
+  padding: 20px; }
+  #PlateformManage .base-message {
+    margin-bottom: 50px; }
+    #PlateformManage .base-message .message {
+      margin-left: 15px; }
+      #PlateformManage .base-message .message a {
+        color: #ee4b46;
+        cursor: pointer; }
+  #PlateformManage .btn-margin {
+    margin-right: 20px;
+    margin-top: 20px; }
+  #PlateformManage .form-margin {
+    padding: 20px 20px 0 20px; }
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak, .ng-hide {
+  display: none !important; }
+
+ng\:form {
+  display: block; }
+
+.ng-animate-block-transitions {
+  transition: 0s all !important;
+  -webkit-transition: 0s all !important; }
+
+.ng-hide-add-active, .ng-hide-remove {
+  display: block !important; }
+
+.mod-send-message__audio-timeimage-wrap {
+  width: 128px;
+  height: 31px;
+  background-image: url(images/style-old-global_801b41ce.png);
+  background-position: -106px -503px;
+  display: inline-block;
+  position: relative;
+  margin: 5px 5px 5px 20px;
+  float: left; }
+
+.mod-send-message__audio-time {
+  width: 30px;
+  display: inline-block;
+  vertical-align: 6px;
+  color: #75777A; }
+
+.mod-send-message__audio-timeimage-wrap {
+  width: 128px;
+  height: 31px;
+  background-image: url(images/style-old-global_801b41ce.png);
+  background-position: -106px -503px;
+  display: inline-block;
+  position: relative;
+  margin: 5px 5px 5px 20px;
+  float: left; }
+
+.mod-send-message__audio-timeimage {
+  width: 12px;
+  height: 17px;
+  position: absolute;
+  background-image: url(images/style-old-global_801b41ce.png);
+  background-position: -578px -228px;
+  display: inline-block;
+  left: 20px;
+  top: 7px; }
+
+.mod-send-message__audio-time {
+  width: 30px;
+  display: inline-block;
+  vertical-align: 6px;
+  color: #75777A; }
+
+/*# sourceMappingURL=style.css.map */

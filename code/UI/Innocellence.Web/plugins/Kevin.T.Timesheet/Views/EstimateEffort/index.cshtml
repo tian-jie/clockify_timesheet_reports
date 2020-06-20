@@ -1,0 +1,145 @@
+﻿@{
+    ViewBag.Title = "项目估算列表";
+}
+
+
+<link href="//cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.css" rel="stylesheet" media="screen">
+
+<body>
+    <div id="toolbar" class="btn-group">
+        <button id="btn_load" type="button" class="btn btn-default btn-load">
+            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Load
+        </button>
+        <button id="btn_save" type="button" class="btn btn-default btn-save">
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Save
+        </button>
+
+    </div>
+
+    <div class="widget-box">
+        <div class="widget-content nopadding">
+            <table class="table table-bordered data-table" id="table">
+                @*<thead>
+                        <tr>
+                            <th style="width: 5%">Id</th>
+                            <th style="width: 30%">ProjectGid</th>
+                            <th style="width: 10%">RoleTitle</th>
+                            <th style="width: 10%">RoleRate</th>
+                            <th style="width: 10%">Effort</th>
+                            <th style="width: 10%">RateEffort</th>
+
+                        </tr>
+                    </thead>*@
+            </table>
+        </div>
+    </div>
+
+
+</body>
+
+@section scripts_Foot
+{
+    <script src="//cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.js"></script>
+
+    <script language="javascript">
+        $(document).ready(function () {
+            initTable();
+        });
+
+        function initTable() {
+            var container = document.getElementById('table')
+            var load = document.getElementById('btn_load')
+            var save = document.getElementById('btn_save')
+
+            hot = new Handsontable(container, {
+                startRows: 20,
+                startCols: 10,
+                rowHeaders: true,
+                colHeaders: ['Id', 'RoleId', 'RoleTitle', 'RoleRate', 'Effort', 'RateEffort'],
+                filters: true,
+                dropdownMenu: true,
+                columns: [
+                    { data: 'Id' },
+                    { data: 'RoleId' },
+                    { data: 'RoleTitle' },
+                    { data: 'RoleRate' },
+                    { data: 'Effort' },
+                    { data: 'RateEffort' }
+                ],
+                afterChange: function (change, source) {
+                    if (source === 'loadData') {
+                        return; //don't save this change
+                    }
+
+
+                    ////clearTimeout(autosaveNotification);
+                    //$.ajax('SaveData', 'GET', JSON.stringify({ data: change }), function (data) {
+                    //    autosaveNotification = setTimeout(function () {
+                    //        exampleConsole.innerText = 'Changes will be autosaved';
+                    //    }, 1000);
+                    //});
+                }
+            });
+
+            Handsontable.dom.addEvent(load, 'click', function () {
+                $.ajax({
+                    url: '../EstimateEffortApi/GetData',
+                    method: 'POST',
+                    contentType: 'application/json; charset=UTF-8',
+                    success: function (res) {
+                        //var data = JSON.parse(res.response);
+
+                        hot.loadData(res);
+                        //exampleConsole.innerText = 'Data loaded';
+                    }
+                });
+            });
+
+            Handsontable.dom.addEvent(save, 'click', function () {
+                // save all cell's data
+                var data1 = hot.getData();
+                // 组合数据给后台传
+                var dataList = [];
+                data1.forEach(function (currentValue, index, arr) {
+                    if (currentValue[0] == 2147483647) {
+                        return;
+                    }
+                    var d = {
+                        Id: currentValue[0],
+                        RoleId: currentValue[1],
+                        RoleTitle: currentValue[2],
+                        RoleRate: currentValue[3],
+                        Effort: currentValue[4],
+                        RateEffort: currentValue[5]
+                    };
+                    dataList.push(d);
+                });
+
+                $.ajax({
+                    url: '../EstimateEffortApi/SaveData',
+                    method: 'POST',
+                    dataType: "json",
+                    data: {
+                        estimateEffortViews: dataList
+                    },
+                    success: function (res) {
+                        alert(JSON.stringify(res));
+                    }
+                });
+                //$.ajax('SaveData', 'POST', JSON.stringify({ data: hot.getData() }), function (res) {
+                //    var response = JSON.parse(res.response);
+
+                //    if (response.status === '200') {
+                //        exampleConsole.innerText = 'Data saved';
+                //    }
+                //    else {
+                //        exampleConsole.innerText = 'Save error';
+                //    }
+                //});
+            });
+
+        }
+
+
+    </script>
+}

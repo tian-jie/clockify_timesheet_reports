@@ -1,0 +1,165 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+          "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <script type="text/javascript" src="../internal.js"></script>
+    <link rel="stylesheet" type="text/css" href="video.css" />
+    <link rel="stylesheet" type="text/css" href="/styles/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="/Scripts/webuploader/webuploader.css" />
+    <style type="text/css">
+        .nopadding-lr {
+            padding-left: 0;
+            padding-right: 0;
+        }
+        .pl5 {
+            padding-left: 5px;
+        }
+        #simple_upload {
+            width: 220px;
+            height: 270px;
+            margin-left: 5px;
+            border: 3px dashed #e6e6e6;
+        }
+        #preview {
+            width: 320px;
+            position: absolute;
+            top: 62px;
+            left: 220px;
+            height: 280px;
+        }
+        #upload-input {
+            visibility: hidden;
+            position: absolute;
+        }
+        #btnUpload {
+            display: block;
+            font-size: 18px;
+            background: #00b7ee;
+            border-radius: 3px;
+            line-height: 44px;
+            padding: 0 30px;
+            color: #fff;
+            margin: 10px auto;
+            cursor: pointer;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div id="videoTab">
+            <div id="tabHeads" class="tabhead">
+                <span tabsrc="video" class="focus" data-content-id="video"><var id="lang_tab_insertV"></var></span>
+                <span tabsrc="upload" data-content-id="upload" style="display: none; "><var id="lang_tab_uploadV"></var></span>
+            </div>
+            <div id="tabBodys" class="tabbody">
+                <div id="video" class="panel focus">
+                    <table><tr><td><label for="videoUrl" class="url"><var id="lang_video_url"></var></label></td><td><input id="videoUrl" type="text"></td></tr></table>
+                    <div class="form-group col-lg-6 nopadding-lr">
+                        <label class="col-sm-3 control-label pl5">Poster :</label>
+                        <div class="col-sm-9 pl5" id="simple_upload">
+                           <img id="videoImage" title="This is a upload image." src="/Scripts/webuploader/images/image.png" width="200" height="150"/>
+                           <button class="btn" type="button" id="btnUpload">Select</button>
+                           <input id="upload-input" type="file" name="file" multiple="multiple" accept="image/*" onchange="return uploadImage(this);">
+                            <div class="progress" style="margin-bottom: 0;width:200px;">
+                                <div id="progress-bar1" class="progress-bar" style="width:0">0</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="preview"></div>
+                    <div id="videoInfo">
+                        <fieldset style="display: none; ">
+                            <legend><var id="lang_video_size"></var></legend>
+                            <table>
+                                <tr><td><label for="videoWidth"><var id="lang_videoW"></var></label></td><td><input class="txt" id="videoWidth" type="text" /></td></tr>
+                                <tr><td><label for="videoHeight"><var id="lang_videoH"></var></label></td><td><input class="txt" id="videoHeight" type="text" /></td></tr>
+                            </table>
+                        </fieldset>
+                        <fieldset style="display: none; ">
+                            <legend><var id="lang_alignment"></var></legend>
+                            <div id="videoFloat"></div>
+                        </fieldset>
+                    </div>
+                </div>
+                <div id="upload" class="panel" style="display: none; ">
+                    <div id="upload_left">
+                        <div id="queueList" class="queueList">
+                            <div class="statusBar element-invisible">
+                                <div class="progress">
+                                    <span class="text">0%</span>
+                                    <span class="percentage"></span>
+                                </div><div class="info"></div>
+                                <div class="btns">
+                                    <div id="filePickerBtn"></div>
+                                    <div class="uploadBtn"><var id="lang_start_upload"></var></div>
+                                </div>
+                            </div>
+                            <div id="dndArea" class="placeholder">
+                                <div class="filePickerContainer">
+                                    <div id="filePickerReady"></div>
+                                </div>
+                            </div>
+                            <ul class="filelist element-invisible">
+                                <li id="filePickerBlock" class="filePickerBlock"></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="uploadVideoInfo">
+                        <fieldset>
+                            <legend><var id="lang_upload_size"></var></legend>
+                            <table>
+                                <tr><td><label><var id="lang_upload_width"></var></label></td><td><input class="txt" id="upload_width" type="text" /></td></tr>
+                                <tr><td><label><var id="lang_upload_height"></var></label></td><td><input class="txt" id="upload_height" type="text" /></td></tr>
+                            </table>
+                        </fieldset>
+                        <fieldset>
+                            <legend><var id="lang_upload_alignment"></var></legend>
+                            <div id="upload_alignment"></div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- video -->
+    <script type="text/javascript" src="video.js"></script>
+    <script type="text/javascript" src="/scripts/jquery.js"></script>
+    <script type="text/javascript" src="/Scripts/bootstrap.js"></script>
+    <script type="text/javascript" src="/Scripts/webuploader/webuploader.js" ></script>
+    <script type="text/javascript" src="/Scripts/Common/Common.Form.js"></script>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $('#btnUpload').click(function () {
+            $('#upload-input').click();
+        });
+    });
+
+    function uploadImage(obj) {
+        //如果取消上传，则不执行上传事件
+        if ($('#upload-input').val() == "") {
+            artDialog.alert("Please Select a file!");
+            return false;
+        }
+        else {
+            $(obj).FileUpload({
+                self: obj,
+                url: "/Common/PostImage",
+                allowExtension: '.png,.jpg,.jpeg,.JPG,.PNG,.JPEG',
+                rewriteDocumentId: '',
+                processBarId: 'progress-bar1',
+                callBack: function (data) {
+                    $('#videoImage').prop('src', "/Common/PushFile?id=" + data.id + "&filename=" + data.result.Src);
+                }
+            });
+        }
+    }
+
+</script>

@@ -1,0 +1,533 @@
+﻿@using Innocellence.WeChat.Domain.Common;
+@using Infrastructure.Web.UI.Resources;
+@using Innocellence.WeChat.Domain.Service;
+@using System.Linq;
+@using Infrastructure.Web.Domain.Entity;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+    <title>WeChat Admin</title>
+
+    <meta name="description" content="Static &amp; Dynamic Tables" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="~/styles/bootstrap.css" />
+    <link rel="stylesheet" href="~/styles/font-awesome.css" />
+
+    <!-- page specific plugin styles -->
+    <!-- text fonts -->
+    <link rel="stylesheet" href="~/styles/ace-fonts.css" />
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="~/styles/ace.css" class="ace-main-stylesheet" id="main-ace-style" />
+    <link rel="stylesheet" href="~/Content/Site.css" />
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="/styles/ace-part2.css" class="ace-main-stylesheet" />
+    <![endif]-->
+    <!--[if lte IE 9]>
+      <link rel="stylesheet" href="/styles/ace-ie.css" />
+    <![endif]-->
+    <!-- inline styles related to this page -->
+    <!-- ace settings handler -->
+    <script src="~/Scripts/ace-extra.js"></script>
+
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+    <!--[if lte IE 8]>
+    <script src="/Scripts/html5shiv.js"></script>
+    <script src="/Scripts/respond.js"></script>
+    <![endif]-->
+    <!-- basic scripts -->
+    <!--[if !IE]> -->
+    <script type="text/javascript">
+        window.jQuery || document.write("<script src='/Scripts/jquery.js'>" + "<" + "/script>");
+    </script>
+
+    <!-- <![endif]-->
+    <!--[if IE]>
+    <script type="text/javascript">
+     window.jQuery || document.write("<script src='/Scripts/jquery1x.js'>"+"<"+"/script>");
+    </script>
+    <![endif]-->
+    <script type="text/javascript">
+        if ('ontouchstart' in document.documentElement) document.write("<script src='/Scripts/jquery.mobile.custom.js'>" + "<" + "/script>");
+    </script>
+    <script src="/Scripts/bootstrap.js"></script>
+
+    @RenderSection("HeaderContent", required: false)
+
+    <link rel="stylesheet" href="~/styles/ui-dialog.css" />
+    <link rel="stylesheet" href="~/styles/datepicker.css" />
+
+    @Display(ResourceLocation.Head)
+
+</head>
+
+<body class="no-skin">
+    <!-- #section:basics/navbar.layout -->
+    <div id="navbar" class="navbar navbar-default">
+        <script type="text/javascript">
+            try { ace.settings.check('navbar', 'fixed') } catch (e) { }
+        </script>
+
+        <div class="navbar-container" id="navbar-container">
+            <!-- #section:basics/sidebar.mobile.toggle -->
+            <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+                <span class="sr-only">Toggle sidebar</span>
+
+                <span class="icon-bar"></span>
+
+                <span class="icon-bar"></span>
+
+                <span class="icon-bar"></span>
+            </button>
+
+            <!-- /section:basics/sidebar.mobile.toggle -->
+            <div class="navbar-header pull-left">
+                <!-- #section:basics/navbar.layout.brand -->
+                <a href="#" class="navbar-brand">
+                    <small>
+                        <i class="fa fa-leaf"></i>
+                        WeChat Admin
+                    </small>
+                </a>
+
+                <!-- /section:basics/navbar.layout.brand -->
+                <!-- #section:basics/navbar.toggle -->
+                <!-- /section:basics/navbar.toggle -->
+            </div>
+
+            <!-- #section:basics/navbar.dropdown -->
+            <div class="navbar-buttons navbar-header pull-right" role="navigation">
+                <ul class="nav ace-nav">
+
+                    <!-- #section:basics/navbar.user_menu -->
+                    <li class="light-blue">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">
+                            <span class="user-info">
+                                <small>Welcome,</small>
+                                @HttpContext.Current.User.Identity.Name
+                            </span>
+
+                            <i class="ace-icon fa fa-caret-down"></i>
+                        </a>
+
+                        <ul class="user-menu dropdown-menu-right dropdown-menu dropdown-yellow dropdown-caret dropdown-close">
+                            <li>
+                                <a href="~/Account/LogOff">
+                                    <i class="ace-icon fa fa-power-off"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <!-- /section:basics/navbar.user_menu -->
+                </ul>
+            </div>
+
+            <!-- /section:basics/navbar.dropdown -->
+        </div><!-- /.navbar-container -->
+    </div>
+
+    <!-- /section:basics/navbar.layout -->
+    <div class="main-container" id="main-container">
+        <script type="text/javascript">
+            try { ace.settings.check('main-container', 'fixed') } catch (e) { }
+        </script>
+
+        <!-- #section:basics/sidebar -->
+        <div id="sidebar" class="sidebar responsive">
+            <script type="text/javascript">
+                try { ace.settings.check('sidebar', 'fixed') } catch (e) { }
+            </script>
+
+            <ul class="nav nav-list">
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-user"></i>
+                        <span class="menu-text"> WeChat </span>
+
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li class="active">
+                            <a href="~/Course/Calendar">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                App
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li>
+                            <a href="~/Authentication/Menu/index">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Menu
+                            </a>
+
+                            <b class="arrow"></b>
+                        </li>
+                        <li>
+                            <a href="~/Authentication/UserWeChat/index">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                User
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu hidden">
+                                <li class="">
+                                    <a href="~/Authentication/UserWechat/Batch">
+                                        <i class="menu-icon fa fa-caret-right"></i>
+                                        批量导入用户
+                                    </a>
+
+                                    <b class="arrow"></b>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="~/Authentication/MessageInfo/Index">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Message
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li>
+                            <a href="~/Authentication/UserWechat/tagIndex">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Tag
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+                        <li>
+                            <a href="~/Authentication/Materials/Index">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Materials
+                            </a>
+                            <b class="arrow"></b>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="">
+                    <a href="~/Authentication/ArticleInfo/Index?iType=1">
+                        <i class="menu-icon fa fa-newspaper-o"></i>
+                        <span class="menu-text">新闻 </span>
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="~/Authentication/ArticleInfo/Index?iType=2">
+                        <i class="menu-icon fa fa-pencil-square-o"></i>
+                        <span class="menu-text"> XXX </span>
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="~/Authentication/ArticleInfo/Index?iType=3">
+                        <i class="menu-icon fa fa-comment"></i>
+                        <span class="menu-text"> XXX </span>
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="~/Authentication/ArticleInfo/Index?iType=4">
+                        <i class="menu-icon fa fa-search"></i>
+                        <span class="menu-text"> 活动 </span>
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="~/Authentication/Tools/Index">
+                        <i class="menu-icon fa fa-briefcase"></i>
+                        <span class="menu-text">ToolBox</span>
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-user"></i>
+                        <span class="menu-text"> Admin </span>
+
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li class="">
+                            <a href="~/Category/index?CateType=1">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Role
+                            </a>
+
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="~/Category/index?CateType=2">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Skill
+                            </a>
+
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="~/User/UserIndex">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                User
+                            </a>
+
+                            <b class="arrow"></b>
+
+                        </li>
+
+                        <li class="">
+                            <a href="~/Logs/Index">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Logs
+                            </a>
+
+                            <b class="arrow"></b>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="">
+                    <a href="~/Authentication/Report/index" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-user"></i>
+                        <span class="menu-text"> 报表 </span>
+
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li class="">
+                            <a href="~/Authentication/Report/Department">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                部门关注度
+                            </a>
+
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="~/Authentication/Report/Enterprise">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                企业号关注度
+                            </a>
+
+                            <b class="arrow"></b>
+                        </li>
+                        <li class="">
+                            <a href="~/Authentication/Report/Statistics">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                App访问量
+                            </a>
+
+                            <b class="arrow"></b>
+                        </li>
+
+                    </ul>
+                </li>
+            </ul><!-- /.nav-list -->
+            <!-- #section:basics/sidebar.layout.minimize -->
+            <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+                <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+            </div>
+
+            <!-- /section:basics/sidebar.layout.minimize -->
+            <script type="text/javascript">
+                try { ace.settings.check('sidebar', 'collapsed') } catch (e) { }
+
+                $('.nav-list .active').removeClass();
+
+                var strHtml = '';
+                //active current menu
+                $('.nav-list a').each(function (i, item) {
+                    var obj = isCurrent(item);
+                    if (obj) { getParentLi(item); }
+
+                });
+
+
+                function isCurrent(item) {
+                    var p = window.location.pathname.toUpperCase();
+                    var pall = window.location.href.toUpperCase();
+                    var itemHref = $(item).attr('href').toUpperCase();
+                    //var parent = $(item).parent;
+                    if (itemHref != '#' &&
+                        ((itemHref.indexOf(p + '?') >= 0 && pall.indexOf(itemHref) >= 0)
+                        || itemHref == p)) {
+                        return true;
+
+                    }
+                    return false;
+                }
+
+                function getParentLi(oChild) {
+                    var parent = $(oChild).parent();
+                    getAText(parent);
+                    if (!parent.is('.nav-list')) {
+                        parent.addClass('active');
+                        getParentLi(parent);
+                    }
+                    if (!$(oChild).has('ul')) { parent.addClass('open'); }
+                }
+
+                function getAText(oControl) {
+                    if (oControl.is('li')) {
+                        var a = oControl.find('a');
+                        //a.html(a[0].text);
+                        var html = a[0].outerHTML;
+                        if (isCurrent(a[0])) { html = a[0].text }
+                        strHtml = '<li>' + html + '</li>' + strHtml;
+                    }
+                }
+            </script>
+        </div>
+
+        <!-- /section:basics/sidebar -->
+        <div class="main-content">
+            <div class="main-content-inner">
+                <!-- #section:basics/content.breadcrumbs -->
+                <div class="breadcrumbs" id="breadcrumbs">
+                    <script type="text/javascript">
+                        try { ace.settings.check('breadcrumbs', 'fixed') } catch (e) { }
+                    </script>
+
+                    <ul class="breadcrumb">
+                        <li>
+                            <i class="ace-icon fa fa-home home-icon"></i>
+                            <a href="#">首页</a>
+                        </li>
+                        @*<li>
+                                <a href="#">Tables</a>
+                            </li>
+                            <li class="active">Simple &amp; Dynamic</li>*@
+                    </ul>
+                    <script>
+                        $('.breadcrumb').html($('.breadcrumb').html() + strHtml);
+                        $('.breadcrumb a').each(function () {
+                            $(this).html(this.text);
+                        });
+                    </script>
+                    <!-- /.breadcrumb -->
+                    <!-- #section:basics/content.searchbox -->
+                    <div class="nav-search" id="nav-search">
+                        <form class="form-search">
+                            <span class="input-icon">
+                                @*<input type="text" placeholder="Search ..." class="nav-search-input" id="nav-search-input" autocomplete="off" />
+                                    <i class="ace-icon fa fa-search nav-search-icon"></i>*@
+                                <select class="form-control" name="_AppId" id="_AppId">
+                                    @{
+                                        var AppList = WeChatCommonService.lstWeChatConfig;
+                                        if (AppList != null)
+                                        {
+                                            foreach (var cat in AppList)
+                                            {
+
+                                                <option value="@cat.WeixinAppId" @(cat.WeixinAppId == ViewBag.CurAppID ? "checked" : "")>@cat.AppName</option>
+                                            }
+                                        }}
+                                </select>
+
+
+                            </span>
+                        </form>
+                    </div><!-- /.nav-search -->
+                    <!-- /section:basics/content.searchbox -->
+                </div>
+
+                <!-- /section:basics/content.breadcrumbs -->
+                <div class="page-content">
+
+                    <!-- /.page-header -->
+                    @RenderBody()
+
+                    <!-- /.row -->
+                </div><!-- /.page-content -->
+            </div>
+        </div><!-- /.main-content -->
+
+        <div class="footer">
+            <div class="footer-inner">
+                <!-- #section:basics/footer -->
+                <div class="footer-content">
+                    <span class="bigger-120">
+                        <img src="/styles/img/footer.png" />
+                    </span>
+                </div>
+
+                <!-- /section:basics/footer -->
+            </div>
+        </div>
+
+        <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+            <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+        </a>
+    </div><!-- /.main-container -->
+    <!-- page specific plugin scripts -->
+    <script src="/Scripts/jquery.dataTables.js"></script>
+    <script src="/Scripts/jquery.dataTables.bootstrap.js"></script>
+
+    <script src="/Scripts/jquery.metadata.js"></script>
+    <script src="/Scripts/jquery.validate.js"></script>
+    <script src="/Scripts/date-time/moment.js"></script>
+    <script src="/Scripts/date-time/bootstrap-datepicker.js"></script>
+
+    <!-- ace scripts -->
+    <script src="/Scripts/ace/elements.scroller.js"></script>
+    <script src="/Scripts/ace/elements.colorpicker.js"></script>
+    <script src="/Scripts/ace/elements.fileinput.js"></script>
+    <script src="/Scripts/ace/elements.typeahead.js"></script>
+    <script src="/Scripts/ace/elements.wysiwyg.js"></script>
+    <script src="/Scripts/ace/elements.spinner.js"></script>
+    <script src="/Scripts/ace/elements.treeview.js"></script>
+    <script src="/Scripts/ace/elements.wizard.js"></script>
+    <script src="/Scripts/ace/elements.aside.js"></script>
+    <script src="/Scripts/ace/ace.js"></script>
+    <script src="/Scripts/ace/ace.ajax-content.js"></script>
+    <script src="/Scripts/ace/ace.touch-drag.js"></script>
+    <script src="/Scripts/ace/ace.sidebar.js"></script>
+    <script src="/Scripts/ace/ace.sidebar-scroll-1.js"></script>
+    <script src="/Scripts/ace/ace.submenu-hover.js"></script>
+    <script src="/Scripts/ace/ace.widget-box.js"></script>
+    <script src="/Scripts/ace/ace.settings.js"></script>
+    <script src="/Scripts/ace/ace.settings-rtl.js"></script>
+    <script src="/Scripts/ace/ace.settings-skin.js"></script>
+    <script src="/Scripts/ace/ace.widget-on-reload.js"></script>
+    <script src="/Scripts/ace/ace.searchbox-autocomplete.js"></script>
+
+
+    <script src="/Scripts/common/Common.js"></script>
+    <script src="/Scripts/common/Common.Form.js"></script>
+    <script src="/Scripts/Common/lang/@(LanguageCode).js"></script>
+    <script src="/Scripts/common/Common.tables.js"></script>
+    <script src="/Scripts/common/dialog-min.js"></script>
+
+    <script>
+        $('#_AppId').on('change', function () {
+            $.get("/Common/SetCurApp", { CurAppID: $(this).val() }, function () { });
+
+        });
+    </script>
+
+    @RenderSection("scripts_Foot", required: false)
+
+
+    @Display(ResourceLocation.Foot)
+</body>
+</html>

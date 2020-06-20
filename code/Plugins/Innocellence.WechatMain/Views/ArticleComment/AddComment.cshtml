@@ -1,0 +1,371 @@
+﻿
+@{
+    Layout = "~/plugins/Innocellence.WeChatMP/Views/Shared/_wxLayout.cshtml";
+    ViewBag.Title = "AddComment";
+}
+<link href="/styles/BMain.css" rel="stylesheet" type="text/css">
+<script src="/Scripts/wechatab/lib/jquery-2.0.3.min.js" type="text/javascript"></script>
+<script src="/Scripts/jsviews.min.js"></script>
+<script src="/Scripts/p.list.bind.js"></script>
+<script src="/Scripts/pages.js"></script>
+<script src="/Scripts/history/html/app_emoji.js"></script>
+<link rel="stylesheet" href="~/Plugins/Innocellence.WeChatMP/Content/style.css">
+
+<style>
+    .article_comment {
+        width: 100%;
+        position: relative;
+    }
+
+    .article_comment_inner {
+        min-width: 375px;
+        width: 100%;
+        margin: 0 auto;
+        background: #cff !important;
+    }
+
+    .comment_avator {
+        width: 35px;
+        height: 35px;
+        float: left;
+        background-color: #ccc;
+        clear: both;
+    }
+
+        .comment_avator img {
+            width: 100%;
+            height: 100%;
+        }
+
+    .comment_content {
+        min-width: 300px;
+        width: calc(100% - 40px);
+        min-height: 50px;
+        float: left;
+        /*background-color: #ccc;*/
+        margin-left: 5px;
+        margin-bottom: 10px;
+        padding: 2px 5px;
+    }
+
+    .comment_content_first_row {
+        float: left;
+        width: 100%;
+    }
+
+    .comment_content_nickname {
+        float: left;
+    }
+
+    .comment_content_thumbup {
+        float: right;
+        cursor: pointer;
+        padding-right: 10px;
+    }
+
+    .comment_can_delete_false {
+        display: none;
+    }
+
+    .comment_thumb_up_count_0 {
+        display: none;
+    }
+</style>
+
+<div style="margin:0 auto;width:60%;min-width:375px">
+    <div>
+        <h2>@ViewBag.ArticleTitle</h2>
+    </div>
+    <div id="msgType-word" data-msg-type="1" class="tab-pane active">
+        <div class="control-group">
+            <div style="display: none" class="controls">
+                <textarea id="msgType-text" name="msgType-text" style="height: 200px;" class="span6"></textarea><span class="errorMsg type1ErrorText">请输入文字</span>
+            </div>
+            <div class="controls">
+                <div class="comment" style="float:none;width:100%;">
+                    <div class="com_form">
+                        <textarea id="saytext" name="saytext" class="input" maxlength="600" style="width:100%;height:300px;"></textarea>
+                        <div class="com_info">
+                            <p id="count"></p>
+                            <p><span class="emotion">表情</span></p>
+                        </div>
+                        <div class="em_wrap">
+                            <div class="em_nr"><a title="微笑" href="javascript:;"></a><a title="撇嘴" href="javascript:;"></a><a title="色" href="javascript:;"></a><a title="发呆" href="javascript:;"></a><a title="得意" href="javascript:;"></a><a title="流泪" href="javascript:;"></a><a title="害羞" href="javascript:;"></a><a title="闭嘴" href="javascript:;"></a><a title="睡" href="javascript:;"></a><a title="大哭" href="javascript:;"></a><a title="尴尬" href="javascript:;"></a><a title="发怒" href="javascript:;"></a><a title="调皮" href="javascript:;"></a><a title="呲牙" href="javascript:;"></a><a title="惊讶" href="javascript:;" class="borderRightNone"></a><a title="难过" href="javascript:;"></a><a title="酷" href="javascript:;"></a><a title="冷汗" href="javascript:;"></a><a title="折磨" href="javascript:;"></a><a title="吐" href="javascript:;"></a><a title="偷笑" href="javascript:;"></a><a title="愉快" href="javascript:;"></a><a title="白眼" href="javascript:;"></a><a title="傲慢" href="javascript:;"></a><a title="饥饿" href="javascript:;"></a><a title="困" href="javascript:;"></a><a title="惊恐" href="javascript:;"></a><a title="流汗" href="javascript:;"></a><a title="憨笑" href="javascript:;"></a><a title="悠闲" href="javascript:;" class="borderRightNone"></a><a title="奋斗" href="javascript:;"></a><a title="咒骂" href="javascript:;"></a><a title="疑问" href="javascript:;"></a><a title="嘘" href="javascript:;"></a><a title="晕" href="javascript:;"></a><a title="抓狂" href="javascript:;"></a><a title="衰" href="javascript:;"></a><a title="骷髅" href="javascript:;"></a><a title="敲打" href="javascript:;"></a><a title="再见" href="javascript:;"></a><a title="擦汗" href="javascript:;"></a><a title="抠鼻" href="javascript:;"></a><a title="鼓掌" href="javascript:;"></a><a title="糗大了" href="javascript:;"></a><a title="坏笑" href="javascript:;" class="borderRightNone"></a><a title="左哼哼" href="javascript:;"></a><a title="右哼哼" href="javascript:;"></a><a title="哈欠" href="javascript:;"></a><a title="鄙视" href="javascript:;"></a><a title="委屈" href="javascript:;"></a><a title="快哭了" href="javascript:;"></a><a title="阴险" href="javascript:;"></a><a title="亲亲" href="javascript:;"></a><a title="吓" href="javascript:;"></a><a title="可怜" href="javascript:;"></a><a title="菜刀" href="javascript:;"></a><a title="西瓜" href="javascript:;"></a><a title="啤酒" href="javascript:;"></a><a title="篮球" href="javascript:;"></a><a title="乒乓" href="javascript:;" class="borderRightNone"></a><a title="咖啡" href="javascript:;"></a><a title="饭" href="javascript:;"></a><a title="猪头" href="javascript:;"></a><a title="玫瑰" href="javascript:;"></a><a title="凋谢" href="javascript:;"></a><a title="嘴唇" href="javascript:;"></a><a title="爱心" href="javascript:;"></a><a title="心碎" href="javascript:;"></a><a title="蛋糕" href="javascript:;"></a><a title="闪电" href="javascript:;"></a><a title="炸弹" href="javascript:;"></a><a title="刀" href="javascript:;"></a><a title="足球" href="javascript:;"></a><a title="瓢虫" href="javascript:;"></a><a title="便便" href="javascript:;" class="borderRightNone"></a><a title="月亮" href="javascript:;"></a><a title="太阳" href="javascript:;"></a><a title="礼物" href="javascript:;"></a><a title="拥抱" href="javascript:;"></a><a title="强" href="javascript:;"></a><a title="弱" href="javascript:;"></a><a title="握手" href="javascript:;"></a><a title="胜利" href="javascript:;"></a><a title="抱拳" href="javascript:;"></a><a title="勾引" href="javascript:;"></a><a title="拳头" href="javascript:;"></a><a title="差劲" href="javascript:;"></a><a title="爱你" href="javascript:;"></a><a title="NO" href="javascript:;"></a><a title="OK" href="javascript:;" class="borderRightNone"></a><a title="爱情" href="javascript:;" class="borderBottomNone"></a><a title="飞吻" href="javascript:;" class="borderBottomNone"></a><a title="跳跳" href="javascript:;" class="borderBottomNone"></a><a title="发抖" href="javascript:;" class="borderBottomNone"></a><a title="怄火" href="javascript:;" class="borderBottomNone"></a><a title="转圈" href="javascript:;" class="borderBottomNone"></a><a title="磕头" href="javascript:;" class="borderBottomNone"></a><a title="回头" href="javascript:;" class="borderBottomNone"></a><a title="跳绳" href="javascript:;" class="borderBottomNone"></a><a title="投降" href="javascript:;" class="borderBottomNone"></a><a title="激动" href="javascript:;" class="borderBottomNone"></a><a title="乱舞" href="javascript:;" class="borderBottomNone"></a><a title="献吻" href="javascript:;" class="borderBottomNone"></a><a title="左太极" href="javascript:;" class="borderBottomNone"></a><a title="右太极" href="javascript:;" class="borderRightNone borderBottomNone"></a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="background:green;width:100%;height:35px;line-height:35px;margin-top: -25px;text-align:center;cursor:pointer;text-align:center" id="add_comment"><span style="color:#FFF">提交</span></div>
+
+    <div id="panel-center" style="margin-top:10px">
+        <div id="leaplist" class="m_center"></div>
+        <div class="scrollLoading" data-url="GetList" data-search="true">
+            <img src="/Content/images/loading.gif" class="img-responsive loading" style="display: none;" alt="this is loading picture." />
+            <div class="no-result" style="display: none;">@T("All data displayed")</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var getUrlParm = function getUrlParm(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        return r != null ? decodeURI(r[2]) : null;
+    };
+    var articleId = getUrlParm('articleId');
+    var userInfoId = getUrlParm('userInfoId');
+    var isMP = getUrlParm('isMP');
+    var commentHtmlStr = '<div class="article_comment" id="comment_{{: Id}}">' +
+                                '<div class="article_comment_inner">' +
+                                    '<div class="comment_avator"> <img src="{{: UserAvatar}}"></div>' +
+                                    '<div class="comment_content">' +
+                                        '<div class="comment_content_first_row">' +
+                                            '<div class="comment_content_nickname">{{: UserNickName}}</div>' +
+                                            '<div class="comment_content_thumbup" commentId="{{: Id}}">' +
+                                                '<i id="comment_thumb_up_style_{{: Id}}" class="fa {{: ThumbUpStyle}}"></i>' +
+                                                '<span id="comment_thumb_up_count_{{: Id}}" class="comment_thumb_up_count_{{: ThumbsUpCount}}">{{: ThumbsUpCount}}</span>' +
+                                            '</div>' +
+                                        '</div>' +
+                                        '<div class="comment_content_second_row" style="width:100%">' +
+                                            '{{: Comment}}' +
+                                        '</div>' +
+                                        '<div class="comment_content_date_row" style="width:100%">' +
+                                            '{{: DiffDateDisplayStr}}' + '<a onclick="DoDeleteComment({{: Id}})" class="comment_can_delete_{{: CanDelete}}" style="margin-left:10px">删除</a>' +
+                                        '</div>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>';
+
+    var initCommentList = function () {
+        $('#leaplist').LEAPDataBind({
+            url: "/ArticleComment/GetList",
+            data: "articleId=" + articleId + '&userInfoId=' + userInfoId + '&isMP=' + isMP + '&isAddComment=true',
+            pageSize: 10,
+            renderHtml: commentHtmlStr,
+            renderSuccess: function () {
+                bindCommentThumbUpClick();
+                $('.comment_content_second_row').each(function () {
+                    var str = $(this).text();
+                    $(this).html(checkEmoji(str));
+                });
+            },
+        });
+    };
+
+    var bindCommentThumbUpClick = function () {
+        $('.comment_content_thumbup').click(function () {
+            var id = $(this).attr('commentId');
+            var iTag = $('#comment_thumb_up_style_' + id);
+            var countSpan = $('#comment_thumb_up_count_' + id);
+            var countValue = parseInt(countSpan.text());
+            var isThumbUp = false;
+            if (iTag.attr("class").indexOf("o") > 0) {
+                iTag.attr("class", "fa fa-thumbs-up");
+                countSpan.text(countValue + 1);
+                countSpan.attr('class', '');
+                isThumbUp = true;
+            } else {
+                iTag.attr("class", "fa fa-thumbs-o-up");
+                countSpan.text(countValue - 1);
+                if ((countValue - 1) == 0) {
+                    countSpan.attr('class', 'comment_thumb_up_count_0');
+                } else {
+                    countSpan.attr('class', '');
+                }
+            }
+            $.ajax({
+                url: '/WechatMain/ArticleComment/ThumbUp',
+                data: { 'commentId': id, 'isThumbUp': isThumbUp, 'userInfoId': userInfoId, 'isMP': isMP },
+            });
+        });
+    };
+
+    function DoDeleteComment(commentId) {
+        var d = dialog({
+            title: '提示',
+            content: '你确认要删除这条记录? ',
+            okValue: '是',
+            ok: function () {
+                $.get("DoDeleteComment", {
+                    "commentId": commentId
+                }, function (data) {
+                    $('#comment_' + commentId).remove();
+                    return true;
+                });
+                return true;
+            },
+            cancelValue: '取消',
+            cancel: function () { }
+        });
+        d.showModal();
+    }
+
+    //表情按钮
+    $(function () {
+
+        $(".em_nr a").each(function (e) {
+            e++;
+            $(this).attr("data-image", e);
+        });
+        $(document).click(function (e) {
+            if (e.target.className != $(".com_form p span").attr("class")) {
+                $(".em_wrap").fadeOut(500);
+            }
+        });
+        $(".emotion").click(function () {
+            if ($(".em_wrap").is(":visible")) {
+                $(".em_wrap").fadeOut(500);
+            } else {
+                $(".em_wrap").fadeIn(500);
+            }
+        });
+
+        function getCursortPosition(ctrl) { //获取光标位置函数
+            var CaretPos = 0; // IE Support
+            if (document.selection) {
+                ctrl.focus();
+                var Sel = document.selection.createRange();
+                Sel.moveStart('character', -ctrl.value.length);
+                CaretPos = Sel.text.length;
+            }
+                // Firefox support
+            else if (ctrl.selectionStart || ctrl.selectionStart == '0')
+                CaretPos = ctrl.selectionStart;
+            return (CaretPos);
+        }
+
+        function addFace(obj, pos, html) {
+            var s = obj.value;
+            obj.value = s.substring(0, pos) + html + s.substring(pos);
+        }
+        $(".em_nr a").click(function () {
+            var saytext = document.getElementById('saytext');
+            var postion = getCursortPosition(saytext);
+            addFace(saytext, postion, "[" + this.title + "]");
+            var data_image = $(this).attr("data-image");
+            $("#for-msgType-text").html(Util.parseFaceFromStrToDisplay(saytext.value));
+            if ($("#for-msgType-text").html() != "") {
+                $("#for-msgType-text").css("padding", "2px 8px");
+            } else {
+                $("#for-msgType-text").css("padding", "0px");
+            }
+            var remain = $('#saytext').val().length;
+            if (remain > 600) {
+                pattern = $('字数超过限制，请适当删除部分内容');
+            } else {
+                var result = limitNum - remain;
+                pattern = '您还可以输入' + result + '字';
+            }
+            $('#count').html(pattern);
+        });
+
+
+        //max word length
+        var limitNum = 600;
+        var pattern = '您还可以输入' + limitNum + '字';
+        $('#count').html(pattern);
+        $('#saytext').on('keyup', function () {
+            var remain = $(this).val().length;
+            if (remain > 600) {
+                pattern = $('字数超过限制，请适当删除部分内容');
+            } else {
+                var result = limitNum - remain;
+                pattern = '您还可以输入' + result + '字';
+            }
+            $('#count').html(pattern);
+
+        });
+
+        var emoji_cn = ['[微笑]', '[撇嘴]', '[色]', '[发呆]', '[得意]', '[流泪]', '[害羞]', '[闭嘴]', '[睡]', '[大哭]', '[尴尬]', '[发怒]', '[调皮]', '[呲牙]', '[惊讶]', '[难过]', '[酷]', '[冷汗]', '[折磨]', '[吐]', '[偷笑]', '[愉快]', '[白眼]', '[傲慢]', '[饥饿]', '[困]', '[惊恐]', '[流汗]', '[憨笑]', '[悠闲]', '[奋斗]', '[咒骂]', '[疑问]', '[嘘]', '[晕]', '[抓狂]', '[衰]', '[骷髅]', '[敲打]', '[再见]', '[擦汗]', '[抠鼻]', '[鼓掌]', '[溴大了]', '[坏笑]', '[左哼哼]', '[右哼哼]', '[哈欠]', '[鄙视]', '[委屈]', '[快哭了]', '[阴险]', '[亲亲]', '[吓]', '[可怜]', '[菜刀]', '[西瓜]', '[啤酒]', '[篮球]', '[乒乓]', '[咖啡]', '[饭]', '[猪头]', '[玫瑰]', '[凋谢]', '[嘴唇]', '[爱心]', '[心碎]', '[蛋糕]', '[闪电]', '[炸弹]', '[刀]', '[足球]', '[瓢虫]', '[便便]', '[月亮]', '[太阳]', '[礼物]', '[拥抱]', '[强]', '[弱]', '[握手]', '[胜利]', '[抱拳]', '[勾引]', '[拳头]', '[差劲]', '[爱你]', '[NO]', '[YES]', '[爱情]', '[飞吻]', '[跳跳]', '[发抖]', '[怄火]', '[转圈]', '[磕头]', '[回头]', '[跳绳]', '[投降]', '[激动]', '[乱舞]', '[献吻]', '[左太极]', '[右太极]'];
+        //匹配方法
+        function replace_img(str) {
+            str = str.replace(/\</g, '&lt;');
+            str = str.replace(/\>/g, '&gt;');
+            str = str.replace(/\n/g, '<br/>');
+            for (var i = 0; i < emoji_cn.length; i++) {
+
+                str = str.replace(eval('/\\' + emoji_cn[i] + '/g'), '<img src="/images/QQexpression/' + (i + 1) + '.gif" border="0" />');
+            }
+            return str;
+        }
+
+        $("#multiText").on('keyup', 'input', function () {
+
+            var length = $(this).val().length;
+            var $span = $(this).siblings('span');
+            var num = +$span.text().split('/')[1];
+            $span.text(length + "/" + num);
+            $span.removeClass('red');
+            $(this).parent().parent().find('.message_edition__text_length_warn').css('display', 'none');
+
+            if (length >= num) {
+                $span.addClass('red');
+                $(this).parent().parent().find('.message_edition__text_length_warn').css('display', 'block');
+            }
+        });
+        $('#saytext').on('input propertychange', function () {
+            var str = $("#saytext").val();
+            $("#for-msgType-text").html(replace_img(str));
+        });
+        //ordermanager------------------
+        $('.main-preview').on('mouseover', '.repeat-item', function () {
+            $(this).find(".order").css("display", "block");
+            if ($(this).next('.repeat-item').length == 0) {
+                $(this).find('.fa-angle-down').hide();
+            } else {
+                $(this).find('.fa-angle-down').show();
+            }
+        });
+        $('.main-preview').on('mouseout', '.repeat-item', function () {
+            $(this).find(".order").css("display", "none");
+        });
+
+        $('.main-preview').on('mouseover', '#fi-item', function () {
+            $(this).find(".order").css("display", "block");
+        });
+        $('.main-preview').on('mouseout', '#fi-item', function () {
+            $(this).find(".order").css("display", "none");
+        });
+
+        $('#add_comment').click(function () {
+            $.ajax({
+                url: 'DoAddComment',
+                data: { 'articleId': articleId, 'isMP': isMP, 'comment': $('#saytext').val(), 'userInfoId': userInfoId },
+                global: false,
+                success: function (data) {
+                    if (data.data != null) {
+                        var obj = data.data;
+                        var htmlStr = '<div class="article_comment" id="comment_' + obj.Id + '">' +
+                                        '<div class="article_comment_inner">' +
+                                            '<div class="comment_avator"> <img src="' + obj.UserAvatar + '"></div>' +
+                                            '<div class="comment_content">' +
+                                                '<div class="comment_content_first_row">' +
+                                                    '<div class="comment_content_nickname">' + obj.UserNickName + '</div>' +
+                                                    '<div class="comment_content_thumbup" commentId="' + obj.Id + '">' +
+                                                        '<i id="comment_thumb_up_style_' + obj.Id + '" class="fa ' + obj.ThumbUpStyle + '"></i>' +
+                                                        '<span id="comment_thumb_up_count_' + obj.Id + '" class="comment_thumb_up_count_' + obj.ThumbsUpCount + '">' + obj.ThumbsUpCount + '</span>' +
+                                                    '</div>' +
+                                                '</div>' +
+                                                '<div class="comment_content_second_row" style="width:100%;">' +
+                                                    checkEmoji(obj.Comment) +
+                                                '</div>' +
+                                                '<div class="comment_content_date_row" style="width:100%">' +
+                                                    obj.DiffDateDisplayStr + '<a onclick="DoDeleteComment(' + obj.Id + ')" class="comment_can_delete_' + obj.CanDelete + '" style="margin-left:10px">删除</a>' +
+                                                '</div>' +
+                                            '</div>' +
+                                        '</div>' +
+                                    '</div>';
+                        $('#leaplist').append(htmlStr);
+                        bindCommentThumbUpClick();
+                    }
+                },
+            });
+        });
+
+        initCommentList();
+
+    });
+</script>

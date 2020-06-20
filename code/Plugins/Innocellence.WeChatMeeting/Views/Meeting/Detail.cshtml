@@ -1,0 +1,243 @@
+﻿@using Innocellence.WeChatMeeting.Domain.ViewModel;
+@using Innocellence.WeChatMeeting.Domain.Entity;
+@model Innocellence.WeChatMeeting.Domain.ViewModel.MeetingInvitationView
+@using Infrastructure.Web.Domain.Service;
+@using System.Linq;
+@section easyui_css
+{
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" type="text/css" />
+    <script src="~/Scripts/ZeroClipboard/ZeroClipboard.js"></script>
+    <script src="/Scripts/wechatab/lib/layer/layer.js"></script>
+
+    <style>
+        .exclamations {
+            color: #ff0000;
+            margin-right: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+    </style>
+}
+
+<input type="hidden" id="mid" value="@ViewBag.meetingId" />
+<div class="subpage-title">
+    <div class="pull-left">
+        会议邀请人员详情
+    </div>
+    <div class="clear"></div>
+</div>
+<div class="row" style="margin-top: 65px;">
+    <div class="col-sm-12">
+
+        <form class="form-inline" id="SearchForm" method="post">
+            <div class="form-group">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="txtUserName" placeholder="用户名">
+                </div>
+                <div data-date-format="yyyy-mm-dd" class="input-append date date-picker" style="display:inline-block;">
+                    <div class="input-group">
+                        <input data-date-format="yyyy-mm-dd" readonly="readonly" type="datetime" name="txtCheckInDt" class="form-control" placeholder="签到时间" />
+                    </div>
+                </div>
+                <select name="IscheckIn" class="form-control">
+                    <option value="0">请选择</option>
+                    <option value="1">未签到</option>
+                    <option value="2">已签到</option>
+                </select>
+
+
+                <a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="重置">
+                    <i class="fa fa-remove"></i>
+                </a>
+                <a href="javascript:void(0);" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索">
+                    <i class="fa fa-search"></i>
+                </a>
+            </div>
+
+            <div class="form-group pull-right">
+                @*<a href="javascript:void(0);" class="btn btn-white btn-primary" data-toggle="tooltip" data-placement="top" title="导出" id="btnExport">
+                        <i class="fa fa-download"></i> 导出
+                    </a>
+                *@
+            </div>
+        </form>
+
+        <div class="table-box">
+            <table class="table table-bordered data-table">
+                <thead>
+                    <tr>
+                        <th style="width:18%">@T("用户名ID")</th>
+                        <th style="width:15%">@T("用户名称")</th>
+                        <th style="width:10%">@T("状态")</th>
+                        <th style="width:15%">@T("签到时间")</th>
+                        <th style="width:20%">@T("操作")</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="modal fade bs-example-modal-sm" role="dialog" id="modalEx">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">报名详情</h4>
+            </div>
+            <div class="modal-body">
+                <div></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+@section scripts_Foot
+{
+    <script src="~/Scripts/EasyUI/jquery.easyui.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            $('#clear_condition').click(function () {
+
+                $('input[name=txtUserName]').val('');
+                $('input[name=txtCheckInDt]').val('');
+                $("select[name=IscheckIn]").val(0);
+
+            });
+
+
+            //datepicker plugin
+            $('input[type="datetime"]').datepicker({
+                autoclose: true,
+                todayHighlight: true,
+                dateFormat: 'yyyy-mm-dd',
+                minDate: -10,
+                maxDate: "+1M +10D",
+                todayBtn: "linked",
+                clearBtn: true
+            });
+
+            var mid = $("#mid").val();
+            //var url = "GetInvitationList", meetingId = mid;
+            //if (meetingId != '') {
+            //    url += "?where=" + JSON.stringify({ Rules: [{ Field: 'MeetingId', value: meetingId }] });
+            //}
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetInvitationList?meetingId" + mid },
+                "aoColumns": [
+                    {
+                        "mData": "UserId",
+                        "bSearchable": false,
+                        "bSortable": false,
+                        "sClass": "center"
+                    },
+                  { "mData": "UserName", "sClass": "center" },
+                  { "mData": "CheckIn","sClass": "center" },
+                  { "mData": "CheckInDt", "sClass": "center" },
+                  { "mDate": "Operation", "sClass": "center" }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                    {
+                        "targets": 2,
+                        "render": function (data, type, full, meta) {
+                            if (full.CheckIn == true) {
+                                return "已签到";
+                            }
+                            else {
+                                return "未签到";
+                            }
+                        }
+                    },
+                    {
+                        "targets": 4,
+                        "render": function (data, type, full, meta) {
+
+                            return "<i class='fa fa-user-md exclamations' data-toggle='tooltip' data-placement='bottom' title='报名详情'></i><input type='hidden' value='" + full.UserId + "'>";
+
+                        }
+                    }
+
+                ]),
+                fnDrawCallback: function () { $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' }); }
+            }));
+
+
+            LEAP.Common.MainPop.options.afterShowModal = function () {
+
+            };
+
+            LEAP.Common.MainPop.options.afterBindData = function (o) {
+
+
+            };
+
+
+
+        });
+
+
+        function PerInfo(data) {
+            var perstr = "";
+            $.ajax({
+                url: "/WeChatMeeting/Meeting/GetSignUpInfo",
+                type: "post",
+                data: { "userid": data },
+                success: function success(result) {
+                    if (result != "") {
+                        var AssistantName = "";
+                        var AssistantPhone = "";
+                        if (result.AssistantName == null) { AssistantName = "";}
+                        else { AssistantName = result.AssistantName; }
+                        if (result.AssistantPhone == null) { AssistantPhone = ""; }
+                        else { AssistantPhone = result.AssistantPhone;}
+
+                        perstr = "<div>姓名：" + result.Name + "</div>"+
+                                 "<div>联系电话：" + result.ContactPhone + "</div>" +
+                                 "<div>邮箱：" + result.Mailbox + "</div>" +
+                                 "<div>助理名称：" + AssistantName + "</div>" +
+                                 "<div>助理电话：" + AssistantPhone + "</div>" +
+                                 "<div>紧急联系人：" + result.EmergencyContact + "</div>" +
+                                 "<div>紧急联系人电话：" + result.EmergencyConPhone + "</div>";
+                    }
+                    else {
+                        perstr = "暂无报名信息";
+                    }
+                   
+                    $('#modalEx').modal().find('.modal-body div').html(perstr);
+                },
+                complete: function complete(data) {
+
+                }
+            });
+
+            
+
+        }
+
+        var $body = $('body');
+        $body.off('click', '.exclamations', function () {
+            var data = $(this).next('input').val();
+            PerInfo(data);
+
+        }).on('click', '.exclamations', function () {
+            var data = $(this).next('input').val();
+
+            PerInfo(data);
+
+        });
+
+
+
+
+
+    </script>
+}

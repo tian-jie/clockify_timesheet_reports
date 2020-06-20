@@ -1,0 +1,212 @@
+﻿@using Innocellence.CA.ModelsView;
+@model MessageTextView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section easyui_css
+{
+    <script src="~/Scripts/ZeroClipboard/ZeroClipboard.js"></script>
+}
+@{
+    Script.Include("https://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js").AtFoot();
+} 
+<div class="row">
+    <div class="col-sm-12">
+        <ul class="nav nav-tabs mb10" role="tablist" style="margin-bottom: 13px!important;">
+            <li role="presentation"><a href="/Activity/EventMessage/EventMessageIndex?appid=@ViewBag.AppId&eventid=@ViewBag.eventId">图文</a></li>
+            <li role="presentation" class="active"><a href="EventMessageTextIndex?appid=@ViewBag.AppId&eventid=@ViewBag.eventId">文字</a></li>
+        </ul>
+
+        <form class="form-inline" id="SearchForm" method="post">
+            <input type="hidden" value="@ViewBag.AppId" name="appId" id="appId" />
+            <input type="hidden" value="@ViewBag.eventId" name="eventId" id="eventId" />
+
+            <div class="form-group">
+                <div class="form-group">
+                    <input class="form-control" type="text" name="txtArticleTitle" placeholder="内容">
+                </div>
+                <div data-date-format="yyyy-mm-dd" class="input-append date date-picker" style="display: inline-block;">
+                    <div class="input-group">
+                        <input type="datetime" name="txtDate" class="form-control" placeholder="发布日期" />
+                        <span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+                    </div>
+                </div>
+                <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索"><i class="fa fa-search"></i></a>
+            </div>
+            <div class="form-group pull-right">
+                <a href="javascript:void(0);" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="导出CSV" id="btnExport">
+                    <i class="fa fa-download"></i>导出
+                </a>
+                <a href="EventMessageTextEdit?appid=@ViewBag.AppId&eventid=@ViewBag.eventId" id="addBtn" class="btn btn-success btn-sm" data-toggle="tooltip" data-placement="top" title="添加">
+                    <i class="fa fa-plus"></i>
+                </a>
+            </div>
+        </form>
+
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%; text-align: center;">@T("ID")</th>
+                            <th style="width: 40%">@T("内容")</th>
+                            <th style="width: 13%">@T("发布日期")</th>
+                            <th style="width: 15%">@T("状态")</th>
+                            <th style="width: 10%">@T("操作")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="pushHistory" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">推送结果</h4>
+            </div>
+            <div class="modal-body">
+                <p id="successResult"></p>
+            </div>
+            <div class="modal-header">
+                <h4 class="modal-title">失败推送 </h4>
+            </div>
+            <div class="modal-body">
+                <p id="errorResult"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="copyPushHistory" style="z-index: 1200;">拷贝到粘贴板</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+@section scripts_Foot
+{
+    <script>
+        var uploader;
+        $(document).ready(function() {
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList?where=" + JSON.stringify({ Rules: [{ Field: 'AppId', Value: @ViewBag.AppId },{Field:'RefId',Value:@ViewBag.eventId}]})},
+                "aoColumns": [
+                {
+                    "mData": "Id",
+                    "bSortable": false,
+                    "sClass": "sTdCheckbox"
+                },
+                {"mData":"Content"},
+                { "mData": "PublishDate" },
+                { "mData": "Status" },
+                { "mDate": "Operation", "bSortable": false }
+                ],
+                "columnDefs":
+                jQuery.extend(true, datatableSetting.columnDefs, [
+                    {
+                        "targets": 3,
+                        "render": function(data, type, full, meta) {
+                            if (data == "Published") {
+                                return "<span class=\"col-md-8\">已发布</span><span class=\"btn btn-danger btn-xs pull-right\" onclick=\"javascript:ChangeStatus('" + full.Id + "','" + @ViewBag.AppId + "',this, 'ChangeStatus')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"取消发布\"><i class=\"fa fa-cloud-download\"></span>";
+                            } else if (data == "Saved") {
+                                return "<span class=\"col-md-8\">已保存</span><span class=\"btn btn-success btn-xs pull-right\" onclick=\"javascript:ChangeStatus('" + full.Id + "','" + @ViewBag.AppId + "',this, 'ChangeStatus')\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"发布\"><i class=\"fa fa-cloud-upload\"></i></span>";
+                            }
+                        }
+                    },
+                    {
+                        "targets": 4,
+                        "render": function(data, type, full, meta) {
+                            if (full.Status == "Published") {
+                                var temp='<a href="javascript:void(0);" onclick="editCourse();return false;" class="artDailog btn btn-info  btn-xs" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>' +
+                                    '<a href="javascript:void(0);" onclick="deleteCourse()" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">' +
+                                    '<i class="fa fa-trash-o"></i></a>';
+
+                                if (full.HistoryId!=0) {
+                                    temp+=  '<a href="javascript:void(0);" onclick="GetHistory(' + full.HistoryId + ');return false;" class="artDailog btn btn-warning  btn-xs" data-toggle="tooltip" data-placement="top" title="查看最后一次推送结果"><i class="fa fa-file-text-o"></i></a>';
+                                }
+
+                                return temp;
+                            } else if (full.Status == "Saved") {
+
+                                return   '<a href="EventMessageTextEdit?id=' + full.Id + '&appid=@ViewBag.AppId&eventid=@ViewBag.eventId" class="artDailog btn btn-info  btn-xs"  data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>' +
+                                        '<a href="javascript:void(0);" onclick="LEAP.Common.MainPop.RowClick(\'' + full.Id + '\',2)" class="btn btn-danger btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="删除">' +
+                                        '<i class="fa fa-trash-o"></i></a>';
+                            }
+                        }
+                    }
+                ]),
+                fnDrawCallback:
+
+            function() { $('[data-toggle="tooltip"]').tooltip(); }
+
+            }));
+
+
+            LEAP.Common.MainPop.options.beforeShowModal = function() {
+                $('#NewsImg').val('');
+            };
+
+            $('.date-picker').datepicker({
+                autoclose: true,
+                todayHighlight: true,
+                dateFormat: 'yyyy-mm-dd',
+                minDate: -10,
+                maxDate: "+1M +10D",
+                clearBtn: true,
+                todayBtn: "linked"
+            });
+
+        });
+
+        function deleteCourse() {
+            artDialog.alert("不能删除已发布的消息<br/>需先取消发布再删除");
+        }
+
+        function editCourse() {
+            artDialog.alert("不能编辑已发布的消息<br/>需先取消发布再编辑");
+        }
+
+        var saveclip = [];
+        function GetHistory(historyId) {
+            view.message('GetPublishHistory',{historyId:historyId}).done(function(response) {
+                $.each(saveclip, function (index) {
+                    saveclip[index].destroy();
+                });
+                saveclip.splice(0);
+
+                if (response.Status!==200) {
+                    artDialog.alert(response.Message);
+                    return;
+                }
+
+                $('#pushHistory').modal('toggle');
+
+                if (response.Data.IsHaveError === false) {
+                    $('#copyPushHistory').hide();
+                } else {
+                    $('#copyPushHistory').show();
+                    setTimeout(function() {
+                        var clip = new ZeroClipboard.Client();
+                        saveclip.push(clip);
+                        clip.setHandCursor(true); 
+                        clip.setText(response.Data.ErrorMessage.replaceAll('</br>','\r\n')); 
+                        clip.glue('copyPushHistory');
+                        clip.addEventListener("complete", function () {
+                            artDialog.alert("复制成功");
+                            $('#pushHistory').modal('hide');
+                        });
+                    },500);
+                }
+                
+                $('#pushHistory #successResult').html(response.Data.SuccessMessage);
+                $('#pushHistory #errorResult').html(response.Data.ErrorMessage);
+            });
+        }
+    </script>
+}

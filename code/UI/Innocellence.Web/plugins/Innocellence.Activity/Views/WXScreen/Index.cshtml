@@ -1,0 +1,158 @@
+﻿@model Innocellence.Activity.ViewModel.WXScreenView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row">
+    <div class="col-sm-12">
+        <div>
+            <form class="form-inline" id="SearchForm" method="post">
+                <input type="hidden" id="AppId" name="AppId" value="@ViewBag.appid" />
+                <input type="hidden" id="Id" name="Id" />
+                <div class="form-group">
+                    <div data-date-format="yyyy-mm-dd" class="input-daterange input-group">
+                        <input type="datetime" id="StartTime" name="StartTime" class="form-control" placeholder="开始时间" />
+                        <span class="input-group-addon">
+                            <i class="fa fa-exchange"></i>
+                        </span>
+                        <input type="datetime" id="EndTime" name="EndTime" class="form-control" placeholder="结束时间" />
+                    </div>
+
+                    <a href="javascript:void(0);" class="btn btn-sm" id="clear_condition" data-toggle="tooltip" data-placement="top" title="清除条件">
+                        <i class="fa fa-remove"></i>
+                    </a>
+                    <a href="#" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索"><i class="fa fa-search"></i></a>
+                </div>
+                <div class="form-group pull-right">
+                    <a href="javascript:void(0);" class="btn btn-sm btn-success" data-toggle="tooltip" data-placement="top" title="导出CSV" id="btnExport">
+                        <i class="fa fa-download"></i> 导出
+                    </a>
+
+                </div>
+
+
+            </form>
+        </div>
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%; text-align: center;">@T("LillyId")</th>
+                            <th style="width: 20%">@T("姓名")</th>
+                            <th style="width: 15%">@T("部门1")</th>
+                            <th style="width: 15%">@T("部门2")</th>
+                            <th style="width: 15%">@T("部门3")</th>
+                            <th style="width: 10%">@T("操作时间")</th>
+                            <th style="width: 10%">@T("EventId")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section scripts_Foot
+{
+    <script>
+        var uploader;
+        var saveclip = new Array();
+
+        $(document).ready(function () {
+            $('#clear_condition').click(function () {
+                $('input[name=StartTime]').val('');
+                $('input[name=EndTime]').val('');
+                $('#btnSearch').trigger('click');
+            });
+
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetList" },
+
+                "aoColumns": [
+
+                    {
+                        "mData": "LillyId",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    { "mData": "UserName" },
+                    { "mData": "deptLv1" },
+                     { "mData": "deptLv2" },
+                    { "mData": "deptLv3" },
+                     { "mData": "OperatedTime" },
+                      { "mData": "EventId" }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                    {
+                        "targets": 0,
+                        "render": function (data, type, full, meta) {
+                            return data;
+
+                        }
+                    },
+                {
+                    "targets": 5,
+                    "render": function (data, type, full, meta) {
+                        if (data == null) {
+                            return data;
+                        }
+                        return data.substring(0, 10);;
+                    }
+                },
+
+                ]),
+                fnDrawCallback: function () {
+                    $('[data-toggle="tooltip"]').tooltip();
+                }
+            }));
+            //datepicker plugin
+            $('.input-daterange').datepicker({
+                autoclose: true,
+                todayHighlight: true,
+                dateFormat: 'yyyy/mm/dd',
+                minDate: -10,
+                maxDate: "+1M +10D",
+                todayBtn: "linked",
+                clearBtn: true
+            });
+
+        });
+
+        function checkdate() {
+            var start = $("#StartTime").val();
+            var end = $("#EndTime").val();
+            if (start == null || start.length == 0) {
+                artDialog.alert("起始日期不能为空");
+                return false;
+            }
+            if (end == null || end.length == 0) {
+                artDialog.alert("截止日期不能为空");
+                return false;
+            }
+
+            var startime = new Date(start);
+            var endtime = new Date(end);
+            if (startime.getTime() > endtime.getTime()) {
+                artDialog.alert("截止日期不能早于起始日期。");
+                return false;
+                //Math.floor(date3 / (24 * 3600 * 1000))
+            } else if (Math.floor((endtime.getTime() - startime.getTime()) / (24 * 3600 * 1000)) > 60) {
+                artDialog.alert("间隔时间不能超过两个月。");
+                return false;
+            }
+            return true;
+        }
+
+        function BeforeExport() {
+            return checkdate();
+        }
+
+        function BeforeSearch() {
+            return checkdate();
+        }
+    </script>
+}

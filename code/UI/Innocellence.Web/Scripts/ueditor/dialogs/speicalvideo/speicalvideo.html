@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <script type="text/javascript" src="../internal.js"></script>
+    <script type="text/javascript" src="../../../jquery-1.11.1.min.js"></script>
+    <style type="text/css">
+        .warp {
+            width: 420px;
+            height: 103px;
+            margin-left: 5px;
+            padding: 20px 0 0 15px;
+            position: relative;
+        }
+
+        #url {
+            width: 300px;
+            margin-bottom: 2px;
+            margin-left:10px;
+        }
+
+        .format span {
+            display: inline-block;
+            width: 58px;
+            text-align: center;
+            zoom: 1;
+        }
+
+        table td {
+            padding: 5px 0;
+        }
+
+        #align {
+            width: 65px;
+            height: 23px;
+            line-height: 22px;
+        }
+        #aleartAddress {
+            color:red;
+        }
+    </style>
+</head>
+<body>
+    <div class="warp">
+        <table width="380" cellpadding="0" cellspacing="0">
+            <tr>
+                <td colspan="2" class="format">
+                    <span>视频地址</span>
+                    <input style="width:300px" id="url" type="text" value="" />
+                </td>
+            </tr>  
+            <tr id="aleartAddress"></tr>    
+        </table>
+    </div>
+    <script type="text/javascript">
+    var linkvideo = editor._iframe;
+    if (linkvideo) {
+        $G("url").value = linkvideo.getAttribute("src") || "";
+    }
+    function queding(){
+        var  url = $G("url").value.replace(/^\s*|\s*$/ig,""),             
+             newIframe = editor.document.createElement("iframe")
+        if(!url){
+            $("#aleartAddress").html("*请输入有效的视频地址（目前仅支持腾讯视频及优酷视频）")
+            return false;
+        }
+        var newUrl= '';
+        if (url.indexOf("v.qq.com") > 0)
+        {
+            var substr = url.match(/page\/(\S*)(?=\.html)/);
+
+            if (substr != null) {
+                var vid = substr[1];
+                newUrl = "https://v.qq.com/iframe/player.html?vid=" + vid + "&tiny=0&auto=0"
+            }
+            else {
+                $("#aleartAddress").html("*请核对此视频网页地址")
+                return false;
+            }
+        }
+        else if (url.indexOf("v.youku.com") > 0) {
+            var substr = url.match(/id_(\S*)(?=\.html)/);
+            if (substr != null) {
+                var vid = substr[1];
+                newUrl = "http://player.youku.com/embed/" + vid
+            }
+            else {
+                $("#aleartAddress").html("*请核对此视频网页地址")
+                return false;
+            }        
+        }
+        else
+        {
+            $("#aleartAddress").html("*请输入有效的视频地址（目前仅支持腾讯视频及优酷视频）")
+            return false;
+        }
+        newIframe.setAttribute("src", newUrl);
+        newIframe.setAttribute("width", '100%');
+        newIframe.setAttribute("height", 'auto');
+        newIframe.setAttribute("frameborder", '0');
+        if (linkvideo) {
+            linkvideo.parentNode.insertBefore(newIframe, linkvideo);
+            domUtils.remove(iframe);
+        }else{
+            div = editor.document.createElement("div");
+            div.appendChild(newIframe);
+            editor.execCommand("inserthtml",div.innerHTML);
+        }
+        editor._iframe = null;
+        dialog.close();
+    }
+    dialog.onok = queding;
+    $G("url").onkeydown = function(evt){
+        evt = evt || event;
+        if(evt.keyCode == 13){
+            queding();
+        }
+    };
+    $focus($G( "url" ));
+
+    </script>
+</body>
+</html>

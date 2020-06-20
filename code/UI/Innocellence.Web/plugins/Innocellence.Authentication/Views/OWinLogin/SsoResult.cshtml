@@ -1,0 +1,8 @@
+﻿<!--Action boxes-->
+@{
+    Layout = "~/plugins/Innocellence.Authentication/Views/Shared/_AutopostLayout.cshtml";
+}
+<form name="form" method="post" action="@ViewBag.targetAction">
+    <input name="samlResponse" type="hidden" value="@ViewBag.samlResponse" />
+    <input name="RelayState" type="hidden" value="@ViewBag.RelayState" />
+</form>

@@ -1,0 +1,27 @@
+﻿
+<!--Action boxes-->
+  <div class="row">
+      <div class="col-sm-12">
+            <form class="form-inline" id="SearchForm">
+                <input type="hidden" name="DeptId" id="DeptId" />
+                <div class="form-group">
+                    <div data-date-format="yyyy-mm-dd" class="input-append date date-picker" style="display:inline-block;">
+                        <div class="input-group">
+                            <input type="datetime" name="txtDate" class="form-control" placeholder="Created Date"/>
+                            <span class="input-group-addon"><i class="fa fa-calendar bigger-110"></i></span>
+                        </div>
+                   </div>
+                   <select class="form-control" name="txtCateLog">
+                               <option value="">Please Select Logcate</option>
+                               <option value="Wechat">Wechatlogin</option>
+                               <option value="Admin">Adminlogin</option>
+                    </select>
+                    <a href="#" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+                </div>
+            </form>
+
+              <div class="widget-box">
+                  @ViewBag.Log
+              </div>
+          </div>
+   </div>

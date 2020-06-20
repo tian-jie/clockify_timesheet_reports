@@ -1,0 +1,677 @@
+﻿@using System;
+@model Innocellence.CA.ModelsView.MessageView
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    Script.Include("~/Scripts/fuelux/fuelux.tree.js");
+    Script.Include("~/Scripts/EasyUI/jquery.easyui.min.js");
+}
+@section easyui_css{
+  <link rel="stylesheet" href="~/Style/EasyUI/easyui.css" type="text/css" />
+}
+<div id="ModalTable">
+
+    <form action="Post" method="get" id="ff" class="form-horizontal">
+        <input type="hidden" id="ID" name="ID" value="@Model.Id" />
+        <input type="hidden" id="AppId" name="AppId" value="@ViewBag.AppId" />
+        <input type="hidden" id="RefId" name="RefId" value="@ViewBag.EventId" />
+
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-lg-3 control-label">标题:</label>
+                <div class="col-lg-9">
+                    <input type="text" name="Title" class="form-control" placeholder="标题" value="@Model.Title"
+                        validate="{required:true,maxlength:150,messages:{required:'请添加标题',maxlength:'请输入少于150字符的文字'}}" />
+                </div>
+            </div>
+
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0;">
+                    <label class="col-lg-3 control-label">链接:</label>
+                    <div class="col-lg-9">
+                        <input type="text" name="URL" class="form-control" placeholder="外部链接 http://" value="@Model.URL"
+                            validate="{required:false,url:true,maxlength:512,messages:{url:'请输入正确格式的链接'}}" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-lg-3 control-label">描述:</label>
+                <div class="col-lg-9">
+                    <textarea name="Comment" id="Comment" class="form-control" placeholder="描述" style="min-height: 83px;"
+                        validate="{required:false,maxlength:140,messages:{required:'请输入简短的描述',maxlength:'请输入少于140字符的描述'}}">@Model.Comment</textarea>
+                </div>
+            </div>
+
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0; margin-bottom: 15px;">
+                    <label class="col-lg-3 control-label">部门:</label>
+                    <div class="col-lg-9" style="padding-right: 35px;">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="toDepartment" id="toDepartment" value="@Model.toDepartment" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm btn-default" type="button" data-toggle="modal" data-target="#departModal">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="margin: 0; margin-bottom: 15px;">
+                    <label class="col-lg-3 control-label">标签:</label>
+                    <div class="col-lg-9" style="padding-right: 35px;">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="toTag" id="toTag" value="@Model.toTag" />
+                            <span class="input-group-btn">
+                                <button class="btn btn-sm btn-default" type="button" data-toggle="modal" data-target="#tagModal">
+                                    <i class="fa fa-plus"></i>
+                                </button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-sm-3 control-label">封面 :</label>
+                <div class="col-sm-4">
+                    <div id="uploader" class="wu-example">
+                        <div class="queueList" style="margin: 0px;">
+                            <div id="dndArea" class="placeholder" style="min-height: 130px; padding-top: 80px; background-position: center 3px;">
+                                <div id="filePicker" class="webuploader-container"></div>
+                                <p>或者将图片拖到这里</p>
+                            </div>
+                            <ul class="filelist"></ul>
+                        </div>
+                    </div>
+                    <p>(建议像素比: 16/9,建议尺寸:400*225 像素.)</p>
+                </div>
+                <div class="col-sm-5">
+                    @if (Model.ThumbImageId == null)
+                     {
+                       <img id="preview" src="" class="img-responsive" />
+                    }else{
+                       <img id="preview" src="/Common/PushFile?id=@Model.ThumbImageId&FileName=@Model.ThumbImageUrl&ImgType=1" class="img-responsive" />
+                    }
+                    <input type="hidden" id="ThumbImageId" name="ThumbImageId" value="@Model.ThumbImageId" />
+                    <input type="hidden" id="ThumbImageUrl" name="ThumbImageUrl" value="@Model.ThumbImageUrl" />
+                </div>
+            </div>
+
+            <div class="form-group col-lg-6">
+                <div class="row" style="margin: 0; margin-bottom: 15px;">
+                    <label class="col-sm-3 control-label">活动:</label>
+                    <div class="col-sm-9" style="padding-top: 7px;">
+                        @if (Model.Id > 0)
+                        {
+                            <input type="hidden" name="EventPersonCategory" id="EventPersonCategory" value="@Model.EventPersonCategory" />
+                        <div class="input-group">
+                            @if (Model.EventPersonCategory != null)
+                                {
+                                    <label style="margin-right: 10px;">
+                                        @if(Model.EventPersonCategory.Contains("Registered")){
+                                            <input name="isReg" id="isReg" class="ace" type="checkbox" checked="checked" />
+                                        }else{
+                                            <input name="isReg" id="isReg" class="ace" type="checkbox" />
+                                        }
+                                        <span class="lbl">&nbsp;发送给报名用户</span>
+                                    </label>
+                            <label>
+                                @if(Model.EventPersonCategory.Contains("Checkin")){
+                                            <input name="isCheck" id="isCheck" class="ace" type="checkbox" checked="checked" />
+                                }else{
+                                            <input name="isCheck" id="isCheck" class="ace" type="checkbox" />
+                                }
+                                        <span class="lbl">&nbsp;发送给签到用户</span>
+                            </label>
+                            }else{
+                                    <label style="margin-right: 10px;">
+                                        <input name="isReg" id="isReg" class="ace" type="checkbox" />
+                                        <span class="lbl">&nbsp;发送给报名用户</span>
+                                    </label>
+                            <label>
+                                <input name="isCheck" id="isCheck" class="ace" type="checkbox" />
+                                <span class="lbl">&nbsp;发送给签到用户</span>
+                            </label>
+                            }
+                        </div>
+                        }
+                        else
+                        {
+                            <input type="hidden" name="EventPersonCategory" id="EventPersonCategory" value="Registered,Checkin" />
+                        <div class="input-group">
+                            <label style="margin-right: 10px;">
+                                <input name="isReg" id="isReg" class="ace" type="checkbox" checked="checked" />
+                                <span class="lbl">&nbsp;发送给报名用户</span>
+                            </label>
+                            <label>
+                                <input name="isCheck" id="isCheck" class="ace" type="checkbox" checked="checked" />
+                                <span class="lbl">&nbsp;发送给签到用户</span>
+                            </label>
+                        </div>
+                        }
+                    </div>
+                </div>
+                <div class="row" style="margin: 0;">
+                    <label class="col-sm-3 control-label">用户:</label>
+                    <div class="col-sm-9">
+                        <textarea name="toUser" id="toUser" class="form-control" placeholder="LillyID / 用 '|'分隔" style="min-height: 135px; margin-bottom: 20px;">@Model.toUser</textarea>
+                        @*<h6>(PS: 如果不指定用户，部门，标签将推送给所有用户)</h6>
+                        *@
+                    </div>
+                    <div class="col-sm-12 pr30">
+                        <button id="check_send_obj" class="btn btn-sm btn-info pull-right" type="button">检查</button><div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-lg-6">
+                <label class="col-sm-3 control-label">点赞:</label>
+
+                <div class="col-sm-9">
+                    <input type="hidden" name="IsLike" id="IsLike" value="@Model.IsLike.ToString()" />
+                    @if (Model.IsLike.HasValue && Model.IsLike.Value == true)
+                        {
+                            <input type="checkbox" name="IsLikeBox" class="ace ace-switch ace-switch-2 form-control" checked="checked" />
+                    }
+                        else if (Model.IsLike.HasValue && Model.IsLike.Value == false)
+                        {
+                            <input type="checkbox" name="IsLikeBox" class="ace ace-switch ace-switch-2 form-control" />
+                    }
+                        else
+                        {
+                           <script type="text/javascript">
+                               $(function () {
+                                   $('#IsLike').val("True");
+                                   $('input[name=IsLikeBox]').attr('checked', true);
+                               })
+                           </script>
+                    <input type="checkbox" name="IsLikeBox" class="ace ace-switch ace-switch-2 form-control" />
+                    }
+                        <span class="lbl mt10"></span>
+                    <p>(PS:是否显示点赞数)</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-10 col-lg-offset-1">
+                <script type="text/plain" id="myEditor" name="Content" style="height: 640px; width: 100%">
+                    @Html.Raw(Model.Content)
+                </script>
+            </div>
+        </div>
+
+        <div class="row" style="margin: 0 35px; margin-top: 15px;">
+            <button type="submit" id="btnSubmit" class="btn btn-success pull-right">保存</button>
+            <button type="button" id="btnPreview_trigger" class="btn btn-warning pull-right" data-target="#previewModal" data-toggle="modal" style="margin-right: 8px;">保存并预览</button>
+        </div>
+
+        <div class="modal fade" role="dialog" aria-labelledby="myLabel" id="previewModal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myLabel">选择预览者</h4>
+                    </div>
+                    <div class="modal-body">
+                        <textarea name="Previewers" id="Previewers" class="form-control" placeholder="LillyID / 用 '|'分隔" style="min-height: 50px; max-width: 568px;">@Model.Previewers</textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="btnPreview">确认</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<div class="modal fade" role="dialog" aria-labelledby="myLabel" id="tagModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myLabel">选择推送目标--标签</h4>
+            </div>
+            <div class="modal-body">
+                <div class="taglist">
+                    @foreach (var item in ViewBag.taglist)
+                    {
+                        if (@ViewBag.taglist.Count <= 0)
+                        {
+                           <p>请联系系统管理员设置应用的可见范围.</p>
+                    }
+                        <div class="checkbox col-sm-6">
+                            <label>
+                                <input class="ace ace-checkbox-2" data-id="@item.tagid" name="form-field-checkbox" type="checkbox" />
+                                <span class="lbl">@item.tagname</span>
+                            </label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer" style="clear: both;">
+                <button type="button" class="btn btn-primary" id="btnConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" role="dialog" aria-labelledby="myLabel" id="departModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myLabel">选择推送目标--部门</h4>
+            </div>
+            <div class="modal-body">
+                <ul id="addtree"></ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnSure">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" role="dialog" aria-labelledby="myLabel" id="checkModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myLabel">推送失败目标</h4>
+            </div>
+            <div class="modal-body">
+                <dl class="dl-horizontal">
+                    <dt>
+                    部门:<dt>
+                    <dd id="partys"></dd>
+                    @*<dt>Tags:</dt>
+                    <dd id="tags"></dd>
+                    *@
+                    <dt>用户:</dt>
+                    <dd id="users"></dd>
+                </dl>
+            </div>
+            <div class="modal-footer">
+                <button type="button" data-dismiss="modal" class="btn btn-sm btn-primary" id="btnClose">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="event_modal" tabindex="-1" role="dialog" aria-labelledby="modal-title">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-title">活动列表</h4>
+            </div>
+            <div class="modal-body">
+                <div class="event-list" style="overflow-y: auto; max-height: 300px;">
+                    <table id="survey_table" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th width="5%">编号</th>
+                                <th width="15%">活动名称</th>
+                                <th width="15%">活动地点</th>
+                                <th width="13%">开始时间</th>
+                                <th width="13%">结束时间</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="btnYes">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+        //实例化编辑器
+        var ue = UE.getEditor('myEditor', {
+            allowDivTransToP: false //阻止div标签自动转换为p标签
+        });
+        var validator = $('#ff').validate();
+        var uploader;
+
+        $(function () {
+            $('#btnSubmit').attr('disabled', false);
+
+            LEAP.Common.MainPop.options.fnAfterPostError = function () { $('#btnSubmit').attr('disabled', false); };
+
+            $('#ff').submit(function () {
+                if (!validator.form()) {
+                    return false;
+                }
+                $('#btnSubmit').attr('disabled', true); //防止重复提交多次
+            });
+
+            $('input[name=IsLikeBox]').click(function () {
+                if ($(this).is(":checked")) {
+                    $('#IsLike').val("True");
+                    $(this).attr('checked', true);
+                } else {
+                    $('#IsLike').val("False");
+                    $(this).attr('checked', false);
+                }
+            });
+
+            $('input[name=isReg]').click(function () {
+                var _this = $(this);
+                var _hidden = $('#EventPersonCategory');
+
+                if (_this.is(":checked")) {
+                    _this.val("Registered");
+                    _this.attr('checked', true);
+                    _hidden.val(_this.val());
+                } else {
+                    _this.val("");
+                    _this.attr('checked', false);
+                    if (_hidden.val().indexOf(',') > 0) { _hidden.val(_hidden.val().replace("Registered,", "")); }
+                    _hidden.val(_hidden.val().replace("Registered", ""));
+                }
+
+                if (_this.is(":checked") && $('#isCheck').is(":checked")) {
+                    _hidden.val(_this.val() + ',' + $('#isCheck').val());
+                }
+            });
+
+            $('input[name=isCheck]').click(function () {
+                var _this = $(this);
+                var _hidden = $('#EventPersonCategory');
+
+                if (_this.is(":checked")) {
+                    _this.val("Checkin");
+                    _this.attr('checked', true);
+                    _hidden.val(_this.val());
+                } else {
+                    _this.val("");
+                    _this.attr('checked', false);
+                    if (_hidden.val().indexOf(',') > 0) { _hidden.val(_hidden.val().replace(",Checkin", "")); }
+                    _hidden.val(_hidden.val().replace("Checkin", ""));
+                }
+                if (_this.is(":checked") && $('#isReg').is(":checked")) {
+                    _hidden.val($('#isReg').val() + ',' + _this.val());
+                }
+            });
+
+
+            //点击trigger的时候就校验下form
+            $('#btnPreview_trigger').click(function () {
+                if (!validator.form()) {
+                    if (document.body.scrollTop > 0) {
+                        $('html, body').animate({ scrollTop: 0 }, 500);
+                    }
+                    return false;
+                }
+                $('#Previewers').attr("validate", "{required:true,messages:{required:'请输入预览者的 LillyID.'}}");
+            });
+
+            $('#btnPreview').click(function () {
+
+                if (!validator.form()) {
+                    if ($('#Previewers').val() != null && $('#Previewers').val() != "") {
+                        $('#previewModal').modal('hide');
+                        if (document.body.scrollTop > 0) {
+                            $('html, body').animate({ scrollTop: 0 }, 500);
+                        }
+                    }
+                    return false;
+                }
+
+                $('#previewModal').modal('hide');
+
+                var form = $('#ff').serializeArray();
+
+                $.post('WxPreview', form, function (result) {
+                    if (result.Message.Text.indexOf(";") > 0) {
+                        var str = result.Message.Text.split(";");
+                        $('#ID').val(str[0]);
+                        artDialog.alert(str[1]);
+                    } else {
+                        if (result.Message.Status == 200) {
+                            $('#ID').val(result.Message.Text);
+                        }
+                        artDialog.alert("预览推送成功!<br/>请在微信中查看");
+                    }
+                });
+            });
+
+            $('#btnClear').click(function () {
+                //$('#EventId').val("0");
+                $('#EventName').val("");
+            });
+
+            $('#event_modal').on("shown.bs.modal", function () {
+                //请求前清除一次
+                $('#survey_table > tbody').html("");
+
+                $.ajax({
+                    type: 'GET',
+                    url: '/Activity/ActivityManage/GetEventList',
+                    cache: false,
+                    data: { appId: $('#AppId').val() },
+                    success: function (result) {
+                        if (result.data != null && result.data != "") {
+                            var endDate, startDate;
+                            //轮循列表
+                            for (var x = 0; x < result.data.length; x++) {
+                                startDate = result.data[x].StartedDateTime;
+                                endDate = result.data[x].EndedDateTime;
+                                $('#survey_table > tbody').append('<tr>' +
+                                    '<td>' +
+                                    '<input type="radio" name="survey" value=' + result.data[x].Id + ' /></td>' +
+                                    '<td>' + result.data[x].Name + '</td>' +
+                                    '<td>' + result.data[x].Location + '</td>' +
+                                    '<td>' + startDate + '</td>' +
+                                    '<td>' + endDate + '</td>' +
+                                    '</tr>'
+                                );
+                            }
+                            //当前url反选
+                            var radioNode = $('input[name="survey"]');
+                            if ($('#EventId').val() != null && $('#EventId').val() != "" && $('#EventId').val() != "0") {
+                                for (var i = 0; i < radioNode.length; i++) {
+                                    if ($('#EventId').val() == radioNode.eq(i).val()) {
+                                        radioNode.eq(i).prop("checked", "checked");
+                                    }
+                                }
+                            }
+                        } else {
+                            $('#survey_table > tbody').html("<p>没有任何的投票记录。</p>");
+                        }
+                    }
+                });
+
+            });
+
+            $('#btnYes').click(function () {
+                var selectNode = $('input[name="survey"]:checked');
+                $('#EventId').val(selectNode.val());
+                $('#EventName').val(selectNode.parent('td').next().text());
+                $('#event_modal').modal('hide');
+                $('input[type="radio"]').attr("checked", false);
+                $('#survey_table > tbody').html("");
+            });
+
+            $('#check_send_obj').click(function () {
+                var appid = $('#AppId').val();
+                var tagids = $('#toTag').val();
+                var userids = $('#toUser').val();
+                var partyids = $('#toDepartment').val();
+
+                //if (tagids == "" && partyids == "" && userids == "") {
+                //    artDialog.alert("请在检查前选择推送目标");
+                //    return false;
+                //}
+
+                $.ajax({
+                    type: "Post",
+                    url: 'CheckSendObjects',
+                    data: {
+                        "appId": appid, "partyids": partyids,
+                        "tagids": tagids, "userids": userids,
+                        "contentId": $('#ID').val(),
+                        "personType": $('#EventPersonCategory').val(),
+                        "eventId": $('#RefId').val()
+                    },
+                    success: function (result) {
+                        if (result.Status === 200) {
+                            artDialog.alert("全部通过!");
+                        } else {
+                            var invalidPartys = '', invalidTags = '', invalidUsers = '';
+                            //each array
+                            if (result.Data != null && result.Data.ErrorDepartments != null) {
+                                $.each(result.Data.ErrorDepartments, function (i, obj) {
+                                    invalidPartys += obj.Name + '|';
+                                });
+                                $('#partys').html(invalidPartys.substring(0, invalidPartys.length - 1));
+                            } else {
+                                var txt = partyids == "" ? "None Selected" : "Pass";
+                                $('#partys').html(txt);
+                            }
+
+                            //if (result.errorinfo.ErrorTags != null) {
+                            //    $.each(result.errorinfo.ErrorTags, function (i, obj) {
+                            //        invalidTags += obj.Name + '|';
+                            //    });
+                            //    $('#tags').html(invalidTags.substring(0, invalidTags.length - 1));
+                            //} else {
+                            //    $('#tags').html("Pass");
+                            //}s
+
+                            if (result.Data != null&& result.Data.ErrorUsers != null) {
+                                $.each(result.Data.ErrorUsers, function (i, obj) {
+                                    invalidUsers += obj + '|';
+                                });
+                                $('#users').html(invalidUsers.substring(0, invalidUsers.length - 1));
+                            } else {
+                                var userTxt = userids == "" ? "None Selected" : "Pass";
+                                $('#users').html(userTxt);
+                            }
+                            $('#checkModal').modal('show');
+                        }
+                    }
+                });
+                return false;
+            });
+
+            $('#tagModal').on('show.bs.modal', function () {
+                var str = $('#toTag').val();
+                if (str != null && str != "") {
+                    var tagids = str.split('|');
+                    var length = $('.taglist .checkbox').length;
+                    for (var i = 0; i < tagids.length; i++) {
+                        for (var j = 0; j < length; j++) {
+                            var inputNode = $('.checkbox input[name="form-field-checkbox"]').eq(j);
+                            if (inputNode.data('id') == tagids[i]) {
+                                inputNode.prop('checked', true);
+                            }
+                        }
+                    }
+                }
+            });
+
+            $("#tagModal").on('shown.bs.modal', function () {
+                //保存后做的事儿
+                $('#btnConfirm').click(function () {
+                    //who is check
+                    var taglist = "";
+                    var length = $('.taglist .checkbox').length;
+                    for (var i = 0; i < length; i++) {
+                        var inputNode = $('.checkbox input[name="form-field-checkbox"]').eq(i);
+                        if (inputNode.is(":checked")) {
+                            taglist += inputNode.data("id") + '|';
+                        }
+                    }
+                    //close modal
+                    $('#tagModal').modal('hide');
+                    $('#toTag').val(taglist.substring(0, taglist.length - 1));
+
+                });
+            });
+
+            $('#tagModal').on('hidden.bs.modal', function () {
+                $('.checkbox input[name="form-field-checkbox"]').prop('checked', false);
+            });
+
+            $("#departModal").on('shown.bs.modal', function () {
+                var departlist = $('#toDepartment').val();
+                $('#addtree').tree({
+                    url: 'GetSubDepartment?Id=0&departlist=' + departlist,
+                    checkbox: true,
+                    method: 'get',
+                    animate: false
+                });
+
+                $('#btnSure').click(function () {
+                    var nodes = $('#addtree').tree('getChecked');
+                    var strIDs = '';
+                    $.each(nodes, function (i, item) {
+                        strIDs += '|' + item.id;
+                    });
+                    $('#toDepartment').val('');
+                    if (strIDs != '') {
+                        $('#toDepartment').val(strIDs.substring(1));
+                    }
+                    //close modal
+                    $('#departModal').modal('hide');
+                });
+            });
+
+            //Using webuoloader
+            if (uploader) {
+                uploadFileObj.clear();
+            } else {
+                uploader = uploadFileObj.uploadFile({
+                    auto: true,
+                    pick: {
+                        id: '#filePicker',
+                        label: 'Select'
+                    },
+                    server: '/Common/PostImage',
+                    accept: {
+                        title: 'Images',
+                        extensions: 'gif,jpg,jpeg,bmp,png',
+                        mimeTypes: 'image/gif,image/jpg,image/bmp,image/png'
+                    },
+                    fileNumLimit: 1,
+                    fileSingleSizeLimit: 2048 * 2048,
+                    onSuccess: function (file, response) {
+
+                        $('#preview').prop('src', "/Common/PushFile?id=" + response.id + "&filename=" + response.result.Src);
+                        $('#ThumbImageId').prop('value', response.id);
+                        $('#ThumbImageUrl').prop('value', response.result.Src);
+
+                    },
+                    onUploadFinished: function () {
+                        uploadFileObj.clear();
+                    }
+                });
+
+            }
+        });
+
+        $(document).ready(function () {
+
+            LEAP.Common.MainPop.options.fnAfterSuccess = function () {
+                window.location.href = 'EventMessageIndex?appid=@ViewBag.AppId&eventid=@ViewBag.EventId';
+            };
+
+        });
+    </script>
+}

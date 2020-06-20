@@ -1,0 +1,233 @@
+﻿@using Innocellence.WeChat.Domain.ModelsView;
+@using Innocellence.WeChat.Domain.Entity;
+@model Innocellence.WeChat.Domain.ModelsView.ToolsView
+
+<div class="row">
+    <div class="col-sm-12">
+            
+            <div class="widget-box">
+                <div class="widget-content nopadding">
+                    <form action="Post" id="ff" method="get" class="form-horizontal" datasource="Get">
+                        <input type="hidden" id="ToolsID" name="ToolsID" value="@Model.Id" />
+                        
+                        <div class="form-group mt20">
+                            <label class="col-sm-3 control-label">FileName :</label>
+                            <div class="col-sm-9">
+                                <a href="~/Tools/FileTools?id=@Model.Id&strUrl=../temp/@Model.ToolsName" style="line-height:35px" id="FileName">@Model.ToolsName</a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">FileSize:</label>
+                            <div class="col-sm-9">
+                                <input type="text" name="FileSize" id="FileSize" class="form-control" readonly="readonly" value="@Model.FileSize" />
+                            </div>
+                        </div>
+                        <div class="form-group hidden">
+                            <label class="col-sm-3 control-label">Preview :</label>
+                            <div class="col-sm-9">
+                                <button class="btn btn-success" id="btnSave"  >Preview</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Zip:<br />(limited to 5MB)</label>
+                            <div class="col-sm-6">
+                                <div id="uploader" class="wu-example">
+                                    <div id="uploader" class="wu-example">
+                                        <!--用来存放文件信息-->
+                                        <div id="thelist" class="uploader-list"></div>
+                                        <div class="btns zip">
+                                            <div id="picker" class="pull-left">Browser</div>
+                                            <a href="#" id="ctlBtn" class="btn btn-default pull-left ml10">Upload</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </form>
+                  
+                </div>
+            </div>
+       
+            <div class="desc">
+                <h5>Attention Please</h5>
+                <dl class="dl-horizontal">
+                    <dt>Package Format :</dt>
+                    <dd>This one only support zip format.</dd>
+                </dl>
+               <dl class="dl-horizontal">
+                    <dt>FileName Rule :</dt>
+                    <dd>You need named <code>index</code> for english version of the html. <br/>The chinese version html should be named <code>index_zh</code>.</dd>
+                </dl>
+                <dl class="dl-horizontal">
+                    <dt>Path Rule :</dt>
+                    <dd>Compressed file package must be compressed in the root directory.</dd>
+                </dl>
+            </div>
+
+    </div>
+</div>
+
+@section scripts_Foot
+{
+<link rel="stylesheet" type="text/css" href="~/scripts/webuploader/webuploader.css">
+
+<!--引入JS-->
+<script type="text/javascript" src="~/scripts/webuploader/webuploader.js"></script>
+
+        <script>
+            var uploader;
+            $(document).ready(function () {
+                
+              
+                if (uploader) {
+                    //WebUploader.clear();
+                    uploader.reset();
+                    var $list = $('#thelist');
+                    $list.html('');
+                } else {
+                    var $btn = $('#ctlBtn');
+                    var state = 'pending';
+                    uploader = WebUploader.create({
+                        // swf文件路径
+                        swf: '/scripts/webuploader/Uploader.swf',
+
+                        // 文件接收服务端。
+                        server: '../tools/PostImage',
+
+                        // 选择文件的按钮。可选。
+                        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+                        pick: '#picker',
+                        disableGlobalDnd: true,
+                        dnd: '#uploader .uploader-list',
+                        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+                        resize: false,
+                        fileSizeLimit: 5 * 1024 * 1024, //5M
+                        fileNumLimit: 1,
+                        accept: {
+                            title: 'zip',
+                            extensions: 'zip',
+                            mimeTypes: 'zip/*'
+                        }
+
+                    });
+                    $btn.on('click', function () {
+                        if (state === 'uploading') {
+                            uploader.stop();
+                        } else {
+                            uploader.upload();
+                        }
+                    });
+                    uploader.on('all', function (type) {
+                        if (type === 'startUpload') {
+                            state = 'uploading';
+                        } else if (type === 'stopUpload') {
+                            state = 'paused';
+                        } else if (type === 'uploadFinished') {
+                            state = 'done';
+                        }
+
+                        if (state === 'uploading') {
+                            $btn.text('paused');
+                        } else {
+                            $btn.text('Upload');
+                        }
+                    });
+                    uploader.on('fileQueued', function (file) {
+                        var $list = $('#thelist');
+                        $list.html('<div id="' + file.id + '" class="item">' +
+                            '<h4 class="info">' + file.name + '</h4>' +
+                            '<p class="state">waiting for upload...</p>' +
+                        '</div>');
+                    });
+                    uploader.on('beforeFileQueued', function (file) {
+                        uploader.reset();
+                        return true;
+                    });
+                    
+
+                    uploader.on('uploadProgress', function (file, percentage) {
+                        var $li = $('#' + file.id),
+                            $percent = $li.find('.progress .progress-bar');
+
+                        // 避免重复创建
+                        if (!$percent.length) {
+                            $percent = $('<div class="progress progress-striped active">' +
+                              '<div class="progress-bar" role="progressbar" style="width: 0%">' +
+                              '</div>' +
+                            '</div>').appendTo($li).find('.progress-bar');
+                        }
+
+                        $li.find('p.state').text('uploading...');
+
+                        $percent.css('width', percentage * 100 + '%');
+                    });
+
+                    uploader.on('uploadSuccess', function (file, response) {
+                        //$('#' + file.id).find('p.state').text('已上传');
+                        
+                       // alert(response.result.FileID);
+                        $('#FileName').html(response.result.Name).prop('href', response.result.Src);
+                        $('#FileSize').val(file.size);
+                        $('#ToolsID').val(response.result.FileID);
+
+                        uploader.reset();
+                        var $list = $('#thelist');
+                        $list.html('');
+                        //$('#ModalTable').closest('.modal').modal('hide');
+
+                    });
+
+                    uploader.on('uploadBeforeSend', function (file, data, header) {
+                        data['ToolsID'] = $('#ToolsID').val();
+                        //data['CandidateID'] = $('#CandidateID').val();
+                    });
+
+
+                    uploader.on('uploadAccept', function (block, ret, fn) {
+                        if (ret.error) {
+                            fn(ret.error.message);
+                        }
+                    });
+
+
+
+                    uploader.on('uploadError', function (file) {
+                        uploader.reset();
+                        var $list = $('#thelist');
+                        $list.html('');
+                        $('#' + file.id).find('p.state').text('upload error');
+                    });
+
+                    uploader.on('error', function (type) {
+                        uploader.reset();
+                        var $list = $('#thelist');
+                        $list.html('');
+                        switch (type) {
+                            case "Q_EXCEED_NUM_LIMIT":
+                                artDialog.alert('文件个数过多, 请重新选择!');
+                                break;
+                            case "F_EXCEED_SIZE":
+                            case "Q_EXCEED_SIZE_LIMIT":
+                                artDialog.alert('文件过大, 请重新选择!');
+                                break;
+                            case "Q_TYPE_DENIED":
+                                artDialog.alert('不支持的文件类型! ');
+                                break;
+                            default:
+                                artDialog.alert('Error: ' + type);
+                                break;
+                        }
+                        //$('#' + file.id).find('p.state').text('upload error');
+                    });
+
+                    uploader.on('uploadComplete', function (file) {
+                        $('#' + file.id).find('.progress').fadeOut();
+                    });
+                }
+             
+            });
+
+          
+        </script>
+    }

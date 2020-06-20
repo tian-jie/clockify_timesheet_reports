@@ -1,0 +1,7 @@
+msgctxt "~/Views/NewsInfo/index.cshtml"
+msgid "Title"
+msgstr "标题"
+
+msgctxt "~/Views/NewsInfo/index.cshtml"
+msgid "Created Date"
+msgstr "创建时间"

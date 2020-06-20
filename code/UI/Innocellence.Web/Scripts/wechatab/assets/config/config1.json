@@ -1,0 +1,13 @@
+
+{
+"groupArr": null,
+"showAllButtonId": "#show_all",
+"liListId": "#list_ul",
+"isCheckedGroup": false,
+"goback": false,
+"image_1": "/Scripts/wechatab/assets/images/icon1.png",
+"image_2": "/Scripts/wechatab/assets/images/icon2.jpg",
+"image_3": "/Scripts/wechatab/assets/images/icon3.png",
+"param":"appId",
+"Xlogo":"ace-icon glyphicon glyphicon-remove"
+}

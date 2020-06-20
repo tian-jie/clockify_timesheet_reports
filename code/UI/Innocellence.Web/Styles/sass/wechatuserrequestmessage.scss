@@ -1,0 +1,62 @@
+#Message_Tag{
+    padding: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+	min-height:200px; 
+	background:#fff;
+	
+	.Tag-title{
+	    padding-bottom: 10px;
+	    margin-bottom:10px;
+	    border-bottom: 1px solid #ccc;
+	    
+          h4{
+                padding: 0;
+                margin: 0;
+            }
+           a{
+                color: #ee4b46;
+            }           
+	}
+	
+		
+	ul{
+		list-style: none;
+		margin: 0;
+		li{
+		    float: left;
+		    padding:5px 31px;
+		    margin: 0 10px 10px 0;
+		    border: 1px solid #ccc ;
+		    cursor: pointer ;
+		    		    
+		    &:hover{
+		     padding:5px 5px;
+             background:#ee4b46 ;
+             border: 1px solid #ee4b46 ;
+             color: #fff;
+		    }
+		    		    		    
+			h5{
+				margin:3px 0;
+				float:left;
+			}
+		    span{
+		        display: none;
+		        padding-left: 10px;
+		        a{
+		            padding: 0 3px;
+		            text-decoration:none;
+		            color: #fff;
+		            
+		            &:hover{
+                       color: #f4f1f1;
+                    }
+		        }
+
+		    }
+		}			
+	}
+	
+
+}

@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="keyword" content="">
+    <meta name="description" content="">
+    <title>未授权</title>
+    <style>
+        img {
+            pointer-events: none;
+        }
+
+        a {
+            display: inline-block;
+        }
+
+        iframe {
+            border: none;
+        }
+
+            iframe.card_iframe {
+                position: relative;
+                z-index: 1000;
+            }
+
+        .wechat_qrcode {
+            width: 260px;
+            height: 260px;
+            margin: 80px auto 20px auto;
+            background: url('/Content/img/qrcode_wechat.jpg') no-repeat scroll 0 0;
+        }
+        .wechat_qrcode_without_qrcode {
+            width: 260px;
+            height: 260px;
+            margin: 80px auto 20px auto;
+        }
+
+        .lock_text {
+            margin-top: 20px !important;
+            font-size: #808080;
+        }
+
+        .body_media_lock {
+            background: #f5f5f5 !important;
+        }
+
+        .lock {
+            width: 80%;
+            margin: 0 auto;
+            text-align: center;
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="https://res.wx.qq.com/mmocbiz/en_US/tmt/mobile/dist/css/style-old-security_cd0a7c52.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body class="body_media_lock">
+    <div class="media_container"><div class="wechat_qrcode_without_qrcode"></div><div class="lock"><p class="lock_text">对不起，您不具备查看该信息的权限。</p></div></div>
+    <script src="//res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+    <script type="text/javascript">function htmlDecode(e) { return e.replace(/&#39;/g, "'").replace(/<br\s*(\/)?\s*>/g, "\n").replace(/&nbsp;/g, " ").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&amp;/g, "&") } function trim(e) { return e.replace(/^\s*|\s*$/g, "") } function viewProfile() { "undefined" != typeof WeixinJSBridge && WeixinJSBridge.invoke && WeixinJSBridge.invoke("profile", { username: user_name, scene: "57" }) } function report_article() { var e = "" == sourceurl ? location.href : sourceurl, i = [nickname, location.href, title, e].join("|WXM|"); location.href = "http://mp.weixin.qq.com/mp/readtemplate?t=wxm-appmsg-inform&__biz=" + biz + "&info=" + encodeURIComponent(i) + "#wechat_redirect" } function initWeixinBridge() { evalWXjsApi(function () { WeixinJSBridge.call("hideOptionMenu") }) } function addCard(e) { evalWXjsApi(function () { WeixinJSBridge.invoke("batchAddCard", { card_list: [e] }, function (e) { var i = e.err_msg.replace("batchAddCard:", ""); "ok" === i || ("fail" === i || "batchAddCard:fail_the permission value is offline verifying" === e.err_msg) && alert("系统错误。请重新打开图文领取卡券。") }) }) } var biz = "", nickname = "", user_name = "", msg_title = "", msg_source_url = "", title = trim(htmlDecode(msg_title)), sourceurl = trim(htmlDecode(msg_source_url)), ISWP = !!navigator.userAgent.match(/Windows\sPhone/i); if (ISWP) { var profile = document.getElementById("post-user"); profile && profile.setAttribute("href", "weixin://profile/" + user_name) } var voice_box = document.querySelector(".msg_item.voice"); if (voice_box) { var audio = document.querySelector("audio"); voice_box.addEventListener("click", function (e) { -1 != voice_box.className.indexOf("cur") ? (audio.currentTime = 0, audio.src = audio.src, audio.pause(), voice_box.classList.remove("cur")) : (voice_box.classList.add("cur"), audio.play()) }) } on_finish_play = function () { document.querySelector(".msg_item.voice").classList.remove("cur") }; var evalWXjsApi = function (e) { "object" == typeof WeixinJSBridge && "function" == typeof WeixinJSBridge.invoke ? e() : (document.attachEvent && document.attachEvent("WeixinJSBridgeReady", e), document.addEventListener && document.addEventListener("WeixinJSBridgeReady", e)) }; initWeixinBridge();</script>
+</body>
+<iframe id="__WeixinJSBridgeIframe_SetResult" style="display: none;"></iframe>
+<iframe id="__WeixinJSBridgeIframe" style="display: none;"></iframe>
+</html>

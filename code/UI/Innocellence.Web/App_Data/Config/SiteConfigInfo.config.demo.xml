@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<SiteConfigInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <UpdateTime>2015-09-14T11:13:13.5195242+08:00</UpdateTime>
+  <SiteName>Magicodes.NET平台</SiteName>
+  <SiteUrl />
+  <SiteTitle>Magicodes.NET通用平台</SiteTitle>
+  <SEOKeyword>Magicodes.NET通用平台</SEOKeyword>
+  <SEODescription>Magicodes.NET框架是一套插件框架，以方便中间件的选择、组装和集成</SEODescription>
+  <ICP />
+  <IsShowLicensed>true</IsShowLicensed>
+  <IsSupportMobile>true</IsSupportMobile>
+  <IsCloseSite>false</IsCloseSite>
+</SiteConfigInfo>

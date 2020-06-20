@@ -1,0 +1,11 @@
+﻿Group: Discount requirements
+FriendlyName: WeChat Management
+SystemName: Innocellence.WeChatMain
+Version: 1.1.0.20170215
+SupportedVersions: 2.00
+Author: ying.he
+DisplayOrder: 1
+FileName: Innocellence.WeChatMain.dll
+Controllers:Innocellence.WeChatMain.Controllers
+Dependences:
+Install: 1

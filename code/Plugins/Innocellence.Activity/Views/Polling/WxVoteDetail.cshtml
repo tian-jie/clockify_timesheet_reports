@@ -1,0 +1,90 @@
+﻿@model Innocellence.Activity.Contracts.ViewModel.PollingView
+@{
+    ViewBag.Title = "投票";
+    Layout = null;
+}
+@*@section Header{
+        <link rel="stylesheet" href="~/Plugins/Innocellence.CA/Content/style.css" />
+
+    }*@
+<div id="wxVoteDetail">
+    <div class="panel panel-default">
+        <div class="panel-heading">@Model.Name</div>
+        <div class="panel-body">
+            <div class="form-group col-xs-12 polling-item" id="qusetions">
+                @if (Model == null)
+                {
+                    <p> 此投票不存在或者已删除</p>
+                }
+                else if (Model.PollingQuestions != null && Model.PollingQuestions.Count > 0)
+                {
+                    for (int i = 0; i < Model.PollingQuestions.Count; i++)
+                    {
+                        var questionView = Model.PollingQuestions[i];
+                        <div class="polling-item-hd">
+                            <h4 class="polling-title">@(i + 1). @questionView.Title@questionView.optionName</h4>
+                        </div>
+                        if (questionView.Type == 99)
+                        {
+                            <div class="col-sm-12 answertext">
+                                <div class="col-sm-12 answertext">
+                                    <textarea class="form-control"
+                                              style="min-height: 45px;" readonly="readonly">@questionView.PollingQuestionResult</textarea>
+                                    </div>
+                                </div>
+
+                        }
+                        for (int j = 0; j < questionView.PollingOptionEntities.Count; j++)
+                        {
+                            var optionview = questionView.PollingOptionEntities[j];
+                            int percent = optionview.Percent;
+                            int num = optionview.VoteNum;
+                            <div class="polling-item-bd">
+                                <ul class="polling-option-list">
+                                    <li class="polling-option">
+                                        @if (!String.IsNullOrEmpty(optionview.Picture))
+                                        {
+                                            <div class="col-xs-12" style="padding-left:0px">
+                                                <img class="img-responsive" src="@optionview.Picture" />
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        }
+
+                                        <div class="polling-option-msg group">
+                                            <strong class="polling-option-title"><br>@optionview.OptionName@optionview.SelectName</strong>
+                                        </div>
+
+                                        <div class="polling-result-meta">
+                                            <div class="polling-graph col-xs-7 nopd-lr">
+                                                @if (percent != 0)
+                                                {
+                                                    <em style="width: @percent%; background-color: #7DADE1" class="polling-progress"></em>
+                                                }
+                                                else
+                                                {
+                                                    <em style="width:   0%; background-color: #f4f5f9" class="polling-progress"></em>
+                                                }
+                                            </div>
+                                            <div class="col-xs-5 nopd-lr">
+                                                <span class="polling-result-tips polling-number">@num 票</span>
+                                                <span class="polling-result-tips polling-percent">@percent%</span>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        }
+
+                    }
+                }
+            </div>
+
+            <hr />
+        </div>
+        <div class="polling_have_vote">
+            您已参与
+        </div>
+
+    </div>
+</div>

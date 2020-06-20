@@ -1,0 +1,271 @@
+﻿
+@{
+    Layout = null;
+    ViewBag.Title = "List";
+    <script src="/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/plugins/Innocellence.WeChatMP/Content/js/jquery.scrollLoading.js"></script>
+    <script src="/Scripts/jsviews.min.js"></script>
+    <script src="/Scripts/p.list.bind.js"></script>
+    <script src="/Scripts/pages.js"></script>
+    <link href="/styles/bootstrap.css" rel="stylesheet" />
+    <link href="~/plugins/Innocellence.WeChatMP/Content/style.css" rel="stylesheet" />
+}
+
+<style>
+    .main_header {
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        left: 0;
+        z-index: 99;
+        transition: 0.5s all;
+        -o-transition: 0.5s all;
+        -webkit-transition: 0.5s all;
+    }
+
+    .m_search {
+        position: absolute;
+        right: 0;
+        display: block;
+        width: 8%;
+        top: 15px;
+        margin-right: 10px;
+        font-family: 'Glyphicons Halflings';
+    }
+
+        .m_search:before {
+            color: #FFF;
+            content: "\e003";
+            font-size: 1.7em;
+        }
+
+    .m_center {
+        margin-top: 68px;
+    }
+
+        .m_center img {
+            /*display: block;*/
+            max-width: 100%;
+            height: auto;
+        }
+
+    .search-box {
+        width: 100%;
+        min-width: 320px;
+        height: 45px;
+        background: #72635d;
+    }
+
+    .option input.form-control {
+        position: relative;
+        float: left;
+        height: 34px;
+        background: #FFF;
+        border-radius: 5px;
+        padding-left: 5px;
+    }
+
+    #dosearch {
+        width: 80px;
+    }
+
+    .option {
+        padding-top: 5px;
+    }
+
+    #clear i {
+        position: absolute;
+        top: 50%;
+        right: 105px;
+        margin-top: -9px;
+        z-index: 999;
+        font-size: 1.7em;
+        color: rgba(0, 0, 0, 0.5);
+    }
+
+    .ele-relative {
+        position: relative;
+    }
+
+    .glyphicon {
+        top: 0;
+    }
+
+    .scrollLoading {
+        width: 100%;
+        position: fixed;
+        background: #eee;
+        bottom: 0px;
+        left: 0;
+        text-align: center;
+        box-shadow: 0px 0px 3px #666;
+    }
+
+        .scrollLoading img {
+            width: 30px;
+            display: block;
+            margin: 5px auto;
+        }
+
+    #panel-center {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    .m_center {
+        margin-top: 68px;
+    }
+
+        .m_center img {
+            /*display: block;*/
+            max-width: 100%;
+            height: auto;
+        }
+
+
+    .row {
+        width: 100% !important;
+        margin: 0px auto !important;
+        overflow: hidden;
+        background: #FFF;
+        border-bottom: 1px solid #DDD !important;
+    }
+
+        .row a {
+            width: 100%;
+            display: block;
+        }
+
+    .row_ul {
+        margin: 10px auto !important;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .row_img {
+        float: left;
+        width: 104px !important;
+        margin: 0;
+        overflow: hidden;
+    }
+
+        .row_img img {
+            max-width: 100%;
+            margin: 0 auto;
+            box-shadow: 0px 0px 6px #666;
+            display: block;
+        }
+
+    .row_txt {
+        line-height: 21px;
+        overflow: hidden;
+        text-align: left;
+        padding-left: 10px;
+    }
+
+        .row_txt span {
+            display: block;
+            font-size: 14px;
+        }
+
+            .row_txt span:last-child {
+                color: #999;
+            }
+
+            .row_txt span.row_txt_top {
+                height: 42px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+
+    img, a img {
+        border: 0;
+    }
+</style>
+
+<div id="main-wrapper">
+    <div class="main_header">
+        <div class="search-box">
+            <div class="col-xs-12 nopadding-lr ele-relative">
+                <div class="option input-group">
+                    <input id="searchword" name="searchword" style="padding-right: 35px" class="form-control" type="text" value="@ViewBag.SearchStr" placeholder="@T("Please input keyword")" />
+                    <span class="input-group-btn" id="search-icon"><button id="dosearch" class="btn btn-default">Search</button></span>
+                </div>
+                <span id="clear"><i class="glyphicon glyphicon-remove-circle" id="clear"></i></span>
+            </div>
+        </div>
+
+    </div>
+    <div id="panel-center">
+        <div id="leaplist" class="m_center"></div>
+        <div class="scrollLoading" data-url="GetList" data-search="true">
+            <img src="/Content/images/loading.gif" class="img-responsive loading" style="display: none;" alt="this is loading picture." />
+            <div class="no-result" style="display: none;">@T("All data displayed")</div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var getUrlParameter = function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+        var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+        if (r != null) return unescape(r[2]); return null; //返回参数值
+    }
+
+    var htmlStr = "<div class='row'>\r\n<a href='wxdetail/{{: Id}}?wechatid=" +@ViewBag.AppId +"'>\r\n<ul class=row_ul\>" +
+        "<li class='row_img'><img src='{{: ImageCoverUrl}}' />\r\n</li>\r\n" +
+        "<li class='row_txt'><span class=\"row_txt_top\">{^{: ArticleTitle}}</span>\r\n" +
+        "<span>{{: PublishDateFormatString}}</span>\r\n</li>\r\n" +
+        "</ul>\r\n</a>\r\n</div>";
+
+    $(document).ready(function () {
+
+        $('#leaplist').LEAPDataBind({
+            url: "GetList",
+            data: "wechatid=" + getUrlParameter("wechatid") + "&strSubCate=" + getUrlParameter("strSubCate"),
+            pageSize: 10,
+            renderHtml: htmlStr
+        });
+
+        $('#dosearch').click(function () {
+            $('#leaplist').LEAPDataBind({
+                url: "GetList",
+                pageSize: 10,
+                data: "searchword=" + $('#searchword').val() + "&wechatid=" + getUrlParameter("wechatid") + "&strSubCate=" + getUrlParameter("strSubCate"),
+                renderHtml: htmlStr
+            });
+        });
+        $('#clear').click(function () {
+            var searchword = $('#searchword').val();
+            if (searchword != null && searchword != "") {
+                $('#searchword').val("").focus();
+                $('#leaplist').LEAPDataBind({
+                    url: "GetList",
+                    data: "wechatid=" + getUrlParameter("wechatid") + "&strSubCate=" + getUrlParameter("strSubCate"),
+                    pageSize: 10,
+                    renderHtml: htmlStr
+                });
+            }
+            return false;
+        });
+
+        $(".scrollLoading").scrollLoading({
+            callback: function (obj, data) {
+                debugger
+                $.each(data, function (n, iValue) {
+                    var htmlStr = "<div class='row'>\r\n<a href='WxDetail/" + iValue.Id + "'>\r\n<ul class=row_ul\>" +
+                        "<li class='row_img'><img src='" + iValue.ImageCoverUrl + "' /></li>\r\n" +
+                        "<li class='row_txt'><span class=\"row_txt_top\">" + iValue.ArticleTitle + "</span>\r\n" +
+                        "<span>" + iValue.PublishDateFormatString + "</span>\r\n</li>\r\n" +
+                        "</ul>\r\n</a>\r\n</div>";
+
+                    $("#leaplist").append(htmlStr);
+                });
+                return true;
+            }
+        });
+    });
+</script>

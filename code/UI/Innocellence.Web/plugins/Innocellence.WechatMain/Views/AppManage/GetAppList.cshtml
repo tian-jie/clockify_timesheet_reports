@@ -1,0 +1,137 @@
+﻿@section easyui_css{
+    <link rel="stylesheet" href="~/styles/EasyUI/easyui.css" type="text/css" />
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <form class="form-inline" id="SearchForm" method="post">
+            <div class="form-group">
+                <select id="APPList" name="APPList" data-placeholder="Please Select APP" class="form-control">
+                    <option value="">Please Select APP</option>
+                    @foreach (var lst in (Dictionary<int,String>)ViewBag.AList)
+                    {
+                        <option name="@lst.Value" value="@lst.Key">@lst.Value</option>
+                    }
+                </select>
+                <a href="#" class="btn btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="搜索条件"><i class="fa fa-search"></i></a>
+            </div>
+        </form>
+
+        <div class="widget-box">
+            <div class="widget-content nopadding">
+                <table class="table table-bordered data-table">
+                    <thead>
+                        <tr>
+                           
+                            <th style="width:10%;text-align:center;">@T("APPID")</th>
+                            <th style="width:10%">@T("APPLogo")</th>
+                            <th style="width:30%">@T("APPName")</th>
+                            <th style="width:40%">@T("APPIntro")</th>
+                            <th style="width:10%">@T("Operation")</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+   <!-- Modal: 添加App -->
+    <div id="ModalAddApp" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="blue bigger">添加App</h4>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="form-group col-md-10">
+                            @*<label class="col-sm-4 control-label">微信AppId :</label>*@
+                            <div class="col-sm-10">
+                                <input type="text" name="agentId" class="form-control" placeholder="微信端应用ID" maxlength="5"
+                                       validate="{required:true,maxlength:5,messages:{required:'请输入微信应用ID.', maxlength:'请输5字符以内.'}}" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-sm" data-dismiss="modal">
+                        <i class="ace-icon fa fa-times"></i>
+                        关闭
+                    </button>
+
+                    <button class="btn btn-sm btn-primary" data-action="save">
+                        <i class="ace-icon fa fa-check"></i>
+                        确定
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+@section scripts_Foot
+{
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
+                "ajax": { "url": "GetAppInfoList" },
+                "aoColumns": [
+                 
+                    {
+                        "mData": "Id",
+                        "bSortable": false,
+                        "sClass": "sTdCheckbox"
+                    },
+                    {
+                        "mData": "Appsquare_logo",
+                        "bSearchable": false,
+                        "bSortable": false
+                    },
+                    { "mData": "APPName" },
+                    { "mData": "Redirect_domain" },
+                    { "mDate": "Operation" }
+                ],
+                "columnDefs": jQuery.extend(true, datatableSetting.columnDefs, [
+                
+                    {
+                        "targets": 1,
+                        "render": function (data, type, full, meta) {
+
+                            return '<img src="' + full.Appsquare_logo + '" class="img-responsive" style="width:30px;height:30px">';
+                        }
+                    },
+                    {
+                        "targets": 4,
+                        "render": function (data, type, full, meta) {
+
+                            return '<a href="Edit?Id=' + full.Id + '" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="编辑"><i class="fa fa-pencil"></i></a>' +
+                                '<a href="CategoryManageList/' + full.Id + '" class="artDailog btn btn-info  btn-xs" style="margin-right:5px;" data-toggle="tooltip" data-placement="top" title="Menu"><i class="glyphicon glyphicon-file"></i></a>';
+
+                        }
+                    }
+                ]),
+                fnDrawCallback: function () { $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' }); }
+            }));
+
+
+            LEAP.Common.MainPop.options.afterShowModal = function () {
+
+            };
+
+            LEAP.Common.MainPop.options.afterBindData = function (o) {
+
+
+            };
+            
+        });
+
+    </script>
+}

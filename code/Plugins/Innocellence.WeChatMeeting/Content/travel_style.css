@@ -1,0 +1,65 @@
+html body {
+  background-color: #ebebeb;
+  padding: 0 10px; 
+  font-size:16px;
+}
+
+* {
+  box-sizing: border-box; }
+
+#wrapper .travel_item {
+  margin-bottom: 14px; }
+
+#wrapper .travel_item .weui-cells {
+  font-size: 14px; }
+
+.travel_item_title {
+  background-color: #b41601; }
+
+.travel_p_title {
+  color: #ffffff; }
+
+.del_btn {
+  padding: 2px 6px;
+  border-radius: 15px;
+  border: 1px solid #ffffff;
+  color: #ffffff;
+  text-align: center; }
+
+.travel_item_wrapper {
+  padding: 5px;
+  background-color: #ffffff;
+  border-left: 1px solid #b7b7b7;
+  border-right: 1px solid #b7b7b7;
+  border-bottom: 1px solid #b7b7b7; }
+  .travel_item_wrapper .weui-cells__title {
+    margin-top: 0.4em;
+    margin-bottom: 0.2em; }
+  .travel_item_wrapper .weui-cell {
+    border-left: 1px solid #d9d9d9;
+    border-right: 1px solid #d9d9d9;
+    padding: 8px 15px; }
+
+.select_icon {
+  color: #b41601; }
+
+.font_grey {
+  color: #b7b7b7; }
+
+.btn_group .add_item {
+  border-radius: 25px;
+  color: #b41601;
+  border: 1px solid #b41601;
+  background-color: #ffffff;
+  box-shadow: 0 11px 8px -7px rgba(180, 22, 1, 0.3); }
+.btn_group .weui-btn_warn_xu {
+  border-radius: 25px;
+  color: #ffffff;
+  background-color: #b41601; }
+
+/*# sourceMappingURL=travel_style.css.map */
+.weui-picker__item {
+padding: 0;
+height: 34px;
+line-height: 34px;
+}
