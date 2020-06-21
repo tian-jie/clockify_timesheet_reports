@@ -1,4 +1,5 @@
 using Infrastructure.Core;
+using Kevin.T.Timesheet.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -46,7 +47,16 @@ namespace Kevin.T.Timesheet.ModelsView
 
         public IViewModel ConvertAPIModel(object model)
         {
-            throw new NotImplementedException();
+            var entity = (ProjectUser)model;
+            Id = entity.Id;
+            ProjectGid = entity.ProjectGid;
+            UserGid = entity.UserGid;
+            EmployeeName = entity.EmployeeName;
+            UserRoleTitleId = entity.UserRoleTitleId;
+            UserRoleTitle = entity.UserRoleTitle;
+            Rate = entity.Rate;
+
+            return this;
         }
     }
 }

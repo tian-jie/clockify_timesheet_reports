@@ -189,5 +189,31 @@ namespace Kevin.T.Timesheet.Services
 
             return timesheetByWeekViews;
         }
+
+        public List<EmployeeView> GetEmployeeByProjectTimeEntry(string projectGid)
+        {
+            var employeeIds = Repository.Entities.Where(a => a.IsDeleted != true && a.ProjectId == projectGid).Select(a => a.UserId).Distinct();
+
+            var employees = new List<EmployeeView>();
+            var allEmployees = _employeeService.Repository.Entities.Where(a => a.IsDeleted != true);
+            foreach (var employeeId in employeeIds)
+            {
+                var employee = allEmployees.FirstOrDefault(a => a.Gid == employeeId);
+                var employeeView = new EmployeeView()
+                {
+                    Id = employee.Id,
+                    Gid = employee.Gid,
+                    Name = employee.Name,
+                    DefaultWorkspace = employee.DefaultWorkspace,
+                    Email = employee.Email,
+                    ProfilePicture = employee.ProfilePicture,
+                    Status = employee.Status
+                };
+
+                employees.Add(employeeView);
+            }
+
+            return employees;
+        }
     }
 }

@@ -1,404 +1,149 @@
 ﻿@{
     ViewBag.Title = "ProjectUsers";
 }
-<style>
-    td {
-        padding: 5px !important;
-    }
-</style>
 
+<link href="//cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.css" rel="stylesheet" media="screen">
 
-
-<div class="row">
-    <div class="col-xs-12">
-        <form class="form-inline" id="SearchForm" method="post">
-            <div class="form-group">
-                <div class="form-group">
-                    <select class="form-control" name="ProjectName" placeholder="项目名称">
-                        @foreach (var project in ViewBag.Projects)
-                        {
-                            <option value="@project.Gid">@project.Name</option>
-                        }
-                    </select>
-                </div>
-                <a href="javascript:void(0)" class="btn  btn-sm" id="btnSearch" data-toggle="tooltip" data-placement="top" title="按条件搜索">
-                    <i class="fa fa-search"></i>
-                </a>
-            </div>
-            <div class="form-group pull-right" style="margin-left:5px">
-
-                <a href="#" class="btn btn-success btn-sm" id="btnAdd" data-toggle="tooltip" data-placement="top" title="增加">
-                    <i class="fa fa-plus"></i>
-                </a>
-            </div>
-        </form>
-
-        <div class="widget-box">
-            <div class="widget-content nopadding">
-                <table class="table table-bordered data-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 15%">项目Gid</th>
-                            <th style="width: 10%">项目名称</th>
-                            <th style="width: 15%">员工Gid</th>
-                            <th style="width: 10%">员工名称</th>
-                            <th style="width: 10%">员工角色</th>
-                            <th style="width: 10%">比率</th>
-                            <th style="width: 11%">操作</th>
-                            @*<th style="width: 1%">有效否</th>
-                                <th style="width: 1%">修改</th>
-                                <th style="width: 1%">删除</th>*@
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
-
-    </div>
+<div id="toolbar" class="btn-group">
+    <button id="btn_load" type="button" class="btn btn-default btn-load">
+        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Load
+    </button>
+    <button id="btn_save" type="button" class="btn btn-default btn-save">
+        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Save
+    </button>
 
 </div>
 
-<div id="ModalTable" class="modal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4 class="blue bigger">Please fill the followings</h4>
-            </div>
-
-            <div class="modal-body">
-                <form action="Post" id="ff" method="get" class="form-horizontal" datasource="Get">
-                    <input type="hidden" id="ID" name="ID" value="0" />
-
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Project:</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" name="ProjectName" placeholder="选择项目">
-                                @foreach (var project in ViewBag.Projects)
-                                {
-                                    <option value="@project.Gid">@project.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Employee:</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" name="EmployeeName" placeholder="选择员工"  data-bind="value: EmployeeName">
-                                @foreach (var employee in ViewBag.Employees)
-                                {
-                                    <option value="@employee.Gid">@employee.Name</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-3 control-label">Role:</label>
-                        <div class="col-sm-9">
-                            <select class="form-control" name="RoleTitle" placeholder="选择角色">
-                                @foreach (var role in ViewBag.RoleTitle)
-                                {
-                                    <option value="@role.Id">@role.Title</option>
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-sm" data-dismiss="modal">
-                    <i class="ace-icon fa fa-times"></i>
-                    Cancel
-                </button>
-
-                <button class="btn btn-sm btn-primary" id="btnSave" data-action="save">
-                    <i class="ace-icon fa fa-check"></i>
-                    Save
-                </button>
-            </div>
-        </div>
+<div class="widget-box">
+    <div class="widget-content nopadding">
+        <table class="table table-bordered data-table" id="table">
+        </table>
     </div>
 </div>
+
 
 
 <input value="@ViewBag.AppId" style="display:none;" class="hidden-input" />
 @section scripts_Foot
 {
-    <script src="/scripts/ace-extra.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
+    <script src="//cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.js"></script>
 
-            var taskproject = @Html.Raw(Json.Encode(ViewBag.TaskProjects));
-
-            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
-                "ajax": { "url": "GetList" },
-                "aoColumns": [
-                    {
-                    "mData": "Name",
-                    "bSearchable": false,
-                    "bSortable": false
-                },
-                    {
-                        "mData": "TaskProjectId",
-                        "bSearchable": false,
-                        "bSortable": false
-                    },
-					{
-						"mData": "Status",
-						"bSearchable": false,
-						"bSortable": false
-					},
-					{
-						"mData": "WarningType",
-						"bSearchable": false,
-						"bSortable": false
-					},
-					{
-						"mData": "OnErrorWarning",
-						"bSearchable": false,
-						"bSortable": false
-					},
-					{
-						"mData": "IsEnabled",
-						"bSearchable": false,
-						"bSortable": false
-					},
-                ],
-                "columnDefs":
-                    jQuery.extend(true, datatableSetting.columnDefs, [
-
-                         {
-                             "targets": 1,
-                             "render": function (data, type, full, meta) {
-								var html = "";
-								projectName = "没有项目";
-                                 for(var a = 0; a< taskproject.length;a++ )
-                                 {
-                                     if(taskproject[a].Id == data)
-                                     {
-                                         projectName = taskproject[a].TaskProjectName;
-										 break;
-                                     }
-                                 }
-
-
-
-                                 var lrst = HtmlUtil.htmlEncode(full.LastResult);
-                                 if (lrst.length > 200)
-                                 {
-                                     lrst = lrst.substr(0, 200) + "...";
-
-                                 }
-                                 var isForceExecute = full.IsForceExecute ? "是":"否";
-								 html = '<div style="width:100%">项目: ' + projectName + '</div>'
-								 + '<div style="width:100%">频率: ' + convertFrequency(full.Frequency) + ', 分-' + full.MinuteSpan + ', 日-' + full.DailyExecutionTime + ', 周-' + full.WeekExecutionWeekDay + ', 月-' + full.MonthExecutionDay  + '</div>'
-								 + '<div style="width:100%">描述: ' + full.Description + '</div>'
-								 + '<div style="width:100%">URL: ' + full.Url + '</div>'
-								 + '<div style="width:100%">最后执行时间: ' + full.LastExecutedTime + '</div>'
-								 + '<div style="width:100%">最后执行结果: ' + lrst + '</div>'
-								 + '<div style="width:100%">是否要强制执行: ' + isForceExecute + '</div>';
-								 return html;
-                             }
-                         },
-						 {
-                             "targets": 2,
-                             "render": function (data, type, full, meta) {
-								if(data){
-									return '正在执行';
-								}else{
-									return '空闲';
-								}
-
-							}
-						},
-
-                        {
-                             "targets": 3,
-                             "render": function (data, type, full, meta) {
-                                 var pollingType = "";
-                                 switch (data) {
-                                     case 0:
-                                         pollingType = "无报警";
-                                         break;
-                                     case 1:
-                                         pollingType = "总是报警";
-                                         break;
-                                     case 2:
-                                         pollingType = "出错报警";
-                                         break;
-                                     default:
-                                         pollingType = "未设置";
-                                 }
-                                 return pollingType;
-                             }
-                         },
-                          {
-                              "targets": 5,
-                              "render": function (data, type, full, meta) {
-                                   var pollingType = "";
-                                 switch (data) {
-                                     case true:
-                                         pollingType = "有效";
-                                         break;
-                                     case false:
-                                         pollingType = "无效";
-                                         break;
-
-                                     default:
-                                         pollingType = "不知道";
-                                 }
-                                  //return pollingType;
-                                 var ref ="";
-                                 if (data) {
-                                     ref += "<span class=\"btn btn-success btn-xs pull-left\" onclick=\"javascript:ChangeVoteStatus('" + full.Id + "',this, '/LccpBackendAdmin/task/EnableId')\" data-toggle=\"tooltip\" style=\"margin: 2px;\" data-placement=\"top\" title=\"\">" + pollingType + "</span>";
-                                 } else {
-                                     ref+= "<span class=\"btn btn-danger btn-xs pull-left\" onclick=\"javascript:ChangeVoteStatus('" + full.Id + "',this, '/LccpBackendAdmin/task/EnableId')\" data-toggle=\"tooltip\" style=\"margin: 2px;\" data-placement=\"top\" title=\"\">" + pollingType + "</span>";
-                                 }
-                                 ref+= "<span class=\"btn btn-success btn-xs pull-left\" onclick=\"javascript:ExecutedStatus('" + full.Id + "',this, '/LccpBackendAdmin/task/Execute')\" data-toggle=\"tooltip\" style=\"margin: 2px;\" data-placement=\"top\" title=\"\">执行</span>";
-                                 ref+= '<a href="/LccpBackendAdmin/Task/EditTask?id=' + full.Id + '" id="addBtn" class="btn btn-success  btn-xs  pull-left" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="">修改</a>';
-
-
-                                 ref+= "<span class=\"btn btn-danger btn-xs pull-left\" onclick=\"javascript:DeleteStatus('" + full.Id + "',this, '/LccpBackendAdmin/task/DeleteId')\" data-toggle=\"tooltip\" style=\"margin: 2px;\" data-placement=\"top\" title=\"\">删除</span>";
-                                 ref+= '<a href="/LccpBackendAdmin/ExecutedTask/?Task=' + full.Id + '" id="addBtn" class="btn btn-success  btn-xs" data-toggle="tooltip" data-placement="top" style="margin: 2px;" title="">执行记录</a>';
-                                 return ref;
-                              }
-                          },
-                    ]),
-                fnDrawCallback:
-                         function () { $('[data-toggle="tooltip"]').tooltip(); }
-            }));
-
+    <script language="javascript">
+        $(document).ready(function () {
+            initTable();
         });
 
+        function initTable() {
+            var container = document.getElementById('table')
+            var load = document.getElementById('btn_load')
+            var save = document.getElementById('btn_save')
 
-        function ChangeVoteStatus(id, obj, url) {
-            $.ajax({
-                type: 'Get',
-                url: url + '?Id=' + id,
-                cache: false
-            }).done(function(data) {
-                artDialog.alert(data.Message);
-                LEAP.Common.MainPop.options.dataTable.fnDraw(true);
+            hot = new Handsontable(container, {
+                startRows: 20,
+                startCols: 10,
+                rowHeaders: true,
+                colHeaders: ['Id', 'UserGid', 'EmployeeName', 'UserRoleTitleId', 'UserRoleTitle', 'Rate'],
+                filters: true,
+                dropdownMenu: true,
+                columns: [
+                    { data: 'Id' },
+                    { data: 'UserGid' },
+                    { data: 'EmployeeName' },
+                    { data: 'UserRoleTitleId' },
+                    { data: 'UserRoleTitle' },
+                    { data: 'Rate' }
+                ],
+                afterChange: function (change, source) {
+                    if (source === 'loadData') {
+                        return; //don't save this change
+                    }
+
+
+                    ////clearTimeout(autosaveNotification);
+                    //$.ajax('SaveData', 'GET', JSON.stringify({ data: change }), function (data) {
+                    //    autosaveNotification = setTimeout(function () {
+                    //        exampleConsole.innerText = 'Changes will be autosaved';
+                    //    }, 1000);
+                    //});
+                }
             });
-        }
 
-
-
-        function DeleteStatus(id, obj, url) {
-            artDialog.width = 250;
-            artDialog.height = 250;
-                artDialog.confirm("是否确定删除?",
-                function () {
-                    $.ajax({
-                        type: 'Get',
-                        url: url + '?Id=' + id,
-                        cache: false
-                    }).done(function(data) {
-                        artDialog.alert(data.Message);
-                        LEAP.Common.MainPop.options.dataTable.fnDraw(true);
-                    });
-                });
-
-
-        }
-
-
-        function ExecutedStatus(id, obj, url) {
-            artDialog.width = 250;
-            artDialog.height = 250;
-            artDialog.confirm("是否确定要执行?",
-            function () {
+            Handsontable.dom.addEvent(load, 'click', function () {
+                var projectGid = getQueryVariable('projectGid');
                 $.ajax({
-                    type: 'Get',
-                    url: url + '?taskId=' + id,
-                    cache: false
-                }).done(function(data) {
-                    artDialog.alert(data.Message);
-                    LEAP.Common.MainPop.options.dataTable.fnDraw(true);
+                    url: 'GetData',
+                    method: 'POST',
+                    dataType: "json",
+                    data: {
+                        projectGid: projectGid
+                    },
+                    success: function (res) {
+                        //var data = JSON.parse(res.response);
+
+                        hot.loadData(res);
+                        //exampleConsole.innerText = 'Data loaded';
+                    }
                 });
             });
 
+            Handsontable.dom.addEvent(save, 'click', function () {
+                // save all cell's data
+                var data1 = hot.getData();
+                // 组合数据给后台传
+                var dataList = [];
+                var projectGid = getQueryVariable('projectGid');
+
+                data1.forEach(function (currentValue, index, arr) {
+                    if (currentValue[0] == 2147483647) {
+                        return;
+                    }
+                    var d = {
+                        Id: currentValue[0],
+                        UserGid: currentValue[1],
+                        EmployeeName: currentValue[2],
+                        UserRoleTitleId: currentValue[3],
+                        UserRoleTitle: currentValue[4],
+                        Rate: currentValue[5],
+                        projectGid: projectGid
+                    };
+                    dataList.push(d);
+                });
+
+                $.ajax({
+                    url: 'SaveData',
+                    method: 'POST',
+                    dataType: "json",
+                    data: {
+                        projectGid: projectGid,
+                        projectUserViews: dataList
+                    },
+                    success: function (res) {
+                        alert(JSON.stringify(res));
+                    }
+                });
+                //$.ajax('SaveData', 'POST', JSON.stringify({ data: hot.getData() }), function (res) {
+                //    var response = JSON.parse(res.response);
+
+                //    if (response.status === '200') {
+                //        exampleConsole.innerText = 'Data saved';
+                //    }
+                //    else {
+                //        exampleConsole.innerText = 'Save error';
+                //    }
+                //});
+            });
 
         }
 
-        function mstime(mss) {
-            //var days = parseInt(mss / (1000 * 60 * 60 * 24));
-            var hours = parseInt(mss / ( 60 * 60));
-            var minutes = parseInt((mss % ( 60 * 60)) / (60));
-            var seconds = parseInt(mss % 60)
-            var ref = "";
-            if (hours < 10) {
-                ref += "0" + hours + ":"
-            } else {
-                ref += hours + ":"
-            }
-            if (minutes < 10) {
-                ref += "0" + minutes + ":"
-            } else {
-                ref += minutes + ":"
-            }
-            if (seconds < 10) {
-                ref += "0" + seconds
-            } else {
-                ref += seconds
-            }
 
-            return ref;
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) { return pair[1]; }
+            }
+            return (false);
         }
-
-		function convertFrequency(frequency){
-			var c = "";
-			switch (frequency) {
-				case 0:
-					c = "每分";
-					break;
-				case 1:
-					c = "每时";
-					break;
-				case 2:
-					c = "每日";
-					break;
-				case 3:
-					c = "每周";
-					break;
-				case 4:
-					c = "每月";
-					break;
-				case 5:
-					c = "每季";
-					break;
-				case 6:
-					c = "每年";
-					break;
-				default:
-					c = "不知道";
-			}
-			return c;
-		}
-		var HtmlUtil = {
-		    /*1.用浏览器内部转换器实现html转码*/
-		    htmlEncode: function (html) {
-		        //1.首先动态创建一个容器标签元素，如DIV
-		        var temp = document.createElement("div");
-		        //2.然后将要转换的字符串设置为这个元素的innerText(ie支持)或者textContent(火狐，google支持)
-		        (temp.textContent != undefined) ? (temp.textContent = html) : (temp.innerText = html);
-		        //3.最后返回这个元素的innerHTML，即得到经过HTML编码转换的字符串了
-		        var output = temp.innerHTML;
-		        temp = null;
-		        return output;
-		    },
-		    /*2.用浏览器内部转换器实现html解码*/
-		    htmlDecode: function (text) {
-		        //1.首先动态创建一个容器标签元素，如DIV
-		        var temp = document.createElement("div");
-		        //2.然后将要转换的字符串设置为这个元素的innerHTML(ie，火狐，google都支持)
-		        temp.innerHTML = text;
-		        //3.最后返回这个元素的innerText(ie支持)或者textContent(火狐，google支持)，即得到经过HTML解码的字符串了。
-		        var output = temp.innerText || temp.textContent;
-		        temp = null;
-		        return output;
-		    }
-		};
     </script>
 }

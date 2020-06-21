@@ -191,6 +191,7 @@
     <Compile Include="Starter.cs" />
     <Compile Include="Services\TimesheetService.cs" />
     <Compile Include="ViewModels\EstimateEffortView.cs" />
+    <Compile Include="ViewModels\EmployeeView.cs" />
     <Compile Include="ViewModels\ProjectUserView.cs" />
     <Compile Include="ViewModels\ProjectView.cs" />
     <Compile Include="ViewModels\ProjectAccountingView.cs" />

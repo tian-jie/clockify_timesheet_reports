@@ -43,15 +43,25 @@ namespace Kevin.T.Timesheet.Controllers
             return View();
         }
 
-        public ActionResult GetTimesheetThisweekByEmployee(string employeeId, int year = 0, int week = 0)
+        public ActionResult GetTimesheetThisweekByEmployee(string employeeId, int year = 2020, int week = 1)
         {
             // TODO: 应该获取当前的项目id，员工，查询这个员工所有的当周的录入情况，group by day，分别放到MON, TUE....中
-            var today = DateTime.Today;
-            if (year != 0 && week != 0)
+
+            // 计算FirstWeek周期
+            var yearFirstDay = new DateTime(DateTime.Now.Year, 1, 1);
+            var firstDayofWeek = (int)yearFirstDay.DayOfWeek;
+            DateTime weekFirstDay = DateTime.Now;
+            DateTime weekLastDay = DateTime.Now;
+
+            weekFirstDay = yearFirstDay.AddDays(-(firstDayofWeek == 0 ? 6 : firstDayofWeek - 1));
+            var firstThursday = weekFirstDay.AddDays(3);
+
+            if (yearFirstDay >= firstThursday)
             {
-                today = new DateTime(year, 1, 1).AddDays(week * 7);
+                weekFirstDay = weekFirstDay.AddDays(7);
             }
-            var thisMonday = today.AddDays(-(today.DayOfWeek == DayOfWeek.Sunday ? 7 : ((int)today.DayOfWeek)) + 1);
+
+            var thisMonday = weekFirstDay.AddDays((week-1)*7);
             var nextMonday = thisMonday.AddDays(7);
 
             var timeEntries = _timeEntryService.GetTimeEntriesByEmployeeGroupByProject(employeeId, thisMonday, nextMonday);
@@ -63,15 +73,22 @@ namespace Kevin.T.Timesheet.Controllers
 
         public ActionResult GetTimesheetThisweekByGroup(string groupId, int year = 0, int week = 0)
         {
-            var today = DateTime.Today;
-            if (year != 0 && week != 0)
+            // 计算FirstWeek周期
+            var yearFirstDay = new DateTime(DateTime.Now.Year, 1, 1);
+            var firstDayofWeek = (int)yearFirstDay.DayOfWeek;
+            DateTime weekFirstDay = DateTime.Now;
+            DateTime weekLastDay = DateTime.Now;
+
+            weekFirstDay = yearFirstDay.AddDays(-(firstDayofWeek == 0 ? 6 : firstDayofWeek - 1));
+            var firstThursday = weekFirstDay.AddDays(3);
+
+            if (yearFirstDay >= firstThursday)
             {
-                today = new DateTime(year, 1, 1).AddDays(week * 7);
+                weekFirstDay = weekFirstDay.AddDays(7);
             }
 
-            var thisMonday = today.AddDays(-(today.DayOfWeek == DayOfWeek.Sunday ? 7 : ((int)today.DayOfWeek)) + 1);
+            var thisMonday = weekFirstDay.AddDays((week - 1) * 7);
             var nextMonday = thisMonday.AddDays(7);
-
 
             var timeEntries = _timeEntryService.GetTimeEntriesByGroupAndDuration(groupId, thisMonday, nextMonday);
 

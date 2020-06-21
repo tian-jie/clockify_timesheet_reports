@@ -40,5 +40,12 @@ namespace Kevin.T.Timesheet.Interfaces
         /// <param name="endDate"></param>
         /// <returns></returns>
         List<TimesheetByWeekView> GetTimeEntriesByEmployeeGroupByProject(string employeeId, DateTime startDate, DateTime endDate);
+
+        /// <summary>
+        /// 获取某个项目填写过的员工
+        /// </summary>
+        /// <param name="projectGid"></param>
+        /// <returns></returns>
+        List<EmployeeView> GetEmployeeByProjectTimeEntry(string projectGid);
     }
 }

@@ -3,7 +3,7 @@
 }
 <style>
     td {
-        padding: 5px!important;
+        padding: 5px !important;
     }
 </style>
 
@@ -43,11 +43,11 @@
     </div>
 
 </div>
-<input value="@ViewBag.AppId" style="display:none;" class="hidden-input"/>
+<input value="@ViewBag.AppId" style="display:none;" class="hidden-input" />
 @section scripts_Foot
 {
     <script type="text/javascript">
-        $(document).ready(function() {
+        $(document).ready(function () {
 
             LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
                 "ajax": { "url": "GetList", "method": "post" },
@@ -102,19 +102,20 @@
                     }
                 ],
                 "columnDefs":
-                    jQuery.extend(true, datatableSetting.columnDefs, [                        
+                    jQuery.extend(true, datatableSetting.columnDefs, [
 
-                       {
-                           "targets": 8,
-                           "render": function (data, type, full, meta) {
-                        return '<a href="../EstimateEffort/index?projectGid='+ full.Gid +'" class="artDailog btn btn-info  btn-xs" style="margin-right:10px;" data-toggle="tooltip" data-placement="top" title="项目预算" target="_blank"><i class="fa fa-pencil"></i> Budget</a>'+
-                               '<a href="../ProjectAccounting/index?projectGid='+ full.Gid +'" class="btn btn-warning btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="项目成本详情" target="_blank"><i class="fa fa-newspaper-o"></i> Accounting</a>';
-                           }
-                       }
+                        {
+                            "targets": 8,
+                            "render": function (data, type, full, meta) {
+                                return '<a href="../EstimateEffort/index?projectGid=' + full.Gid + '" class="artDailog btn btn-info  btn-xs" style="margin-right:10px;" data-toggle="tooltip" data-placement="top" title="项目预算" target="_blank"><i class="fa fa-pencil"></i> Budget</a>' +
+                                    '<a href="../ProjectAccounting/index?projectGid=' + full.Gid + '" class="btn btn-warning btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="项目成本详情" target="_blank"><i class="fa fa-newspaper-o"></i> Accounting</a>' +
+                                    '<a href="../ProjectUser/index?projectGid=' + full.Gid + '" class="btn btn-xs" id="btnDelete" data-toggle="tooltip" data-placement="top" title="项目人员配置" target="_blank"><i class="fa fa-newspaper-o"></i> Staff</a>';
+                            }
+                        }
                     ]),
 
                 fnDrawCallback:
-                         function () { $('[data-toggle="tooltip"]').tooltip(); }
+                    function () { $('[data-toggle="tooltip"]').tooltip(); }
             }));
 
         });

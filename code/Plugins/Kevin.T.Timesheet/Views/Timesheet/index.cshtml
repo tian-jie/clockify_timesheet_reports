@@ -27,10 +27,29 @@
                         <option value="2025">2025</option>
                     </select>
                     <select id="Week" class="form-control" name="Week1" data-placeholder="Select Week">
-                        <option value="0" selected="selected">Choose Year</option>
+                        <option value="0" selected="selected">Choose Week</option>
+                        @{
+                            // 计算FirstWeek周期
+                            var yearFirstDay = new DateTime(DateTime.Now.Year, 1, 1);
+                            var firstDayofWeek = (int)yearFirstDay.DayOfWeek;
+                            DateTime weekFirstDay = DateTime.Now;
+                            DateTime weekLastDay = DateTime.Now;
+
+                            weekFirstDay = yearFirstDay.AddDays(-(firstDayofWeek == 0 ? 6 : firstDayofWeek - 1));
+                            var firstThursday = weekFirstDay.AddDays(3);
+
+                            if (yearFirstDay >= firstThursday)
+                            {
+                                weekFirstDay = weekFirstDay.AddDays(7);
+                            }
+                            weekLastDay = weekFirstDay.AddDays(6);
+                        }
+
                         @for (var i = 1; i < 52; i++)
                         {
-                            <option value="@i">@i</option>
+                            <option value="@i">@i ( @weekFirstDay.ToString("MM-dd") - @weekLastDay.ToString("MM-dd"))</option>
+                            weekFirstDay = weekFirstDay.AddDays(7);
+                            weekLastDay = weekFirstDay.AddDays(6);
                         }
                     </select>
 
@@ -78,14 +97,14 @@
 </div>
 
 @section scripts_Foot
-{
+                                {
     <script type="text/javascript">
         $(document).ready(function () {
             initTable();
         });
 
         function initTable() {
-            
+
             $('#table').bootstrapTable('destroy');
 
             $('#table').bootstrapTable({
@@ -162,7 +181,7 @@
                 //pageList: [10, 25],
                 "columns": [{
                     field: 'ProjectName',
-                },{
+                }, {
                     field: 'TaskName',
                 }, {
                     field: 'MondayTotalHours',
