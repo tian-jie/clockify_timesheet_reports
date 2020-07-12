@@ -15,12 +15,14 @@ namespace Kevin.T.Timesheet.Services
         IProjectService _projectService;
         IProjectTaskService _projectTaskService;
         IEmployeeService _employeeService;
+        IRoleTitleService _roleTitleService;
 
         public TimeEntryService(IUserGroupService userGroupService
             , IProjectUserService projectUserService
             , IProjectService projectService
             , IProjectTaskService projectTaskService
-            , IEmployeeService employeeService)
+            , IEmployeeService employeeService
+            , IRoleTitleService roleTitleService)
             : base("Timesheet")
         {
             _userGroupService = userGroupService;
@@ -28,6 +30,7 @@ namespace Kevin.T.Timesheet.Services
             _projectService = projectService;
             _projectTaskService = projectTaskService;
             _employeeService = employeeService;
+            _roleTitleService = roleTitleService;
         }
 
         /// <summary>
@@ -58,22 +61,32 @@ namespace Kevin.T.Timesheet.Services
         public List<TimeEntriesGroupByEmployeeView> GetTimeEntriesByProjectGroupByEmployee(string projectGid)
         {
             // 获取项目相关的员工
-            var projectUsers = _projectUserService.GetUserByProject(projectGid, null);
-            var allUsers = _employeeService.Repository.Entities.Where(a => a.IsDeleted != true).ToList();
+            // var projectUsers = _projectUserService.GetUserByProject(projectGid, null);
+            var allUsers = _employeeService.AllEmployeesWithRole();
+            var roleTitles = _roleTitleService.AllInternal();
+
 
             // 看这个projectGid，如果属于taskgid，就从taskgid过滤
-            var task = _projectTaskService.GetProjectTaskById(projectGid);
+            //var task = _projectTaskService.GetProjectTaskById(projectGid);
 
             // 再根据每个员工统计timeentry
-            var timeEntry = Repository.Entities.Where(a => a.IsDeleted != true);
-            if (task != null && task.Count > 0)
-            {
-                timeEntry = timeEntry.Where(a => a.TaskId == projectGid);
-            }
-            else
-            {
-                timeEntry = timeEntry.Where(a => a.ProjectId == projectGid);
-            }
+            //var timeEntry = Repository.Entities.Where(a => a.IsDeleted != true);
+            //if (task != null && task.Count > 0)
+            //{
+            //    timeEntry = timeEntry.Where(a => a.TaskId == projectGid);
+            //}
+            //else
+            //{
+            //    timeEntry = timeEntry.Where(a => a.ProjectId == projectGid);
+            //}
+
+            var sql = @"
+                select * from TimeEntry TE where 
+                exists(select 1 from Project P where P.Gid = TE.projectId and Gid = '{0}')
+                or exists (select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId and TPM.ProjectGid='{0}')";
+
+            var timeEntry = Repository.SqlQuery(string.Format(sql, projectGid));
+
 
             var timeEntryByUsers = timeEntry.GroupBy(a => a.UserId);
 
@@ -81,34 +94,20 @@ namespace Kevin.T.Timesheet.Services
 
             foreach (var a in timeEntryByUsers)
             {
-                var user = projectUsers.FirstOrDefault(b => b.UserGid == a.Key);
+                // var user = projectUsers.FirstOrDefault(b => b.UserGid == a.Key);
 
-                if (user == null)
-                {
-                    var employeeName = allUsers == null ? "Unknown???" : allUsers.FirstOrDefault(b => b.Gid == a.Key).Name;
+                var employee = allUsers.FirstOrDefault(b => b.Gid == a.Key);
+
 
                     timeEntriesGroupByEmployeesView.Add(new TimeEntriesGroupByEmployeeView()
                     {
                         UserId = a.Key,
                         TotalHours = a.Sum(b => b.TotalHours),
-                        EmployeeRate = 1,
-                        EmployeeRole = "N/A",
-                        TotalHoursRate = a.Sum(b => b.TotalHours),
-                        EmployeeName = employeeName
+                        EmployeeRate = employee.RoleRate,
+                        EmployeeRole = employee.RoleName,
+                        TotalHoursRate = a.Sum(b => b.TotalHours) * employee.RoleRate,
+                        EmployeeName = employee.Name
                     });
-                }
-                else
-                {
-                    timeEntriesGroupByEmployeesView.Add(new TimeEntriesGroupByEmployeeView()
-                    {
-                        UserId = a.Key,
-                        TotalHours = a.Sum(b => b.TotalHours),
-                        EmployeeRate = user.Rate,
-                        EmployeeRole = user.UserRoleTitle,
-                        TotalHoursRate = user.Rate * a.Sum(b => b.TotalHours),
-                        EmployeeName = user.EmployeeName
-                    });
-                }
             }
             return timeEntriesGroupByEmployeesView;
         }
@@ -192,7 +191,12 @@ namespace Kevin.T.Timesheet.Services
 
         public List<EmployeeView> GetEmployeeByProjectTimeEntry(string projectGid)
         {
-            var employeeIds = Repository.Entities.Where(a => a.IsDeleted != true && a.ProjectId == projectGid).Select(a => a.UserId).Distinct();
+            //var employeeIds = Repository.Entities.Where(a => a.IsDeleted != true && a.ProjectId == projectGid).Select(a => a.UserId).Distinct();
+            var sql = @"select * from TimeEntry TE
+where exists(select 1 from TaskToProjectMapping TPM where TPM.ProjectGid = TE.ProjectId and TPM.ProjectGId = '{0}')
+or exists(select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId and TPM.ProjectGId = '{0}')";
+
+            var employeeIds = Repository.SqlQuery(string.Format(sql, projectGid)).Select(a => a.UserId).Distinct();
 
             var employees = new List<EmployeeView>();
             var allEmployees = _employeeService.Repository.Entities.Where(a => a.IsDeleted != true);

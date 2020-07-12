@@ -136,24 +136,88 @@
                 showToggle: false,                   //是否显示详细视图和列表视图的切换按钮
                 cardView: false,                    //是否显示详细视图
                 detailView: true,                  //是否显示父子表
+                showFooter: true,
                 "columns": [{
                     field: 'UserId',
                 }, {
                     field: 'EmployeeName',
                 }, {
                     field: 'MondayTotalHours',
+                    align: 'center',
+                    valign: 'middle',
+                    footerFormatter: function (value) { //底部合计
+                        var count = 0;
+                        for (var i in value) {
+                            count += value[i].MondayTotalHours;
+                        }
+                        return count;
+                    }
                 }, {
                     field: 'TuesdayTotalHours',
+                    align: 'center',
+                    valign: 'middle',
+                    footerFormatter: function (value) { //底部合计
+                        var count = 0;
+                        for (var i in value) {
+                            count += value[i].TuesdayTotalHours;
+                        }
+                        return count;
+                    }
                 }, {
                     field: 'WednesdayTotalHours',
+                    align: 'center',
+                    valign: 'middle',
+                    footerFormatter: function (value) { //底部合计
+                        var count = 0;
+                        for (var i in value) {
+                            count += value[i].WednesdayTotalHours;
+                        }
+                        return count;
+                    }
                 }, {
                     field: 'ThursdayTotalHours',
+                    align: 'center',
+                    valign: 'middle',
+                    footerFormatter: function (value) { //底部合计
+                        var count = 0;
+                        for (var i in value) {
+                            count += value[i].ThursdayTotalHours;
+                        }
+                        return count;
+                    }
                 }, {
                     field: 'FridayTotalHours',
+                    align: 'center',
+                    valign: 'middle',
+                    footerFormatter: function (value) { //底部合计
+                        var count = 0;
+                        for (var i in value) {
+                            count += value[i].FridayTotalHours;
+                        }
+                        return count;
+                    }
                 }, {
                     field: 'SaturdayTotalHours',
+                    align: 'center',
+                    valign: 'middle',
+                    footerFormatter: function (value) { //底部合计
+                        var count = 0;
+                        for (var i in value) {
+                            count += value[i].SaturdayTotalHours;
+                        }
+                        return count;
+                    }
                 }, {
                     field: 'SundayTotalHours',
+                    align: 'center',
+                    valign: 'middle',
+                    footerFormatter: function (value) { //底部合计
+                        var count = 0;
+                        for (var i in value) {
+                            count += value[i].SundayTotalHours;
+                        }
+                        return count;
+                    }
                 }
                 ],
                 //注册加载子表的事件。注意下这里的三个参数！

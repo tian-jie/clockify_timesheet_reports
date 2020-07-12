@@ -47,7 +47,7 @@ namespace Kevin.T.Timesheet.Controllers
         public JsonResult GetData()
         {
             Expression<Func<EstimateEffort, bool>> predicate = m => true;
-            PageCondition pageCondition = new PageCondition(1, 10);
+            PageCondition pageCondition = new PageCondition(1, 1000);
 
             var list = GetListEx(predicate, pageCondition);
 
@@ -101,6 +101,31 @@ namespace Kevin.T.Timesheet.Controllers
             }
 
             var q = _objService.GetList<EstimateEffortView>(predicate.AndAlso(x => x.IsDeleted != true), ConPage);
+
+            if (q.Count == 0)
+            {
+                // TODO: 如果数据为空的话，就动态创建一条完整的
+                var externalRoles = _roleTitleService.AllExternal();
+                var estimateRoles = new List<EstimateEffortView>();
+                foreach (var r in externalRoles)
+                {
+                    estimateRoles.Add(new EstimateEffortView()
+                    {
+                        ProjectGid = strProjectGid,
+                        Effort = 0,
+                        ProjectId = 0,
+                        RateEffort = 0,
+                        RoleId = r.Id,
+                        RoleRate = r.Rate,
+                        RoleTitle = r.Title
+                    });
+
+                }
+
+                SaveData(estimateRoles);
+
+                q = _objService.GetList<EstimateEffortView>(predicate.AndAlso(x => x.IsDeleted != true), ConPage);
+            }
 
             // 添加一个汇总
             var summary = new EstimateEffortView()

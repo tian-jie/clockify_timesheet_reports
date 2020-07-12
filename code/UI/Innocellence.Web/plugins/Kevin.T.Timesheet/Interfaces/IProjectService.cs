@@ -9,6 +9,8 @@ namespace Kevin.T.Timesheet.Interfaces
     {
         List<Project> GetAllProjects();
 
+        List<Project> GetAllActiveProjects();
+
         Project GetProjectById(string Gid);
 
         ProjectAccountingView AccountProject(string Gid);

@@ -24,6 +24,11 @@ namespace Kevin.T.Timesheet.Entities
         public decimal Rate { get; set; }
 
         /// <summary>
+        /// Type，内部，外部
+        /// </summary>
+        public string Type { get; set; }
+
+        /// <summary>
         /// 创建日期，框架直接调用
         /// </summary>
         public DateTime? CreatedDate { get; set; }

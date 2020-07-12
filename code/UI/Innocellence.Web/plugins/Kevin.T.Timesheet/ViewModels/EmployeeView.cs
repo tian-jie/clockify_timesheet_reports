@@ -30,6 +30,21 @@ namespace Kevin.T.Timesheet.ModelsView
         public string Name { get; set; }
 
         /// <summary>
+        /// RoleId
+        /// </summary>
+        public int RoleId { get; set; }
+
+        /// <summary>
+        /// RoleName
+        /// </summary>
+        public string RoleName { get; set; }
+
+        /// <summary>
+        /// RoleRate
+        /// </summary>
+        public decimal RoleRate { get; set; }
+
+        /// <summary>
         /// Ô±¹¤Í·Ïñ
         /// </summary>
         public string ProfilePicture { get; set; }

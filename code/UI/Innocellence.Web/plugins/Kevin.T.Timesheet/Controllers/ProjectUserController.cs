@@ -46,7 +46,7 @@ namespace Kevin.T.Timesheet.Controllers
         //初始化list页面
         public override List<ProjectUserView> GetListEx(Expression<Func<ProjectUser, bool>> predicate, PageCondition ConPage)
         {
-            var q = _objService.GetList<ProjectUserView>(predicate.AndAlso(x => x.IsDeleted == false), ConPage);
+            var q = _objService.GetList<ProjectUserView>(predicate.AndAlso(x => x.IsDeleted != true), ConPage);
 
             return q.ToList();
         }
@@ -54,7 +54,7 @@ namespace Kevin.T.Timesheet.Controllers
         public JsonResult GetData(string projectGid)
         {
             Expression<Func<ProjectUser, bool>> predicate = m => m.ProjectGid == projectGid;
-            PageCondition pageCondition = new PageCondition(1, 10);
+            PageCondition pageCondition = new PageCondition(1, 50);
 
             var list = GetListEx(predicate, pageCondition);
 

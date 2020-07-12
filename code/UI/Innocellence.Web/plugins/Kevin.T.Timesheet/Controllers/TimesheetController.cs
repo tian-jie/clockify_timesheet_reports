@@ -61,7 +61,7 @@ namespace Kevin.T.Timesheet.Controllers
                 weekFirstDay = weekFirstDay.AddDays(7);
             }
 
-            var thisMonday = weekFirstDay.AddDays((week-1)*7);
+            var thisMonday = weekFirstDay.AddDays((week - 1) * 7);
             var nextMonday = thisMonday.AddDays(7);
 
             var timeEntries = _timeEntryService.GetTimeEntriesByEmployeeGroupByProject(employeeId, thisMonday, nextMonday);
@@ -95,8 +95,13 @@ namespace Kevin.T.Timesheet.Controllers
             // 拿到所有的timeEntry后，根据每个人，组成当前week的数据
             var userTimeEntriesByUser = timeEntries.GroupBy(a => a.UserId);
 
-            var users = _employeeService.Repository.SqlQuery(
-                $"select * from employee E where exists(select 1 from usergroup UG where UG.GroupId='{groupId}' and UG.UserId = E.Gid) and status='ACTIVE'");
+            var usersRepo = _employeeService.Repository;
+            var users = string.IsNullOrEmpty(groupId) ?
+                                usersRepo.SqlQuery(
+                $"select * from employee E where exists(select 1 from usergroup UG where UG.UserId = E.Gid) ")
+:
+            usersRepo.SqlQuery(
+                $"select * from employee E where exists(select 1 from usergroup UG where UG.GroupId='{groupId}' and UG.UserId = E.Gid)");
 
             var timesheetByWeekViews = new List<TimesheetByWeekView>();
             // 把上面整理好的每个人每天的信息，整理到按周几放到的TimesheetByWeekView里。

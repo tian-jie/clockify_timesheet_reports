@@ -71,7 +71,6 @@
                         return; //don't save this change
                     }
 
-
                     ////clearTimeout(autosaveNotification);
                     //$.ajax('SaveData', 'GET', JSON.stringify({ data: change }), function (data) {
                     //    autosaveNotification = setTimeout(function () {
@@ -82,10 +81,14 @@
             });
 
             Handsontable.dom.addEvent(load, 'click', function () {
+                var projectGid = getQueryVariable('projectGid');
                 $.ajax({
                     url: '../EstimateEffortApi/GetData',
                     method: 'POST',
-                    contentType: 'application/json; charset=UTF-8',
+                    dataType: "json",
+                    data: {
+                        "projectGid": projectGid
+                    },
                     success: function (res) {
                         //var data = JSON.parse(res.response);
 
@@ -100,6 +103,8 @@
                 var data1 = hot.getData();
                 // 组合数据给后台传
                 var dataList = [];
+                var projectGid = getQueryVariable('projectGid');
+
                 data1.forEach(function (currentValue, index, arr) {
                     if (currentValue[0] == 2147483647) {
                         return;
@@ -110,7 +115,8 @@
                         RoleTitle: currentValue[2],
                         RoleRate: currentValue[3],
                         Effort: currentValue[4],
-                        RateEffort: currentValue[5]
+                        RateEffort: currentValue[5],
+                        projectGid: projectGid
                     };
                     dataList.push(d);
                 });
@@ -139,6 +145,14 @@
             });
 
         }
-
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split("&");
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split("=");
+                if (pair[0] == variable) { return pair[1]; }
+            }
+            return (false);
+        }
     </script>
 }

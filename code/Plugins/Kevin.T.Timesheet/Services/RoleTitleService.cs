@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Core.Data;
 using Kevin.T.Timesheet.Entities;
 using Kevin.T.Timesheet.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Kevin.T.Timesheet.Services
@@ -13,9 +14,14 @@ namespace Kevin.T.Timesheet.Services
 
         }
 
-        public IQueryable<RoleTitle> All()
+        public IList<RoleTitle> AllInternal()
         {
-            return Repository.Entities.Where(a => a.IsDeleted != true);
+            return Repository.Entities.Where(a => a.IsDeleted != true && a.Type == "internal").ToList();
+        }
+
+        public IList<RoleTitle> AllExternal()
+        {
+            return Repository.Entities.Where(a => a.IsDeleted != true && a.Type == "external").ToList();
         }
     }
 }

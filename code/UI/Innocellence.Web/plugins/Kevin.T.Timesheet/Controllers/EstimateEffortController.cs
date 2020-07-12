@@ -28,14 +28,14 @@ namespace Kevin.T.Timesheet.Controllers
 
         public override ActionResult Index()
         {
-            ViewBag.RoleTitles = _roleTitleService.All().ToList();
+            ViewBag.RoleTitles = _roleTitleService.AllExternal();
             return base.Index();
         }
 
         public override ActionResult GetList()
         {
             Expression<Func<EstimateEffort, bool>> predicate = m => true;
-            PageCondition pageCondition = new PageCondition(1, 10);
+            PageCondition pageCondition = new PageCondition(1, 1000);
 
             var list = GetListEx(predicate, pageCondition);
 

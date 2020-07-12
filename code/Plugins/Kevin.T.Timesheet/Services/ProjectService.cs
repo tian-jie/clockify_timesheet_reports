@@ -1,9 +1,10 @@
 ﻿using Infrastructure.Core.Data;
-using Kevin.T.Timesheet.Interfaces;
 using Kevin.T.Timesheet.Entities;
+using Kevin.T.Timesheet.Interfaces;
+using Kevin.T.Timesheet.ModelsView;
 using System.Collections.Generic;
 using System.Linq;
-using Kevin.T.Timesheet.ModelsView;
+using System.Threading.Tasks;
 
 namespace Kevin.T.Timesheet.Services
 {
@@ -25,16 +26,19 @@ namespace Kevin.T.Timesheet.Services
             var projects = Repository.Entities.Where(a => a.IsDeleted != true).ToList();
 
             // 再加上其他以task为项目的项目
-            var taskAsProjects = _taskToProjectMappingService.All();
-            foreach (var taskAsProject in taskAsProjects)
-            {
-                projects.Add(new Project()
-                {
-                    Id = 0,
-                    Name = taskAsProject.ProjectName,
-                    Gid = taskAsProject.TaskGid
-                });
-            }
+            var taskAsProjects = _taskToProjectMappingService.AllProjects();
+            projects.AddRange(taskAsProjects);
+
+            return projects;
+        }
+
+        public List<Project> GetAllActiveProjects()
+        {
+            var projects = Repository.Entities.Where(a => a.IsDeleted != true & a.Archived==false).ToList();
+
+            // 再加上其他以task为项目的项目
+            var taskAsProjects = _taskToProjectMappingService.AllProjects();
+            projects.AddRange(taskAsProjects);
 
             return projects;
         }
@@ -45,12 +49,12 @@ namespace Kevin.T.Timesheet.Services
 
             if(project == null)
             {
-                var taskAsProject = _taskToProjectMappingService.Repository.Entities.FirstOrDefault(a => a.IsDeleted != true && a.TaskGid == Gid);
+                var taskAsProject = _taskToProjectMappingService.Repository.Entities.FirstOrDefault(a => a.IsDeleted != true && a.ProjectGid == Gid);
                 project = new Project()
                 {
                     Id = 0,
                     Name = taskAsProject.ProjectName,
-                    Gid = taskAsProject.TaskGid
+                    Gid = Gid
                 };
             }
 

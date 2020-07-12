@@ -137,6 +137,7 @@
     <Compile Include="Controllers\ProjectController.cs" />
     <Compile Include="Controllers\ProjectAccountingController.cs" />
     <Compile Include="Controllers\TimesheetController.cs" />
+    <Compile Include="Entities\EmployeeRate.cs" />
     <Compile Include="Entities\TaskToProjectMapping.cs" />
     <Compile Include="Entities\EstimateEffort.cs" />
     <Compile Include="Entities\ProjectTask.cs" />

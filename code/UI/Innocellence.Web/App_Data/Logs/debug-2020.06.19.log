@@ -859,4 +859,4 @@ ClientConnectionId:2b5b9e69-f540-47b5-9db5-442d0e2030d0
 Error Number:-2,State:0,Class:11
 2020-06-19 22:51:39,323 [5] HomeController - (null) - 等待的操作过时。
 System.ComponentModel.Win32Exception (0x80004005): 等待的操作过时。
-2020-06-19 22:53:39,422 [27] Commo
+2020-06-19 22:53:39,422 [27] Commoture=neutral, PublicKeyToken=0df73ec7942b34e1  ,  NPOI.OpenXmlFormats, Version=2.2.1.0, Culture=neutral, PublicKeyToken=0df73ec7942b34e1  ,  Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5  ,  RouteDebugger, Version=2.1.5.0, Culture=neutral, PublicKeyToken=null  ,  SqlSugar, Version=2.7.0.9, Culture=neutral, PublicKeyToken=null  ,  WebBackgrounder, Version=0.2.0.0, Culture=neutral, PublicKeyToken=null  ,  Innocellence.WeChatMain, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null  ,  Innocellence.WeChat, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null  ,  Innocellence.Activity, Version=1.0.7475.40200, Culture=neutral, PublicKeyToken=null  ,  Kevin.T.Timesheet, Version=1.0.7475.40606, Culture=neutral, PublicKeyToken=null  ,  Anonymously Hosted DynamicMethods Assembly, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null

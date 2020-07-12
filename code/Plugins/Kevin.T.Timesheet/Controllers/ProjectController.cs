@@ -23,7 +23,7 @@ namespace Kevin.T.Timesheet.Controllers
             var req = new GridRequest(Request);
 
             // 普通项目
-            var projects = _projectService.GetAllProjects();
+            var projects = _projectService.GetAllActiveProjects();
 
             return GetPageResult(projects, req);
         }
