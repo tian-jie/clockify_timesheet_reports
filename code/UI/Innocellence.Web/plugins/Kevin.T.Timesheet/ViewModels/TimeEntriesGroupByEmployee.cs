@@ -1,4 +1,4 @@
-using System;
+using System.Collections.Generic;
 
 namespace Kevin.T.Timesheet.ModelsView
 {
@@ -14,9 +14,20 @@ namespace Kevin.T.Timesheet.ModelsView
 
         public decimal EmployeeRate { get; set; }
 
-        public virtual decimal TotalHours { get; set; }
+        public decimal TotalHours { get; set; }
 
-        public virtual decimal TotalHoursRate { get; set; }
+        public decimal TotalHoursRate { get; set; }
+
+        public List<TotalEffortByWeek> TotalEffortByWeek { get; set; }
+
+    }
+
+    public partial class TotalEffortByWeek
+    {
+        public int WeekNumber { get; set; }
+        public string WeekDescription { get; set; }
+        public decimal TotalHours { get; set; }
+        public decimal TotalHoursRate { get; set; }
 
     }
 }

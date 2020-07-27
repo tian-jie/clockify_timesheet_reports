@@ -1,6 +1,58 @@
 ﻿@{
     ViewBag.Title = "项目统计";
 }
+
+<style>
+    .fixed-table-container thead th .th-inner, .fixed-table-container tbody td .th-inner {
+        line-height: 18px;
+    }
+
+    .fixed-table-pagination .pagination a {
+        padding: 5px 10px;
+    }
+
+    .fixed-table-toolbar .bars, .fixed-table-toolbar .search, .fixed-table-toolbar .columns {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .fixed-table-header-columns,
+    .fixed-table-body-columns {
+        position: absolute;
+        background-color: #fff;
+        box-sizing: border-box;
+        overflow: hidden;
+    }
+
+    .fixed-table-header-columns,
+    .fixed-table-body-columns {
+        border-right: 1px solid #e9e9e9;
+        border-left: 1px solid #e9e9e9;
+    }
+
+        .fixed-table-header-columns table,
+        .fixed-table-body-columns table {
+            border: none;
+        }
+
+        .fixed-table-header-columns .table.table-no-bordered,
+        .fixed-table-body-columns .table.table-no-bordered {
+            border-right: 1px solid transparent;
+        }
+
+        .fixed-table-body-columns table {
+            position: absolute;
+            animation: none;
+        }
+
+    .bootstrap-table .table-hover > tbody > tr.hover > td {
+        background-color: #f5f5f5;
+    }
+
+    .bootstrap-table .table-container .fixed-table-body-columns td, .table-container .fixed-table-body-columns th {
+        border: 1px solid #e9e9e9 !important;
+    }
+</style>
 <div class="row">
 
     <div class="col-xs-12">
@@ -16,16 +68,19 @@
         </div>
         <div class="widget-box">
             <div class="widget-content nopadding">
-                <table class="table table-bordered data-table">
+                <table class="table table-bordered data-table" id="table" style="table-layout: fixed;">
                     <thead>
                         <tr>
-                            @*<th style="width: 8%; text-align: center;">Id</th>*@
-                            <th style="width: 5%">Id</th>
-                            <th style="width: 15%">Employee</th>
-                            <th style="width: 15%">Role</th>
-                            <th style="width: 15%">Rate</th>
-                            <th style="width: 30%">Total Hours</th>
-                            <th style="width: 30%">Total Hours(Rate)</th>
+                            <th style="width: 90px; text-align: center;">Employee Id</th>
+                            <th style="width: 120px">Employee</th>
+                            <th style="width: 120px">Role</th>
+                            <th style="width: 80px">Rate</th>
+                            <th style="width: 10%">W01</th>
+                            <th style="width: 10%">W02</th>
+                            <th style="width: 10%">W03</th>
+                            <th style="width: 10%">W.....</th>
+                            <th style="width: 10%">Total Hours</th>
+                            <th style="width: 10%">Total Hours (Rate)</th>
                         </tr>
                     </thead>
                 </table>
@@ -55,130 +110,148 @@
                     document.getElementById('SpentManHour').innerHTML = data.SpentManHour;
                     document.getElementById('SpentManHourRate').innerHTML = data.SpentManHourRate;
                     document.getElementById('UsedPercetange').innerHTML = (data.SpentManHourRate * 100 / data.EstimatedSpentManHourRate).toFixed(2) + '%';
-                }
-            });
 
-            LEAP.Common.MainPop.options.dataTable = $('.data-table').dataTable(jQuery.extend(true, datatableSetting, {
-                "ajax": { "url": "GetList" },
-                "aoColumns": [
-                    {
-                        "mData": "Id",
-                        "bSearchable": false,
-                        "bSortable": false
-                    },
-                    {
-                        "mData": "EmployeeName",
-                        "bSearchable": false,
-                        "bSortable": false
-                    },
-                    {
-                        "mData": "EmployeeRole",
-                        "bSearchable": false,
-                        "bSortable": false
-                    },
-                    {
-                        "mData": "EmployeeRate",
-                        "bSearchable": false,
-                        "bSortable": false
-                    },
-                    {
-                        "mData": "TotalHours",
-                        "bSearchable": false,
-                        "bSortable": false
-                    },
-                    {
-                        "mData": "TotalHoursRate",
-                        "bSearchable": false,
-                        "bSortable": false
+                    // 处理table的问题
+                    var columns = [{
+                        field: 'EmployeeName',
+                        title: 'Employee Name',
+                        width: 120
+                    }, {
+                        field: 'EmployeeRole',
+                        title: 'Role',
+                        align: 'center',
+                        valign: 'middle',
+                        width: 120
+                    }, {
+                        field: 'EmployeeRate',
+                        title: 'Rate',
+                        align: 'center',
+                        valign: 'middle',
+                        width: 60,
+                    }];
+
+                    columns.push({
+                        field: 'TotalHours',
+                        title: 'Total Hours',
+                        align: 'center',
+                        valign: 'middle',
+                        width: 100,
+                        footerFormatter: function (value) { //底部合计
+                            var count = 0;
+                            for (var i in value) {
+                                count += value[i].TotalHours;
+                            }
+                            return count;
+                        }
+                    });
+
+                    columns.push({
+                        field: 'TotalHoursRate',
+                        title: 'Total Hours (Rate)',
+                        align: 'center',
+                        valign: 'middle',
+                        width: 100,
+                        footerFormatter: function (value) { //底部合计
+                            var count = 0;
+                            for (var i in value) {
+                                count += value[i].TotalHoursRate;
+                            }
+                            return count;
+                        }
+                    });
+
+
+                    if (data.TimeEntriesGroupByEmployeesView.length == 0) {
+                        return;
                     }
 
-                ],
-                "columnDefs":
-                    jQuery.extend(true, datatableSetting.columnDefs, [
-                    ]),
-                fnDrawCallback:
-                    function (data) {
-                        $('[data-toggle="tooltip"]').tooltip();
+                    // 补充动态列
+                    // TODO: 这里缺一些，如果一个人第一周没干活，第三周才开始干，以第一个人的时间是不合理的，要按照所有人的时间做。
+
+                    // 找出第一周，找出最后一周
+                    var firstWeek = 100;
+                    var lastWeek = 0;
+
+                    $.each(data.TimeEntriesGroupByEmployeesView, function (j, timeEntriesGroupByEmployees) {
+                        $.each(timeEntriesGroupByEmployees.TotalEffortByWeek, function (i, item) {
+                            if (item.WeekNumber < firstWeek) {
+                                firstWeek = item.WeekNumber;
+                            }
+                            if (item.WeekNumber > lastWeek) {
+                                lastWeek = item.WeekNumber;
+                            }
+                        });
+                    });
+
+
+                    for (var i = firstWeek; i <= lastWeek; i++) {
+                        addColumn(i, columns);
                     }
-            }));
 
-            $('.form_datatime').datetimepicker({
-                format: 'yyyy-mm-dd hh:ii',
-                weekStart: 1,
-                autoclose: true,
-                todayBtn: 'linked',
-                clearBtn: true,
-                language: 'zh-CN',
-                startView: 2,
-                minView: 0,
-                onClose: function () {
-                    this.focus();
+
+                    // 处理每行数据，动态增加data.TimeEntriesGroupByEmployeesView的列
+                    $.each(data.TimeEntriesGroupByEmployeesView, function (i, timeEntriesGroupByEmployeesView) {
+                        // 这边是人的级别
+                        for (var i = firstWeek; i <= lastWeek; i++) {
+                            timeEntriesGroupByEmployeesView['W' + i] = 0;
+                        }
+
+                        $.each(timeEntriesGroupByEmployeesView.TotalEffortByWeek, function (j, totalEffortByWeek) {
+                            // 这里循环所有的week，合适的填数据
+                            timeEntriesGroupByEmployeesView['W' + totalEffortByWeek.WeekNumber] = totalEffortByWeek.TotalHours;
+
+                        });
+                    });
+
+                    initTable(columns, data.TimeEntriesGroupByEmployeesView);
                 }
-            });
-
-            $('#clear_condition').click(function () {
-                $('input').val('');
             });
 
         });
 
-        function BeforeSearch() {
-            //if ($('#startDate').val() > $('#endDate').val()) {
-            //    artDialog.alert('结束时间不能小于开始时间。');
-            //    return false;
-            //}
-            return true;
+        function initTable(columns, data1) {
+            $('#table').bootstrapTable('destroy').bootstrapTable({
+                //url: "GetTimesheetThisweekByGroup",
+                //method: "post",
+                //queryParams: {
+                //    groupId: $('#Group').val(),
+                //    year: $('#Year').val(),
+                //    week: $('#Week').val()
+                //},
+                data: data1,
+                toolbar: "#toolbar",
+                striped: true,                      //是否显示行间隔色
+                cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+                pagination: true,                   //是否显示分页（*）
+                sortable: true,                     //是否启用排序
+                sortOrder: "asc",                   //排序方式
+                //sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+                //pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
+                //pageSize: 10,                       //每页的记录行数（*）
+                //pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+                search: true,                      //是否显示表格搜索
+                strictSearch: false,
+                showColumns: false,                   //是否显示所有的列（选择显示的列）
+                showRefresh: true,                  //是否显示刷新按钮
+                minimumCountColumns: 4,             //最少允许的列数
+                clickToSelect: true,                //是否启用点击选中行
+                //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+                //uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+                showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
+                cardView: false,                    //是否显示详细视图
+                detailView: false,                  //是否显示父子表
+                showFooter: true,
+                fixedColumns: true,
+                fixedNumber: 2, //固定列数
+                //height: 600,
+                leftFixedColumns: true,
+                leftFixedNumber: 5,
+                //rightFixedColumns: false,
+                //rightFixedNumber: 2,
+                columns: columns
+            });
         }
 
-        function mstime(mss) {
-            //var days = parseInt(mss / (1000 * 60 * 60 * 24));
-            var hours = parseInt(mss / (60 * 60));
-            var minutes = parseInt((mss % (60 * 60)) / (60));
-            var seconds = parseInt(mss % 60)
-            var ref = "";
-            if (hours < 10) {
-                ref += "0" + hours + ":"
-            } else {
-                ref += hours + ":"
-            }
-            if (minutes < 10) {
-                ref += "0" + minutes + ":"
-            } else {
-                ref += minutes + ":"
-            }
-            if (seconds < 10) {
-                ref += "0" + seconds
-            } else {
-                ref += seconds
-            }
-
-            return ref;
-        }
-
-        var HtmlUtil = {
-            /*1.用浏览器内部转换器实现html转码*/
-            htmlEncode: function (html) {
-                //1.首先动态创建一个容器标签元素，如DIV
-                var temp = document.createElement("div");
-                //2.然后将要转换的字符串设置为这个元素的innerText(ie支持)或者textContent(火狐，google支持)
-                (temp.textContent != undefined) ? (temp.textContent = html) : (temp.innerText = html);
-                //3.最后返回这个元素的innerHTML，即得到经过HTML编码转换的字符串了
-                var output = temp.innerHTML;
-                temp = null;
-                return output;
-            },
-            /*2.用浏览器内部转换器实现html解码*/
-            htmlDecode: function (text) {
-                //1.首先动态创建一个容器标签元素，如DIV
-                var temp = document.createElement("div");
-                //2.然后将要转换的字符串设置为这个元素的innerHTML(ie，火狐，google都支持)
-                temp.innerHTML = text;
-                //3.最后返回这个元素的innerText(ie支持)或者textContent(火狐，google支持)，即得到经过HTML解码的字符串了。
-                var output = temp.innerText || temp.textContent;
-                temp = null;
-                return output;
-            }
-        };
 
         function getQueryVariable(variable) {
             var query = window.location.search.substring(1);
@@ -189,5 +262,339 @@
             }
             return (false);
         }
+
+        function sortNumber(a, b) {//升序
+            return a - b
+        }
+
+        function addColumn(weekNumber, columns) {
+            columns.push({
+                field: 'W' + weekNumber,
+                title: 'W' + weekNumber,
+                align: 'center',
+                valign: 'middle',
+                width: 60,
+                footerFormatter: function (value) { //底部合计
+                    var count = 0;
+                    for (var j in value) {
+                        count += eval('value[' + j + '].W' + weekNumber);
+                        console.debug('value[' + j + '].W' + weekNumber + ': ' + count);
+                    }
+                    return count;
+                }
+            });
+        }
+
+        //function addColumn(tr, weekNumber) {
+
+        //}
+
+
+        (function ($) {
+            'use strict';
+
+            $.extend($.fn.bootstrapTable.defaults, {
+                leftFixedColumns: false,
+                leftFixedNumber: 1,
+                rightFixedColumns: false,
+                rightFixedNumber: 1
+            });
+
+            var BootstrapTable = $.fn.bootstrapTable.Constructor,
+                _initHeader = BootstrapTable.prototype.initHeader,
+                _initBody = BootstrapTable.prototype.initBody,
+                _resetView = BootstrapTable.prototype.resetView;
+
+            BootstrapTable.prototype.initFixedColumns = function () {
+                this.timeoutHeaderColumns_ = 0;
+                this.timeoutBodyColumns_ = 0;
+                if (this.options.leftFixedColumns) {
+                    this.$fixedHeader = $([
+                        '<div class="fixed-table-header-columns">',
+                        '<table>',
+                        '<thead></thead>',
+                        '</table>',
+                        '</div>'].join(''));
+
+                    this.$fixedHeader.find('table').attr('class', this.$el.attr('class'));
+                    this.$fixedHeaderColumns = this.$fixedHeader.find('thead');
+                    this.$tableHeader.before(this.$fixedHeader);
+
+                    this.$fixedBody = $([
+                        '<div class="fixed-table-body-columns">',
+                        '<table>',
+                        '<tbody></tbody>',
+                        '</table>',
+                        '</div>'].join(''));
+
+                    this.$fixedBody.find('table').attr('class', this.$el.attr('class'));
+                    this.$fixedBodyColumns = this.$fixedBody.find('tbody');
+                    this.$tableBody.before(this.$fixedBody);
+
+                }
+                if (this.options.rightFixedColumns) {
+                    this.$rightfixedHeader = $([
+                        '<div class="fixed-table-header-columns" style="right:0px;top:0;z-index:101;">',
+                        '<table>',
+                        '<thead></thead>',
+                        '</table>',
+                        '</div>'].join(''));
+
+                    this.$rightfixedHeader.find('table').attr('class', this.$el.attr('class'));
+                    this.$rightfixedHeaderColumns = this.$rightfixedHeader.find('thead');
+                    this.$tableHeader.before(this.$rightfixedHeader);
+
+                    this.$rightfixedBody = $([
+                        '<div class="fixed-table-body-columns" style="right:0px;top:35px;z-index:100;">',
+                        '<table>',
+                        '<tbody></tbody>',
+                        '</table>',
+                        '</div>'].join(''));
+
+                    this.$rightfixedBody.find('table').attr('class', this.$el.attr('class'));
+                    this.$rightfixedBodyColumns = this.$rightfixedBody.find('tbody');
+                    this.$tableBody.before(this.$rightfixedBody);
+
+                }
+            };
+
+            BootstrapTable.prototype.initHeader = function () {
+                _initHeader.apply(this, Array.prototype.slice.apply(arguments));
+
+                if (!this.options.leftFixedColumns && !this.options.rightFixedColumns) {
+                    return;
+                }
+                this.initFixedColumns();
+
+                var $tr = this.$header.find('tr:eq(0)').clone(),
+                    $ths = $tr.clone().find('th');
+
+                //$tr.html('');
+                //左边列冻结
+                if (this.options.leftFixedColumns) {
+                    var $newtr = $('<tr></tr>');
+                    $newtr.attr('data-index', $tr.attr('data-index'));
+                    $newtr.attr('data-uniqueid', $tr.attr('data-uniqueid'));
+                    debugger;
+                    for (var i = 0; i < this.options.leftFixedNumber; i++) {
+                        $newtr.append($ths.eq(i).clone());
+                    }
+                    this.$fixedHeaderColumns.html('').append($newtr);
+                }
+                //$tr.html('');
+                //右边列冻结
+                if (this.options.rightFixedColumns) {
+                    var $newtr2 = $('<tr></tr>');
+                    $newtr2.attr('data-index', $tr.attr('data-index'));
+                    $newtr2.attr('data-uniqueid', $tr.attr('data-uniqueid'));
+                    for (var i = 0; i < this.options.rightFixedNumber; i++) {
+                        $newtr2.append($ths.eq($ths.length - this.options.rightFixedNumber + i).clone());
+                    }
+                    this.$rightfixedHeaderColumns.html('').append($newtr2);
+                }
+            };
+
+            BootstrapTable.prototype.initBody = function () {
+                _initBody.apply(this, Array.prototype.slice.apply(arguments));
+
+                if (!this.options.leftFixedColumns && !this.options.rightFixedColumns) {
+                    return;
+                }
+
+                var that = this;
+                if (this.options.leftFixedColumns) {
+                    this.$fixedBodyColumns.html('');
+                    this.$body.find('> tr[data-index]').each(function () {
+                        var $tr = $(this).clone(),
+                            $tds = $tr.clone().find('td');
+
+                        $tr.html('');
+                        for (var i = 0; i < that.options.leftFixedNumber; i++) {
+                            $tr.append($tds.eq(i).clone());
+                        }
+                        that.$fixedBodyColumns.append($tr);
+                    });
+                }
+                if (this.options.rightFixedColumns) {
+                    this.$rightfixedBodyColumns.html('');
+                    this.$body.find('> tr[data-index]').each(function () {
+                        var $tr = $(this).clone(),
+                            $tds = $tr.clone().find('td');
+
+                        $tr.html('');
+                        for (var i = 0; i < that.options.rightFixedNumber; i++) {
+                            var indexTd = $tds.length - that.options.rightFixedNumber + i;
+                            var oldTd = $tds.eq(indexTd);
+                            var fixTd = oldTd.clone();
+                            var buttons = fixTd.find('button');
+                            //事件转移：冻结列里面的事件转移到实际按钮的事件
+                            buttons.each(function (key, item) {
+                                $(item).click(function () {
+                                    that.$body.find("tr[data-index=" + $tr.attr('data-index') + "] td:eq(" + indexTd + ") button:eq(" + key + ")").click();
+                                });
+                            });
+                            $tr.append(fixTd);
+                        }
+                        that.$rightfixedBodyColumns.append($tr);
+                    });
+                }
+            };
+
+            BootstrapTable.prototype.resetView = function () {
+                _resetView.apply(this, Array.prototype.slice.apply(arguments));
+
+                if (!this.options.leftFixedColumns && !this.options.rightFixedColumns) {
+                    return;
+                }
+
+                clearTimeout(this.timeoutHeaderColumns_);
+                this.timeoutHeaderColumns_ = setTimeout($.proxy(this.fitHeaderColumns, this), this.$el.is(':hidden') ? 100 : 0);
+
+                clearTimeout(this.timeoutBodyColumns_);
+                this.timeoutBodyColumns_ = setTimeout($.proxy(this.fitBodyColumns, this), this.$el.is(':hidden') ? 100 : 0);
+            };
+
+            BootstrapTable.prototype.fitHeaderColumns = function () {
+                var that = this,
+                    visibleFields = this.getVisibleFields(),
+                    headerWidth = 0;
+                if (that.options.leftFixedColumns) {
+                    this.$body.find('tr:first-child:not(.no-records-found) > *').each(function (i) {
+                        var $this = $(this),
+                            index = i;
+
+                        if (i >= that.options.leftFixedNumber) {
+                            return false;
+                        }
+
+                        if (that.options.detailView && !that.options.cardView) {
+                            index = i - 1;
+                        }
+
+                        that.$fixedHeader.find('thead th[data-field="' + visibleFields[index] + '"]')
+                            .find('.fht-cell').width($this.innerWidth() - 1);
+                        headerWidth += $this.outerWidth();
+                    });
+                    this.$fixedHeader.width(headerWidth - 1).show();
+                }
+                if (that.options.rightFixedColumns) {
+                    this.$body.find('tr:first-child:not(.no-records-found) > *').each(function (i) {
+                        var $this = $(this),
+                            index = i;
+
+                        if (i >= visibleFields.length - that.options.rightFixedNumber) {
+                            //return false;
+
+
+                            //if (that.options.detailView && !that.options.cardView) {
+                            //    index = i - 1;
+                            //}
+                            that.$rightfixedHeader.find('thead th[data-field="' + visibleFields[index] + '"]')
+                                .find('.fht-cell').width($this.innerWidth());
+                            headerWidth += $this.outerWidth();
+                        }
+                    });
+                    this.$rightfixedHeader.width(headerWidth - 1).show();
+                }
+            };
+
+            BootstrapTable.prototype.fitBodyColumns = function () {
+                var that = this,
+                    top = -(parseInt(this.$el.css('margin-top')) - 2),
+                    height = this.$tableBody.height() - 2;
+
+                if (that.options.leftFixedColumns) {
+                    if (!this.$body.find('> tr[data-index]').length) {
+                        this.$fixedBody.hide();
+                        return;
+                    }
+                    if (!this.options.height) {
+                        top = this.$fixedHeader.height() - 1;
+                        height = height - top;
+                    }
+
+                    this.$fixedBody.css({
+                        width: this.$fixedHeader.width(),
+                        height: height,
+                        top: top + 1
+                    }).show();
+
+
+                    this.$body.find('> tr').each(function (i) {
+                        that.$fixedBody.find('tbody tr:eq(' + i + ')').height($(this).height());
+                    });
+
+                    //// events
+                    this.$tableBody.on('scroll', function () {
+                        that.$fixedBody.find('table').css('top', -$(this).scrollTop());
+                    });
+                    this.$body.find('> tr[data-index]').off('hover').hover(function () {
+                        var index = $(this).data('index');
+                        that.$fixedBody.find('tr[data-index="' + index + '"]').addClass('hover');
+                    }, function () {
+                        var index = $(this).data('index');
+                        that.$fixedBody.find('tr[data-index="' + index + '"]').removeClass('hover');
+                    });
+                    this.$fixedBody.find('tr[data-index]').off('hover').hover(function () {
+                        var index = $(this).data('index');
+                        that.$body.find('tr[data-index="' + index + '"]').addClass('hover');
+                    }, function () {
+                        var index = $(this).data('index');
+                        that.$body.find('> tr[data-index="' + index + '"]').removeClass('hover');
+                    });
+                }
+                if (that.options.rightFixedColumns) {
+                    if (!this.$body.find('> tr[data-index]').length) {
+                        this.$rightfixedBody.hide();
+                        return;
+                    }
+                    if (!this.options.height) {
+                        top = this.$rightfixedHeader.height() - 1;
+                        height = height - top;
+                    }
+
+                    this.$rightfixedBody.css({
+                        width: this.$rightfixedHeader.width() + 2,
+                        height: height - 17,
+                        //top: top + 1
+                    }).show();
+
+
+                    this.$body.find('> tr').each(function (i) {
+                        that.$rightfixedBody.find('tbody tr:eq(' + i + ')').height($(this).height());
+                    });
+
+                    //// events
+                    this.$tableBody.on('scroll', function () {
+                        that.$rightfixedBody.find('table').css('top', -$(this).scrollTop());
+                    });
+                    this.$body.find('> tr[data-index]').off('hover').hover(function () {
+                        var index = $(this).data('index');
+                        that.$rightfixedBody.find('tr[data-index="' + index + '"]').addClass('hover');
+                    }, function () {
+                        var index = $(this).data('index');
+                        that.$rightfixedBody.find('tr[data-index="' + index + '"]').removeClass('hover');
+                    });
+                    this.$rightfixedBody.find('tr[data-index]').off('hover').hover(function () {
+                        var index = $(this).data('index');
+                        that.$body.find('tr[data-index="' + index + '"]').addClass('hover');
+                    }, function () {
+                        var index = $(this).data('index');
+                        that.$body.find('> tr[data-index="' + index + '"]').removeClass('hover');
+                    });
+                }
+            };
+
+        })(jQuery);
+
+        $(window).resize(function () {
+            var h = $(window).height();
+            var w = $(window).width();
+            var $fixedTableBody = $("#table").closest("div"),
+                $fixedTableBodyColumns = $fixedTableBody.prev(),
+                $FixedtableContainer = $fixedTableBody.closest("div");
+            $FixedtableContainer.height(h - 200);
+            $fixedTableBodyColumns.height(h - 253);
+        });
     </script>
 }

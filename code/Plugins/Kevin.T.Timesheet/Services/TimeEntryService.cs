@@ -83,31 +83,53 @@ namespace Kevin.T.Timesheet.Services
             var sql = @"
                 select * from TimeEntry TE where 
                 exists(select 1 from Project P where P.Gid = TE.projectId and Gid = '{0}')
-                or exists (select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId and TPM.ProjectGid='{0}')";
+                or exists (select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId and TPM.ProjectGid='{0}')
+                order by [date]";
 
             var timeEntry = Repository.SqlQuery(string.Format(sql, projectGid));
-
-
             var timeEntryByUsers = timeEntry.GroupBy(a => a.UserId);
-
             var timeEntriesGroupByEmployeesView = new List<TimeEntriesGroupByEmployeeView>();
 
             foreach (var a in timeEntryByUsers)
             {
-                // var user = projectUsers.FirstOrDefault(b => b.UserGid == a.Key);
-
                 var employee = allUsers.FirstOrDefault(b => b.Gid == a.Key);
 
+                var tv = new TimeEntriesGroupByEmployeeView()
+                {
+                    UserId = a.Key,
+                    TotalHours = a.Sum(b => b.TotalHours),
+                    EmployeeRate = employee.RoleRate,
+                    EmployeeRole = employee.RoleName,
+                    TotalHoursRate = a.Sum(b => b.TotalHours) * employee.RoleRate,
+                    EmployeeName = employee.Name
+                };
 
-                    timeEntriesGroupByEmployeesView.Add(new TimeEntriesGroupByEmployeeView()
+                tv.TotalEffortByWeek = new List<TotalEffortByWeek>();
+
+                // 计算周数
+                foreach (var v in a)
+                {
+                    // 计算这个日期属于第几周
+                    var week = ConvertDateToWeek(v.Date);
+
+                    var totalEffortByWeek = tv.TotalEffortByWeek.FirstOrDefault(b => b.WeekNumber == week);
+                    if (totalEffortByWeek == null)
                     {
-                        UserId = a.Key,
-                        TotalHours = a.Sum(b => b.TotalHours),
-                        EmployeeRate = employee.RoleRate,
-                        EmployeeRole = employee.RoleName,
-                        TotalHoursRate = a.Sum(b => b.TotalHours) * employee.RoleRate,
-                        EmployeeName = employee.Name
-                    });
+                        tv.TotalEffortByWeek.Add(new TotalEffortByWeek()
+                        {
+                            WeekNumber = week,
+                            TotalHours = v.TotalHours,
+                            TotalHoursRate = v.TotalHours * employee.RoleRate
+                        });
+                    }
+                    else
+                    {
+                        totalEffortByWeek.TotalHours += v.TotalHours;
+                        totalEffortByWeek.TotalHoursRate += v.TotalHours * employee.RoleRate;
+                    }
+                }
+
+                timeEntriesGroupByEmployeesView.Add(tv);
             }
             return timeEntriesGroupByEmployeesView;
         }
@@ -218,6 +240,31 @@ or exists(select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId a
             }
 
             return employees;
+        }
+
+        private int ConvertDateToWeek(DateTime date)
+        {
+            // 计算FirstWeek周期
+            var yearFirstDay = new DateTime(date.Year, 1, 1);
+            var firstDayofWeek = (int)yearFirstDay.DayOfWeek;
+            DateTime weekFirstDay = DateTime.Now;
+            DateTime weekLastDay = DateTime.Now;
+
+            weekFirstDay = yearFirstDay.AddDays(-(firstDayofWeek == 0 ? 6 : firstDayofWeek - 1));
+            var firstThursday = weekFirstDay.AddDays(3);
+
+            if (yearFirstDay <= firstThursday)
+            {
+                weekFirstDay = weekFirstDay.AddDays(7);
+            }
+            // weekLastDay = weekFirstDay.AddDays(6);
+
+            // 计算当天跟第一天差几天，算周数
+            var dayOfWeekFirstday = weekFirstDay.DayOfYear;
+
+            var days = date.DayOfYear - dayOfWeekFirstday;
+
+            return days / 7;
         }
     }
 }
