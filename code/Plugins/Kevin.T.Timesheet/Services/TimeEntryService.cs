@@ -242,7 +242,7 @@ or exists(select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId a
             return employees;
         }
 
-        private int ConvertDateToWeek(DateTime date)
+        public int ConvertDateToWeek(DateTime date)
         {
             // 计算FirstWeek周期
             var yearFirstDay = new DateTime(date.Year, 1, 1);
@@ -253,7 +253,7 @@ or exists(select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId a
             weekFirstDay = yearFirstDay.AddDays(-(firstDayofWeek == 0 ? 6 : firstDayofWeek - 1));
             var firstThursday = weekFirstDay.AddDays(3);
 
-            if (yearFirstDay <= firstThursday)
+            if (yearFirstDay > firstThursday)
             {
                 weekFirstDay = weekFirstDay.AddDays(7);
             }
@@ -261,10 +261,14 @@ or exists(select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId a
 
             // 计算当天跟第一天差几天，算周数
             var dayOfWeekFirstday = weekFirstDay.DayOfYear;
+            if (dayOfWeekFirstday > 10)
+            {
+                dayOfWeekFirstday -= new DateTime(weekFirstDay.Year, 12, 31).DayOfYear;
+            }
 
             var days = date.DayOfYear - dayOfWeekFirstday;
 
-            return days / 7;
+            return days / 7 + 1;
         }
     }
 }
