@@ -45,7 +45,7 @@ namespace Kevin.T.Timesheet.Controllers
         {
             // 获取项目信息
             var timeEntriesGroupByEmployeesView = _timeEntryService.GetTimeEntriesByProjectGroupByEmployee(projectGid);
-
+            
             return timeEntriesGroupByEmployeesView;
         }
 

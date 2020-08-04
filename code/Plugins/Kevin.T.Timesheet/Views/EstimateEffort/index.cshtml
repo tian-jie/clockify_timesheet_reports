@@ -2,9 +2,6 @@
     ViewBag.Title = "项目估算列表";
 }
 
-
-<link href="//cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.css" rel="stylesheet" media="screen">
-
 <body>
     <div id="toolbar" class="btn-group">
         <button id="btn_load" type="button" class="btn btn-default btn-load">
@@ -18,7 +15,7 @@
 
     <div class="widget-box">
         <div class="widget-content nopadding">
-            <table class="table table-bordered data-table" id="table">
+            <div class="table table-bordered data-table" id="table">
                 @*<thead>
                         <tr>
                             <th style="width: 5%">Id</th>
@@ -30,7 +27,7 @@
 
                         </tr>
                     </thead>*@
-            </table>
+            </div>
         </div>
     </div>
 
@@ -39,10 +36,16 @@
 
 @section scripts_Foot
 {
-    <script src="//cdn.jsdelivr.net/npm/handsontable@7.4.2/dist/handsontable.full.min.js"></script>
-
     <script language="javascript">
+        var roleTitles = [];
         $(document).ready(function () {
+            var roleTitlesRaw = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.RoleTitles));
+            roleTitlesRaw.forEach(function(item, index, arr){
+                roleTitles.push({
+                    id: item.Id,
+                    name: item.Title
+                });
+            });
             initTable();
         });
 
@@ -50,99 +53,156 @@
             var container = document.getElementById('table')
             var load = document.getElementById('btn_load')
             var save = document.getElementById('btn_save')
+            var projectGid = getQueryVariable('projectGid');
 
-            hot = new Handsontable(container, {
-                startRows: 20,
-                startCols: 10,
-                rowHeaders: true,
-                colHeaders: ['Id', 'RoleId', 'RoleTitle', 'RoleRate', 'Effort', 'RateEffort'],
-                filters: true,
-                dropdownMenu: true,
+            table = jexcel(container, {
+                url: '../EstimateEffortApi/GetData?projectGid=' + projectGid,
+                tableWidth: "100%",
+                tableHeight: "100%",
+                footers: [['Total', '=SUMCOL(TABLE(), COLUMN())', '=SUMCOL(TABLE(), COLUMN())', '=SUMCOL(TABLE(), COLUMN())']],
                 columns: [
-                    { data: 'Id' },
-                    { data: 'RoleId' },
-                    { data: 'RoleTitle' },
-                    { data: 'RoleRate' },
-                    { data: 'Effort' },
-                    { data: 'RateEffort' }
+                    {
+                        type: 'hidden',
+                        width: '80px',
+                        title: 'Id',
+                        name: 'Id'
+                    },
+                    {
+                        type: 'hidden',
+                        width: '120px',
+                        title: 'ProjectGid',
+                        name: 'ProjectGid'
+                    },
+                    {
+                        type: 'hidden',
+                        width: '120px',
+                        title: 'ProjectId',
+                        name: 'ProjectId'
+                    },
+                    {
+                        type: 'hidden',
+                        width: '80px',
+                        title: 'EmployeeId',
+                        name: 'EmployeeId'
+                    },
+                    {
+                        type: 'hidden',
+                        width: '80px',
+                        title: 'EmployeeGid',
+                        name: 'EmployeeGid'
+                    },
+                    {
+                        type: 'dropdown',
+                        width: '250px',
+                        title: 'Role',
+                        name: 'RoleId',
+                        source: roleTitles,
+                        multiple: false,
+                        align: 'left'
+                    },
+                    {
+                        type: 'hidden',
+                        width: '80px',
+                        title: 'RoleTitle',
+                        name: 'RoleTitle'
+                    },
+                    {
+                        type: 'text',
+                        width: '80px',
+                        title: 'Role Rate',
+                        name: 'RoleRate'
+                    },
+                    {
+                        type: 'text',
+                        width: '80px',
+                        title: 'Effort',
+                        name: 'Effort',
+                        align: 'right'
+                    },
+                    {
+                        type: 'text',
+                        width: '100px',
+                        title: 'Rate Effort',
+                        name: 'RateEffort',
+                        align: 'right'
+                    },
                 ],
-                afterChange: function (change, source) {
-                    if (source === 'loadData') {
-                        return; //don't save this change
-                    }
-
-                    ////clearTimeout(autosaveNotification);
-                    //$.ajax('SaveData', 'GET', JSON.stringify({ data: change }), function (data) {
-                    //    autosaveNotification = setTimeout(function () {
-                    //        exampleConsole.innerText = 'Changes will be autosaved';
-                    //    }, 1000);
-                    //});
-                }
-            });
-
-            Handsontable.dom.addEvent(load, 'click', function () {
-                var projectGid = getQueryVariable('projectGid');
-                $.ajax({
-                    url: '../EstimateEffortApi/GetData',
-                    method: 'POST',
-                    dataType: "json",
-                    data: {
-                        "projectGid": projectGid
-                    },
-                    success: function (res) {
-                        //var data = JSON.parse(res.response);
-
-                        hot.loadData(res);
-                        //exampleConsole.innerText = 'Data loaded';
-                    }
-                });
-            });
-
-            Handsontable.dom.addEvent(save, 'click', function () {
-                // save all cell's data
-                var data1 = hot.getData();
-                // 组合数据给后台传
-                var dataList = [];
-                var projectGid = getQueryVariable('projectGid');
-
-                data1.forEach(function (currentValue, index, arr) {
-                    if (currentValue[0] == 2147483647) {
-                        return;
-                    }
-                    var d = {
-                        Id: currentValue[0],
-                        RoleId: currentValue[1],
-                        RoleTitle: currentValue[2],
-                        RoleRate: currentValue[3],
-                        Effort: currentValue[4],
-                        RateEffort: currentValue[5],
-                        projectGid: projectGid
-                    };
-                    dataList.push(d);
-                });
-
-                $.ajax({
-                    url: '../EstimateEffortApi/SaveData',
-                    method: 'POST',
-                    dataType: "json",
-                    data: {
-                        estimateEffortViews: dataList
-                    },
-                    success: function (res) {
-                        alert(JSON.stringify(res));
-                    }
-                });
-                //$.ajax('SaveData', 'POST', JSON.stringify({ data: hot.getData() }), function (res) {
-                //    var response = JSON.parse(res.response);
-
-                //    if (response.status === '200') {
-                //        exampleConsole.innerText = 'Data saved';
+                //updateTable: function (instance, cell, col, row, val, label, cellName) {
+                //    // Number formating
+                //    if (col == 9) {
+                //        // Get text
+                //        txt = cell.innerText;
+                //        // Format text
+                //        a = parseInt(txt);
+                //        b = a.toLocaleString();
+                //        // Update cell value
+                //        cell.innerHTML = b;
                 //    }
-                //    else {
-                //        exampleConsole.innerText = 'Save error';
-                //    }
-                //});
+
+                //    //// Total row
+                //    //if (row == 9) {
+                //    //    if (col < 3) {
+                //    //        cell.innerHTML = '';
+                //    //    }
+
+                //    //    if (col == 2) {
+                //    //        cell.innerHTML = 'Total';
+                //    //        cell.style.fontWeight = 'bold';
+                //    //    }
+
+                //    //    cell.className = '';
+                //    //    cell.style.backgroundColor = '#f46e42';
+                //    //    cell.style.color = '#ffffff';
+                //    //}
+                //}
             });
+
+
+            //Handsontable.dom.addEvent(save, 'click', function () {
+            //    // save all cell's data
+            //    var data1 = hot.getData();
+            //    // 组合数据给后台传
+            //    var dataList = [];
+            //    var projectGid = getQueryVariable('projectGid');
+
+            //    data1.forEach(function (currentValue, index, arr) {
+            //        if (currentValue[0] == 2147483647) {
+            //            return;
+            //        }
+            //        var d = {
+            //            Id: currentValue[0],
+            //            RoleId: currentValue[1],
+            //            RoleTitle: currentValue[2],
+            //            RoleRate: currentValue[3],
+            //            Effort: currentValue[4],
+            //            RateEffort: currentValue[5],
+            //            projectGid: projectGid
+            //        };
+            //        dataList.push(d);
+            //    });
+
+            //    $.ajax({
+            //        url: '../EstimateEffortApi/SaveData',
+            //        method: 'POST',
+            //        dataType: "json",
+            //        data: {
+            //            estimateEffortViews: dataList
+            //        },
+            //        success: function (res) {
+            //            alert(JSON.stringify(res));
+            //        }
+            //    });
+            //    //$.ajax('SaveData', 'POST', JSON.stringify({ data: hot.getData() }), function (res) {
+            //    //    var response = JSON.parse(res.response);
+
+            //    //    if (response.status === '200') {
+            //    //        exampleConsole.innerText = 'Data saved';
+            //    //    }
+            //    //    else {
+            //    //        exampleConsole.innerText = 'Save error';
+            //    //    }
+            //    //});
+            //});
 
         }
         function getQueryVariable(variable) {
@@ -153,6 +213,18 @@
                 if (pair[0] == variable) { return pair[1]; }
             }
             return (false);
+        }
+
+        // A custom method to SUM all the cells in the current column
+        var SUMCOL = function (instance, columnId) {
+            var total = 0;
+            for (var j = 0; j < instance.options.data.length; j++) {
+                if (Number(instance.records[j][columnId - 1].innerHTML)) {
+                    total += Number(instance.records[j][columnId - 1].innerHTML);
+                    console.warn(b);
+               }
+            }
+            return total;
         }
     </script>
 }

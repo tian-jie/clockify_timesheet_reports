@@ -38,6 +38,9 @@
     <link rel="stylesheet" href="~/Styles/layout/layout.css" />
     <link rel="stylesheet" href="~/Styles/webAdmin/style.css" />
     <link rel="stylesheet" href="//cdn.bootcdn.net/ajax/libs/bootstrap-table/1.16.0/bootstrap-table.min.css" />
+    <link href="//bossanova.uk/jexcel/v4/jexcel.css" rel="stylesheet" media="screen">
+    <link href="//bossanova.uk/jsuites/v2/jsuites.css" rel="stylesheet" media="screen">
+
     @*<link rel="stylesheet" href="//cdn.bootcdn.net/ajax/libs/bootstrap-table/1.17.1/extensions/fixed-columns/bootstrap-table-fixed-columns.min.css" />*@
 
     <!--[if lte IE 9]>
@@ -72,13 +75,19 @@
     @*<script src="//cdn.bootcdn.net/ajax/libs/bootstrap-table/1.17.1/extensions/fixed-columns/bootstrap-table-fixed-columns.min.js"></script>*@<!--jquery-placeholder cdn-->
     <script src="~/Scripts/Common/view.min.js" type="text/javascript"></script>
     <script src="~/Scripts/util.js"></script>
+    <script src="//bossanova.uk/jexcel/v4/jexcel.js"></script>
+    <script src="//bossanova.uk/jsuites/v2/jsuites.js"></script>
+
     @RenderSection("HeaderContent", required: false)
 
-    @*<style>
-        .table {
-            table-layout: fixed;
+    <style>
+        .jexcel tbody tr:nth-child(even) {
+            background-color: #97BFB4 !important;
         }
-    </style>*@
+        .jexcel tbody tr:nth-child(odd) {
+            background-color: #CDC8DC !important;
+        }
+    </style>
 </head>
 
 <body class="no-skin">

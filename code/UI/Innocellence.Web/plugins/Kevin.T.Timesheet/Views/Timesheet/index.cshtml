@@ -19,7 +19,7 @@
                     <select id="Year" class="form-control" name="Year1" data-placeholder="Select Year">
                         <option value="0" selected="selected">Choose Year</option>
                         <option value="2019">2019</option>
-                        <option value="2020">2020</option>
+                        <option value="2020" selected>2020</option>
                         <option value="2021">2021</option>
                         <option value="2022">2022</option>
                         <option value="2023">2023</option>
@@ -47,7 +47,7 @@
 
                         @for (var i = 1; i < 52; i++)
                         {
-                            <option value="@i">@i ( @weekFirstDay.ToString("MM-dd") - @weekLastDay.ToString("MM-dd"))</option>
+                            <option value="@i" @((DateTime.Now>weekFirstDay && DateTime.Now<(weekLastDay.AddDays(1)))?"selected":"")>@i ( @weekFirstDay.ToString("MM-dd") - @weekLastDay.ToString("MM-dd"))</option>
                             weekFirstDay = weekFirstDay.AddDays(7);
                             weekLastDay = weekFirstDay.AddDays(6);
                         }
