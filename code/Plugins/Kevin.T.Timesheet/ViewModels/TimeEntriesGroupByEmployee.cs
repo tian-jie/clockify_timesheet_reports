@@ -24,6 +24,7 @@ namespace Kevin.T.Timesheet.ModelsView
 
     public partial class TotalEffortByWeek
     {
+        public int Year { get; set; }
         public int WeekNumber { get; set; }
         public string WeekDescription { get; set; }
         public decimal TotalHours { get; set; }

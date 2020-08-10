@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using Kevin.T.Timesheet.ModelsView;
+using Kevin.T.Timesheet.Common;
 
 namespace Kevin.T.Timesheet.Services
 {
@@ -110,13 +111,15 @@ namespace Kevin.T.Timesheet.Services
                 foreach (var v in a)
                 {
                     // 计算这个日期属于第几周
-                    var week = ConvertDateToWeek(v.Date);
+                    var week = v.Date.WeekOfYear();
+                    var year = v.Date.YearOfWeekOfYear();
 
                     var totalEffortByWeek = tv.TotalEffortByWeek.FirstOrDefault(b => b.WeekNumber == week);
                     if (totalEffortByWeek == null)
                     {
                         tv.TotalEffortByWeek.Add(new TotalEffortByWeek()
                         {
+                            Year = year,
                             WeekNumber = week,
                             TotalHours = v.TotalHours,
                             TotalHoursRate = v.TotalHours * employee.RoleRate
@@ -242,33 +245,5 @@ or exists(select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId a
             return employees;
         }
 
-        public int ConvertDateToWeek(DateTime date)
-        {
-            // 计算FirstWeek周期
-            var yearFirstDay = new DateTime(date.Year, 1, 1);
-            var firstDayofWeek = (int)yearFirstDay.DayOfWeek;
-            DateTime weekFirstDay = DateTime.Now;
-            DateTime weekLastDay = DateTime.Now;
-
-            weekFirstDay = yearFirstDay.AddDays(-(firstDayofWeek == 0 ? 6 : firstDayofWeek - 1));
-            var firstThursday = weekFirstDay.AddDays(3);
-
-            if (yearFirstDay > firstThursday)
-            {
-                weekFirstDay = weekFirstDay.AddDays(7);
-            }
-            // weekLastDay = weekFirstDay.AddDays(6);
-
-            // 计算当天跟第一天差几天，算周数
-            var dayOfWeekFirstday = weekFirstDay.DayOfYear;
-            if (dayOfWeekFirstday > 10)
-            {
-                dayOfWeekFirstday -= new DateTime(weekFirstDay.Year, 12, 31).DayOfYear;
-            }
-
-            var days = date.DayOfYear - dayOfWeekFirstday;
-
-            return days / 7 + 1;
-        }
     }
 }

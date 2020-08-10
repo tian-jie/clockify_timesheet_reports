@@ -54,18 +54,18 @@ namespace Kevin.T.Timesheet.Controllers
 
             var q = _objService.GetList<EstimateEffortView>(predicate.AndAlso(x => x.IsDeleted != true), ConPage);
 
-            // 添加一个汇总
-            var summary = new EstimateEffortView()
-            {
-                Id = 999,
-                ProjectGid = strProjectGid,
-                ProjectId = 0,
-                Effort = q.Sum(a => a.Effort),
-                RoleTitle = "汇总",
-                RateEffort = q.Sum(a => a.Effort * a.RoleRate)
-            };
+            //// 添加一个汇总
+            //var summary = new EstimateEffortView()
+            //{
+            //    Id = 999,
+            //    ProjectGid = strProjectGid,
+            //    ProjectId = 0,
+            //    Effort = q.Sum(a => a.Effort),
+            //    RoleTitle = "汇总",
+            //    RateEffort = q.Sum(a => a.Effort * a.RoleRate)
+            //};
 
-            q.Add(summary);
+            //q.Add(summary);
 
             return q.ToList();
         }
