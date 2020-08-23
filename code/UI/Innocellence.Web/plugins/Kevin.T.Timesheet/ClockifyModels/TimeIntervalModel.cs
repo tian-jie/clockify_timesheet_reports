@@ -1,9 +1,11 @@
-﻿namespace Kevin.T.Clockify.Data.Models
+﻿using System;
+
+namespace Kevin.T.Clockify.Data.Models
 {
     public class TimeIntervalModel
     {
-        public string start { get; set; }
-        public string end { get; set; }
-        public string duration { get; set; }
+        public DateTime start { get; set; }
+        public DateTime end { get; set; }
+        public int duration { get; set; }
     }
 }

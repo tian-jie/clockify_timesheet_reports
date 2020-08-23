@@ -122,25 +122,25 @@ namespace Kevin.T.Timesheet.Controllers
                     switch (weekOfDay)
                     {
                         case DayOfWeek.Monday:
-                            tv.MondayTotalHours = totalHoursByDate;
+                            tv.MondayTotalHours += totalHoursByDate;
                             break;
                         case DayOfWeek.Tuesday:
-                            tv.TuesdayTotalHours = totalHoursByDate;
+                            tv.TuesdayTotalHours += totalHoursByDate;
                             break;
                         case DayOfWeek.Wednesday:
-                            tv.WednesdayTotalHours = totalHoursByDate;
+                            tv.WednesdayTotalHours += totalHoursByDate;
                             break;
                         case DayOfWeek.Thursday:
-                            tv.ThursdayTotalHours = totalHoursByDate;
+                            tv.ThursdayTotalHours += totalHoursByDate;
                             break;
                         case DayOfWeek.Friday:
-                            tv.FridayTotalHours = totalHoursByDate;
+                            tv.FridayTotalHours += totalHoursByDate;
                             break;
                         case DayOfWeek.Saturday:
-                            tv.SaturdayTotalHours = totalHoursByDate;
+                            tv.SaturdayTotalHours += totalHoursByDate;
                             break;
                         case DayOfWeek.Sunday:
-                            tv.SundayTotalHours = totalHoursByDate;
+                            tv.SundayTotalHours += totalHoursByDate;
                             break;
                     }
 

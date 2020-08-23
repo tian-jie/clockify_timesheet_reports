@@ -12,6 +12,7 @@ namespace Kevin.T.Timesheet.Interfaces
         Task<int> SyncGroups(string userid, string token);
 
         Task<int> SyncTimeRecords(string userid, string token, DateTime startTime, DateTime endTime);
+        Task<int> SyncTimeRecordsV3(string userid, string token, DateTime startTime, DateTime endTime);
 
         Task<int> SyncProjects(string userid, string token);
 

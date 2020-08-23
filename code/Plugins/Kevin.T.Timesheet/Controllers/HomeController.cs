@@ -71,7 +71,7 @@ namespace Kevin.T.Timesheet.Controllers
             var sdt = DateTime.ParseExact(startTime, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
             var edt = DateTime.ParseExact(endTime, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
 
-            var cnt = await _timesheetService.SyncTimeRecords(workspaceId, login.token, sdt, edt);
+            var cnt = await _timesheetService.SyncTimeRecordsV3(workspaceId, login.token, sdt, edt);
             return SuccessNotification($"Success Synced: {cnt}");
         }
 

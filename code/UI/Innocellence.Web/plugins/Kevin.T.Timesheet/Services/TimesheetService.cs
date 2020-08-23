@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -207,7 +206,8 @@ namespace Kevin.T.Timesheet.Services
             var currentUser = HttpContext.Current.User.Identity.Name;
 
             // 先到clockify获取数据
-            var ls = await _clockifyService.GetTimeEntries(userid, token, startDate, endDate);
+            var ls = await _clockifyService.GetTimeEntriesV2(userid, token, startDate, endDate);
+            _logger.Debug(JsonConvert.SerializeObject(ls));
             var list = new List<TimeEntry>();
 
             var projectIdList = _projectService.Repository.Entities.Select(a => a.Gid).ToList();
@@ -217,44 +217,18 @@ namespace Kevin.T.Timesheet.Services
             {
                 try
                 {
-                    var clockifyTime = l.timeInterval.duration;
-                    Regex regex = new Regex(@"PT((?<Hour>\d*)H)?((?<Minute>\d*)M)?((?<Second>\d*)S)?");
-                    var match = regex.Match(clockifyTime);
-
-                    int hour = 0;
-                    int minute = 0;
-                    int second = 0;
-                    var val = match.Groups["Hour"].Value;
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        hour = int.Parse(val);
-                    }
-
-                    val = match.Groups["Minute"].Value;
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        minute = int.Parse(val);
-                    }
-
-                    val = match.Groups["Second"].Value;
-                    if (!string.IsNullOrEmpty(val))
-                    {
-                        second = int.Parse(val);
-                    }
-
-
                     list.Add(new TimeEntry()
                     {
-                        Gid = l.id,
+                        Gid = l._id,
                         UserId = l.userId,
-                        WorkspaceId = l.workspaceId,
+                        //WorkspaceId = l.workspaceId,
                         Description = l.description,
                         //IsBillable = 
                         IsLocked = l.isLocked,
-                        ProjectId = l.project.id,
-                        TaskId = l.task == null ? "" : l.task.id,
-                        TotalHours = (decimal)((hour * 3600 + minute * 60 + second) / 3600.0f),
-                        Date = DateTime.ParseExact(l.timeInterval.start, "yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture).Date,
+                        ProjectId = l.projectId,
+                        TaskId = l.taskId,
+                        TotalHours = (decimal)(l.timeInterval.duration / 3600.0f),
+                        Date = l.timeInterval.start.Date.AddHours(8),
                         CreatedDate = DateTime.Now,
                         CreatedUserID = currentUser,
                         CreatedUserName = currentUser,
@@ -264,56 +238,56 @@ namespace Kevin.T.Timesheet.Services
                         UpdatedUserName = currentUser
                     });
 
-                    if (!projectIdList.Contains(l.project.id))
-                    {
-                        // 插入project信息
-                        await _projectService.Repository.InsertAsync(new Project()
-                        {
-                            Gid = l.project.id,
-                            Billable = l.project.billable,
-                            ClientId = l.project.clientId,
-                            Archived = l.project.archived,
-                            Color = l.project.color,
-                            Duration = l.project.duration,
-                            IsPublic = l.project.Public,
-                            Name = l.project.name,
-                            Note = l.project.note,
-                            WorkspaceId = l.project.workspaceId,
-                            CreatedDate = DateTime.Now,
-                            CreatedUserID = currentUser,
-                            CreatedUserName = currentUser,
-                            IsDeleted = false,
-                            UpdatedDate = DateTime.Now,
-                            UpdatedUserID = currentUser,
-                            UpdatedUserName = currentUser
-                        });
+                    //if (!projectIdList.Contains(l.projectId))
+                    //{
+                    //    // 插入project信息
+                    //    await _projectService.Repository.InsertAsync(new Project()
+                    //    {
+                    //        Gid = l.project.id,
+                    //        Billable = l.project.billable,
+                    //        ClientId = l.project.clientId,
+                    //        Archived = l.project.archived,
+                    //        Color = l.project.color,
+                    //        Duration = l.project.duration,
+                    //        IsPublic = l.project.Public,
+                    //        Name = l.project.name,
+                    //        Note = l.project.note,
+                    //        WorkspaceId = l.project.workspaceId,
+                    //        CreatedDate = DateTime.Now,
+                    //        CreatedUserID = currentUser,
+                    //        CreatedUserName = currentUser,
+                    //        IsDeleted = false,
+                    //        UpdatedDate = DateTime.Now,
+                    //        UpdatedUserID = currentUser,
+                    //        UpdatedUserName = currentUser
+                    //    });
 
-                        projectIdList.Add(l.project.id);
-                    }
+                    //    projectIdList.Add(l.project.id);
+                    //}
 
-                    if (l.task!= null && !taskIdList.Contains(l.task.id))
-                    {
-                        // 插入project信息
-                        await _projectTaskService.Repository.InsertAsync(new ProjectTask()
-                        {
-                            Gid = l.task.id,
-                            Duration = l.task.duration,
-                            Name = l.task.name,
-                            AssigneeId = l.task.assigneeId,
-                            Estimate = l.task.estimate,
-                            Status = l.task.status,
-                            CreatedDate = DateTime.Now,
-                            CreatedUserID = currentUser,
-                            CreatedUserName = currentUser,
-                            IsDeleted = false,
-                            UpdatedDate = DateTime.Now,
-                            UpdatedUserID = currentUser,
-                            UpdatedUserName = currentUser,
-                            ProjectGid = l.projectId
-                        });
+                    //if (l.task!= null && !taskIdList.Contains(l.task.id))
+                    //{
+                    //    // 插入project信息
+                    //    await _projectTaskService.Repository.InsertAsync(new ProjectTask()
+                    //    {
+                    //        Gid = l.task.id,
+                    //        Duration = l.task.duration,
+                    //        Name = l.task.name,
+                    //        AssigneeId = l.task.assigneeId,
+                    //        Estimate = l.task.estimate,
+                    //        Status = l.task.status,
+                    //        CreatedDate = DateTime.Now,
+                    //        CreatedUserID = currentUser,
+                    //        CreatedUserName = currentUser,
+                    //        IsDeleted = false,
+                    //        UpdatedDate = DateTime.Now,
+                    //        UpdatedUserID = currentUser,
+                    //        UpdatedUserName = currentUser,
+                    //        ProjectGid = l.projectId
+                    //    });
 
-                        taskIdList.Add(l.task.id);
-                    }
+                    //    taskIdList.Add(l.task.id);
+                    //}
                 }
                 catch (Exception ex)
                 {
@@ -335,6 +309,33 @@ namespace Kevin.T.Timesheet.Services
             ctx.SaveChanges();
 
             affectedRecordCount = list.Count;
+
+            return affectedRecordCount;
+        }
+        public async Task<int> SyncTimeRecordsV3(string userid, string token, DateTime startDate, DateTime endDate)
+        {
+            var currentUser = HttpContext.Current.User.Identity.Name;
+
+            // 先到clockify获取数据
+            var byUser = await _clockifyService.GetTimeEntriesV3(userid, token, startDate, endDate);
+            _logger.Debug(JsonConvert.SerializeObject(byUser));
+
+            var projectIdList = _projectService.Repository.Entities.Select(a => a.Gid).ToList();
+            var taskIdList = _projectTaskService.Repository.Entities.Select(a => a.Gid).ToList();
+
+            // 然后在本地插入或者同步数据
+            var affectedRecordCount = _timeEntryService.Repository.SqlExcute($"delete from timeentry where [date]>='{startDate.ToString("yyyy-MM-dd")}' and [date]<'{endDate.AddDays(1).ToString("yyyy-MM-dd")}'");
+
+
+            var ctx = (DbContext)(_timeEntryService.Repository.UnitOfWork);
+            var options = new BulkInsertOptions
+            {
+                EnableStreaming = true,
+            };
+            ctx.BulkInsert(byUser, options);
+            ctx.SaveChanges();
+
+            affectedRecordCount = byUser.Count;
 
             return affectedRecordCount;
         }
