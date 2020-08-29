@@ -35,13 +35,14 @@
                 </div>
             </div>
         </div>
-
+        <div id="echartmain" style="width: 100%;height:400px;"></div>
     </div>
 
 </div>
 
 @section scripts_Foot
 {
+    <script src="//cdn.bootcdn.net/ajax/libs/echarts/4.9.0-rc.1/echarts.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
 
@@ -156,53 +157,103 @@
                     });
 
                     initTable(columns, data.TimeEntriesGroupByEmployeesView);
+
+                    // 加载echart图表
+                    initEcharts(data.ActualCostByWeek, data.EstimateToCompletionByWeek);
                 }
             });
 
         });
 
-        //function initTable(columns, data1) {
-        //    $('#table').bootstrapTable('destroy').bootstrapTable({
-        //        //url: "GetTimesheetThisweekByGroup",
-        //        //method: "post",
-        //        //queryParams: {
-        //        //    groupId: $('#Group').val(),
-        //        //    year: $('#Year').val(),
-        //        //    week: $('#Week').val()
-        //        //},
-        //        data: data1,
-        //        toolbar: "#toolbar",
-        //        striped: true,                      //是否显示行间隔色
-        //        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
-        //        pagination: true,                   //是否显示分页（*）
-        //        sortable: true,                     //是否启用排序
-        //        sortOrder: "asc",                   //排序方式
-        //        //sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-        //        //pageNumber: 1,                      //初始化加载第一页，默认第一页,并记录
-        //        //pageSize: 10,                       //每页的记录行数（*）
-        //        //pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
-        //        search: true,                      //是否显示表格搜索
-        //        strictSearch: false,
-        //        showColumns: false,                   //是否显示所有的列（选择显示的列）
-        //        showRefresh: true,                  //是否显示刷新按钮
-        //        minimumCountColumns: 4,             //最少允许的列数
-        //        clickToSelect: true,                //是否启用点击选中行
-        //        //height: 500,                      //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-        //        //uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
-        //        showToggle: true,                   //是否显示详细视图和列表视图的切换按钮
-        //        cardView: false,                    //是否显示详细视图
-        //        detailView: false,                  //是否显示父子表
-        //        showFooter: true,
-        //        fixedColumns: true,
-        //        fixedNumber: 2, //固定列数
-        //        //height: 600,
-        //        leftFixedColumns: true,
-        //        leftFixedNumber: 5,
-        //        //rightFixedColumns: false,
-        //        //rightFixedNumber: 2,
-        //        columns: columns
-        //    });
-        //}
+        function initEcharts(ac, ec) {
+            var myChart = echarts.init(document.getElementById('echartmain'));
+            var xData = [];
+            var yData = [];
+            var yData1 = [];
+
+            var length = ec.length;
+            for (var i = 0; i < length; i++) {
+                xData.push(ec[i]['Year'] * 100 + ec[i]['Week'])
+                if (ac[i] != null) {
+                    yData.push(ac[i]['TotalHoursRate']);
+                }
+                yData1.push(ec[i]['TotalHoursRate']);
+            }
+
+            option = {
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xData
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    data: yData,
+                    type: 'line',
+                    areaStyle: {
+                        color: ['rgba(250,55,55,0.8)', 'rgba(200,77,77,0.8)']
+                    }
+                }, {
+                    data: yData1,
+                    type: 'line',
+                    areaStyle: {
+                        color: ['rgba(0,250,0,0.3)', 'rgba(0,200,0,0.3)']
+                    }
+                }]
+            };
+            // 指定图表的配置项和数据
+            //var option = {
+            //    title: {
+            //        text: '案例观看信息'
+            //    },
+            //    toolbox: {
+            //        show: true,
+            //        title: '案例信息',
+            //        feature: {
+            //            dataView: {
+            //                show: true
+            //            },
+            //            saveAsImage: {
+            //                type: 'png',
+            //                show: true
+            //            },
+            //            magicType: {
+            //                show: true,
+            //                type: ['bar', 'line']
+            //            }
+            //        }
+            //    },
+            //    tooltip: {
+            //        show: true,
+            //        trigger: 'item'
+            //    },
+            //    legend: {
+            //        data: ['数量']
+            //    },
+            //    xAxis: {
+            //        data: xData,
+            //        //数据项太多，斜着显示
+            //        axisLabel: {
+            //            interval: 0,
+            //            padding: [0, -5],
+            //            rotate: 45,
+            //        },
+            //    },
+            //    yAxis: {},
+            //    series: [{
+            //        name: '数量',
+            //        type: 'line',
+            //        data: yData,
+            //    }, {
+            //            name: '数量',
+            //            type: 'line',
+            //            data: yData1,
+            //        }]
+            //};
+            myChart.setOption(option);
+        }
 
         function initTable(columns, data1) {
             var container = document.getElementById('table')

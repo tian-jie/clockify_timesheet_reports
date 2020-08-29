@@ -7,7 +7,7 @@
         <button id="btn_load" type="button" class="btn btn-default btn-load">
             <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>Load
         </button>
-        <button id="btn_save" type="button" class="btn btn-default btn-save">
+        <button id="btn_save" type="button" class="btn btn-default btn-save" onclick="saveData();">
             <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>Save
         </button>
 
@@ -38,6 +38,7 @@
 {
     <script language="javascript">
         var roleTitles = [];
+        var table;
         $(document).ready(function () {
             var roleTitlesRaw = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.RoleTitles));
             roleTitlesRaw.forEach(function(item, index, arr){
@@ -49,10 +50,27 @@
             initTable();
         });
 
+        function saveData() {
+            // 删掉最后一行
+            var data = table.getJson();
+            data.pop();
+            $.ajax({
+                url: '../EstimateEffortApi/SaveData',
+                method: 'POST',
+                dataType: "json",
+                data: {
+                    estimateEffortViews: data
+                },
+                success: function (res) {
+                    alert(JSON.stringify(res));
+                }
+            });
+        }
+
         function initTable() {
             var container = document.getElementById('table')
-            var load = document.getElementById('btn_load')
-            var save = document.getElementById('btn_save')
+            //var load = document.getElementById('btn_load')
+            //var save = document.getElementById('btn_save')
             var projectGid = getQueryVariable('projectGid');
 
             table = jexcel(container, {
@@ -127,34 +145,73 @@
                         align: 'right'
                     },
                 ],
-                //updateTable: function (instance, cell, col, row, val, label, cellName) {
-                //    // Number formating
-                //    if (col == 9) {
-                //        // Get text
-                //        txt = cell.innerText;
-                //        // Format text
-                //        a = parseInt(txt);
-                //        b = a.toLocaleString();
-                //        // Update cell value
-                //        cell.innerHTML = b;
-                //    }
-
-                //    //// Total row
-                //    //if (row == 9) {
-                //    //    if (col < 3) {
-                //    //        cell.innerHTML = '';
-                //    //    }
-
-                //    //    if (col == 2) {
-                //    //        cell.innerHTML = 'Total';
-                //    //        cell.style.fontWeight = 'bold';
-                //    //    }
-
-                //    //    cell.className = '';
-                //    //    cell.style.backgroundColor = '#f46e42';
-                //    //    cell.style.color = '#ffffff';
-                //    //}
-                //}
+                //toolbar: [
+                //    {
+                //        type: 'i',
+                //        content: 'undo',
+                //        onclick: function () {
+                //            table.undo();
+                //        }
+                //    },
+                //    {
+                //        type: 'i',
+                //        content: 'redo',
+                //        onclick: function () {
+                //            table.redo();
+                //        }
+                //    },
+                //    {
+                //        type: 'i',
+                //        content: 'save',
+                //        onclick: function () {
+                //            table.download();
+                //        }
+                //    },
+                //    {
+                //        type: 'select',
+                //        k: 'font-family',
+                //        v: ['Arial', 'Verdana']
+                //    },
+                //    {
+                //        type: 'select',
+                //        k: 'font-size',
+                //        v: ['9px', '10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', '18px', '19px', '20px']
+                //    },
+                //    {
+                //        type: 'i',
+                //        content: 'format_align_left',
+                //        k: 'text-align',
+                //        v: 'left'
+                //    },
+                //    {
+                //        type: 'i',
+                //        content: 'format_align_center',
+                //        k: 'text-align',
+                //        v: 'center'
+                //    },
+                //    {
+                //        type: 'i',
+                //        content: 'format_align_right',
+                //        k: 'text-align',
+                //        v: 'right'
+                //    },
+                //    {
+                //        type: 'i',
+                //        content: 'format_bold',
+                //        k: 'font-weight',
+                //        v: 'bold'
+                //    },
+                //    {
+                //        type: 'color',
+                //        content: 'format_color_text',
+                //        k: 'color'
+                //    },
+                //    {
+                //        type: 'color',
+                //        content: 'format_color_fill',
+                //        k: 'background-color'
+                //    },
+                //],
             });
 
 

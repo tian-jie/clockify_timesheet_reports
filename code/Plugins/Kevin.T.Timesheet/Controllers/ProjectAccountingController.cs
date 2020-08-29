@@ -1,9 +1,11 @@
 ﻿using Infrastructure.Core.Logging;
 using Infrastructure.Web.UI;
 using Innocellence.WeChat.Domain;
+using Kevin.T.Timesheet.Common;
 using Kevin.T.Timesheet.Entities;
 using Kevin.T.Timesheet.Interfaces;
 using Kevin.T.Timesheet.ModelsView;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
@@ -19,12 +21,14 @@ namespace Kevin.T.Timesheet.Controllers
         private readonly IUserGroupService _userGroupService;
         private readonly IEmployeeService _employeeService;
         private readonly IProjectService _projectService;
+        private readonly IResourcePlanService _resourcePlanService;
 
 
         public ProjectAccountingController(ITimeEntryService timeEntryService, ITimesheetService timesheetService,
             IGroupService groupService, IUserGroupService userGroupService,
             IEmployeeService employeeService,
-            IProjectService projectService)
+            IProjectService projectService,
+            IResourcePlanService resourcePlanService)
             : base(timeEntryService)
         {
             _timeEntryService = timeEntryService;
@@ -33,6 +37,7 @@ namespace Kevin.T.Timesheet.Controllers
             _userGroupService = userGroupService;
             _employeeService = employeeService;
             _projectService = projectService;
+            _resourcePlanService = resourcePlanService;
         }
 
         [HttpGet]
@@ -74,6 +79,45 @@ namespace Kevin.T.Timesheet.Controllers
             projectAccountingInfo.SpentManHour = timeEntriesGroupByEmployeesView.Sum(a => a.TotalHours);
             projectAccountingInfo.SpentManHourRate = timeEntriesGroupByEmployeesView.Sum(a => a.TotalHoursRate);
 
+            var today = DateTime.Now.Date;
+            // 获取今天，以及今天的w和y
+            var year = today.YearOfWeekOfYear();
+            var week = today.WeekOfYear();
+
+            // 计算本周一
+            var weekDay = today.DayOfWeek;
+
+            var monday = today.AddDays(-(int)weekDay + 1);
+            // 计算AC
+            projectAccountingInfo.ActualCostByWeek = _timeEntryService.GetActualEffortByWeek(projectGid, monday);
+            decimal lastTotalHours = 0;
+            decimal lastTotalHoursRate = 0;
+            // 每周的数据要加上前一周的数据
+            foreach (var acbw in projectAccountingInfo.ActualCostByWeek)
+            {
+                acbw.TotalHours += lastTotalHours;
+                acbw.TotalHoursRate += lastTotalHoursRate;
+
+                lastTotalHours = acbw.TotalHours;
+                lastTotalHoursRate = acbw.TotalHoursRate;
+            }
+
+            // 计算EC
+            lastTotalHours = 0;
+            lastTotalHoursRate = 0;
+            projectAccountingInfo.EstimateToCompletionByWeek = _resourcePlanService.GetBudgetByWeek(projectGid, year, week);
+            foreach (var etcbw in projectAccountingInfo.EstimateToCompletionByWeek)
+            {
+                etcbw.TotalHours += lastTotalHours;
+                etcbw.TotalHoursRate += lastTotalHoursRate;
+
+                lastTotalHours = etcbw.TotalHours;
+                lastTotalHoursRate = etcbw.TotalHoursRate;
+            }
+
+            // 计算ETC
+            projectAccountingInfo.EAC = lastTotalHoursRate;
+            // 数据怎么给eChart做折线图
 
             return Json(projectAccountingInfo, JsonRequestBehavior.AllowGet);
         }

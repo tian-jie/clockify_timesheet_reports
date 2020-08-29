@@ -222,6 +222,7 @@
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Starter.cs" />
     <Compile Include="Services\TimesheetService.cs" />
+    <Compile Include="ViewModels\EffortByWeekView.cs" />
     <Compile Include="ViewModels\ResourcePlanView.cs" />
     <Compile Include="ViewModels\EstimateEffortView.cs" />
     <Compile Include="ViewModels\EmployeeView.cs" />

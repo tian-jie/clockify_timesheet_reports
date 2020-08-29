@@ -47,5 +47,14 @@ namespace Kevin.T.Timesheet.Interfaces
         /// <param name="projectGid"></param>
         /// <returns></returns>
         List<EmployeeView> GetEmployeeByProjectTimeEntry(string projectGid);
+
+        /// <summary>
+        /// 获取某个项目填写过的员工，到指定周，不包含当周的数据
+        /// </summary>
+        /// <param name="projectGid"></param>
+        /// <param name="date"></param>
+        /// <returns></returns>
+        List<EffortByWeekView> GetActualEffortByWeek(string projectGid, DateTime date);
+
     }
 }

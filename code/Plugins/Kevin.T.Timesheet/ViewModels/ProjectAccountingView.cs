@@ -48,6 +48,11 @@ namespace Kevin.T.Timesheet.ModelsView
         /// </summary>
         public decimal SpentManHourRate { get; set; }
 
+        /// <summary>
+        /// 已花费 带rate的工时，rate根据RoleTitle.Rate计算，projectAccountingByWeeks汇总
+        /// </summary>
+        public decimal EAC { get; set; }
+
         // 第一层 by week
         // 第二层 by 员工
         public List<ProjectAccountingByWeek> ProjectAccountingByWeeks { get; set; }
@@ -56,6 +61,16 @@ namespace Kevin.T.Timesheet.ModelsView
         /// 所有数据by员工的汇总，不by week
         /// </summary>
         public List<TimeEntriesGroupByEmployeeView> TimeEntriesGroupByEmployeesView { get; set; }
+
+        /// <summary>
+        /// 计算AC，byweek
+        /// </summary>
+        public List<EffortByWeekView> ActualCostByWeek { get; set; }
+
+        /// <summary>
+        /// 计算EC，byweek
+        /// </summary>
+        public List<EffortByWeekView> EstimateToCompletionByWeek { get; set; }
 
     }
 

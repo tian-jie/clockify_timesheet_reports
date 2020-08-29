@@ -140,6 +140,48 @@ namespace Kevin.T.Timesheet.Services
             return Repository.Entities.Where(a => a.ProjectGid == projectGid && a.IsDeleted != true).ToList();
         }
 
+        public List<EffortByWeekView> GetBudgetByWeek(string projectGid, int year, int week)
+        {
+            //var resourcePlans = Repository.Entities.Where(a => a.ProjectGid == projectGid && a.IsDeleted != true && a.Year * 100 + a.Week >= year * 100 + week).ToList();
+            var resourcePlans = Repository.Entities.Where(a => a.ProjectGid == projectGid && a.IsDeleted != true ).ToList();
+            // 找到第一周和最后一周
+            var firstWeekData = resourcePlans.OrderBy(a => a.Year).ThenBy(a => a.Week).FirstOrDefault();
+            var firstWeek = firstWeekData.Year * 100 + firstWeekData.Week;
+            var lastWeekData = resourcePlans.OrderByDescending(a => a.Year).ThenByDescending(a => a.Week).FirstOrDefault();
+            var lastWeek = lastWeekData.Year * 100 + lastWeekData.Week;
+            // 获取rate数据
+            var employeesWithRole = _employeeService.AllEmployeesWithRole();
+
+            var effortsByWeek = new List<EffortByWeekView>();
+            // 创建所有周的数据
+            var y = firstWeekData.Year;
+            var w = firstWeekData.Week;
+            while (y * 100 + w <= lastWeek)
+            {
+                var resourcePlans1 = resourcePlans.Where(a => a.Year == y && a.Week == w).ToList();
+                decimal totalHoursRate = 0;
+                foreach (var rp in resourcePlans1)
+                {
+                    totalHoursRate += rp.Amount * employeesWithRole.FirstOrDefault(a => a.Gid == rp.EmployeeGid).RoleRate;
+                }
+                effortsByWeek.Add(new EffortByWeekView()
+                {
+                    Year = y,
+                    Week = w,
+                    TotalHours = resourcePlans1.Sum(a => a.Amount),
+                    TotalHoursRate = totalHoursRate
+                });
+                w++;
+                if (w > 53)
+                {
+                    w = 1;
+                    y++;
+                }
+            }
+
+            return effortsByWeek;
+        }
+
         public void DeleteByProject(string projectGid)
         {
             string sql = $"Update ResourcePlan set isDeleted=1, UpdatedDate=GETDATE() where projectGid='{projectGid}'";

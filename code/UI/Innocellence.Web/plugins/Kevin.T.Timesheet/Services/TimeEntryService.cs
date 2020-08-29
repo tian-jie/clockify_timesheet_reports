@@ -245,5 +245,58 @@ or exists(select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId a
             return employees;
         }
 
+
+        public List<EffortByWeekView> GetActualEffortByWeek(string projectGid, DateTime date)
+        {
+            var year = date.YearOfWeekOfYear();
+            var week = date.WeekOfYear();
+
+            var sql = @"
+                select * from TimeEntry TE where 
+                (exists(select 1 from Project P where P.Gid = TE.projectId and Gid = '{0}')
+                or exists (select 1 from TaskToProjectMapping TPM where TPM.TaskGid = TE.TaskId and TPM.ProjectGid='{0}')) and Date<'{1}'
+                order by [date]";
+
+            var timeEntries = Repository.SqlQuery(string.Format(sql, projectGid, date.ToString("yyyy-MM-dd")));
+
+            // 找到第一周和最后一周
+            var firstWeekData = timeEntries.OrderBy(a => a.Date).FirstOrDefault();
+            var lastWeekData = timeEntries.OrderByDescending(a => a.Date).FirstOrDefault();
+            var lastWeek = lastWeekData.Date.YearOfWeekOfYear() * 100 + lastWeekData.Date.WeekOfYear();
+            // 获取rate数据
+            var employeesWithRole = _employeeService.AllEmployeesWithRole();
+
+            var effortsByWeek = new List<EffortByWeekView>();
+            // 创建所有周的数据
+            var y = firstWeekData.Date.YearOfWeekOfYear();
+            var w = firstWeekData.Date.WeekOfYear();
+            while (y * 100 + w <= lastWeek)
+            {
+                effortsByWeek.Add(new EffortByWeekView()
+                {
+                    Year = y,
+                    Week = w
+                });
+                w++;
+                if (w > 53)
+                {
+                    w = 1;
+                    y++;
+                }
+            }
+
+            foreach (var te in timeEntries)
+            {
+                var teYear = te.Date.YearOfWeekOfYear();
+                var teWeek = te.Date.WeekOfYear();
+
+                var effortByWeekView = effortsByWeek.FirstOrDefault(a => a.Year == teYear && a.Week == teWeek);
+                effortByWeekView.TotalHours += te.TotalHours;
+                effortByWeekView.TotalHoursRate += te.TotalHours * employeesWithRole.FirstOrDefault(a => a.Gid == te.UserId).RoleRate;
+            }
+
+            return effortsByWeek;
+        }
+
     }
 }
