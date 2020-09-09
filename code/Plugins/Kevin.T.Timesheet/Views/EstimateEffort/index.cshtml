@@ -53,7 +53,7 @@
         function saveData() {
             // 删掉最后一行
             var data = table.getJson();
-            data.pop();
+            //data.pop();
             $.ajax({
                 url: '../EstimateEffortApi/SaveData',
                 method: 'POST',
@@ -77,8 +77,37 @@
                 url: '../EstimateEffortApi/GetData?projectGid=' + projectGid,
                 tableWidth: "100%",
                 tableHeight: "100%",
-                footers: [['Total', '=SUMCOL(TABLE(), COLUMN())', '=SUMCOL(TABLE(), COLUMN())', '=SUMCOL(TABLE(), COLUMN())']],
+                footers: [['Total', '', '=SUMCOL(TABLE(), COLUMN())', '=SUMCOL(TABLE(), COLUMN())', '=SUMCOL(TABLE(), COLUMN())']],
                 columns: [
+                    {
+                        type: 'dropdown',
+                        width: '250px',
+                        title: 'Role',
+                        name: 'RoleId',
+                        source: roleTitles,
+                        multiple: false,
+                        align: 'left'
+                    },
+                    {
+                        type: 'text',
+                        width: '80px',
+                        title: 'Role Rate',
+                        name: 'RoleRate'
+                    },
+                    {
+                        type: 'text',
+                        width: '80px',
+                        title: 'Effort',
+                        name: 'Effort',
+                        align: 'right'
+                    },
+                    {
+                        type: 'text',
+                        width: '100px',
+                        title: 'Rate Effort',
+                        name: 'RateEffort',
+                        align: 'right'
+                    },
                     {
                         type: 'hidden',
                         width: '80px',
@@ -110,157 +139,13 @@
                         name: 'EmployeeGid'
                     },
                     {
-                        type: 'dropdown',
-                        width: '250px',
-                        title: 'Role',
-                        name: 'RoleId',
-                        source: roleTitles,
-                        multiple: false,
-                        align: 'left'
-                    },
-                    {
                         type: 'hidden',
                         width: '80px',
                         title: 'RoleTitle',
                         name: 'RoleTitle'
-                    },
-                    {
-                        type: 'text',
-                        width: '80px',
-                        title: 'Role Rate',
-                        name: 'RoleRate'
-                    },
-                    {
-                        type: 'text',
-                        width: '80px',
-                        title: 'Effort',
-                        name: 'Effort',
-                        align: 'right'
-                    },
-                    {
-                        type: 'text',
-                        width: '100px',
-                        title: 'Rate Effort',
-                        name: 'RateEffort',
-                        align: 'right'
-                    },
-                ],
-                //toolbar: [
-                //    {
-                //        type: 'i',
-                //        content: 'undo',
-                //        onclick: function () {
-                //            table.undo();
-                //        }
-                //    },
-                //    {
-                //        type: 'i',
-                //        content: 'redo',
-                //        onclick: function () {
-                //            table.redo();
-                //        }
-                //    },
-                //    {
-                //        type: 'i',
-                //        content: 'save',
-                //        onclick: function () {
-                //            table.download();
-                //        }
-                //    },
-                //    {
-                //        type: 'select',
-                //        k: 'font-family',
-                //        v: ['Arial', 'Verdana']
-                //    },
-                //    {
-                //        type: 'select',
-                //        k: 'font-size',
-                //        v: ['9px', '10px', '11px', '12px', '13px', '14px', '15px', '16px', '17px', '18px', '19px', '20px']
-                //    },
-                //    {
-                //        type: 'i',
-                //        content: 'format_align_left',
-                //        k: 'text-align',
-                //        v: 'left'
-                //    },
-                //    {
-                //        type: 'i',
-                //        content: 'format_align_center',
-                //        k: 'text-align',
-                //        v: 'center'
-                //    },
-                //    {
-                //        type: 'i',
-                //        content: 'format_align_right',
-                //        k: 'text-align',
-                //        v: 'right'
-                //    },
-                //    {
-                //        type: 'i',
-                //        content: 'format_bold',
-                //        k: 'font-weight',
-                //        v: 'bold'
-                //    },
-                //    {
-                //        type: 'color',
-                //        content: 'format_color_text',
-                //        k: 'color'
-                //    },
-                //    {
-                //        type: 'color',
-                //        content: 'format_color_fill',
-                //        k: 'background-color'
-                //    },
-                //],
+                    }
+                ]
             });
-
-
-            //Handsontable.dom.addEvent(save, 'click', function () {
-            //    // save all cell's data
-            //    var data1 = hot.getData();
-            //    // 组合数据给后台传
-            //    var dataList = [];
-            //    var projectGid = getQueryVariable('projectGid');
-
-            //    data1.forEach(function (currentValue, index, arr) {
-            //        if (currentValue[0] == 2147483647) {
-            //            return;
-            //        }
-            //        var d = {
-            //            Id: currentValue[0],
-            //            RoleId: currentValue[1],
-            //            RoleTitle: currentValue[2],
-            //            RoleRate: currentValue[3],
-            //            Effort: currentValue[4],
-            //            RateEffort: currentValue[5],
-            //            projectGid: projectGid
-            //        };
-            //        dataList.push(d);
-            //    });
-
-            //    $.ajax({
-            //        url: '../EstimateEffortApi/SaveData',
-            //        method: 'POST',
-            //        dataType: "json",
-            //        data: {
-            //            estimateEffortViews: dataList
-            //        },
-            //        success: function (res) {
-            //            alert(JSON.stringify(res));
-            //        }
-            //    });
-            //    //$.ajax('SaveData', 'POST', JSON.stringify({ data: hot.getData() }), function (res) {
-            //    //    var response = JSON.parse(res.response);
-
-            //    //    if (response.status === '200') {
-            //    //        exampleConsole.innerText = 'Data saved';
-            //    //    }
-            //    //    else {
-            //    //        exampleConsole.innerText = 'Save error';
-            //    //    }
-            //    //});
-            //});
-
         }
         function getQueryVariable(variable) {
             var query = window.location.search.substring(1);
@@ -278,8 +163,7 @@
             for (var j = 0; j < instance.options.data.length; j++) {
                 if (Number(instance.records[j][columnId - 1].innerHTML)) {
                     total += Number(instance.records[j][columnId - 1].innerHTML);
-                    console.warn(b);
-               }
+                }
             }
             return total;
         }
