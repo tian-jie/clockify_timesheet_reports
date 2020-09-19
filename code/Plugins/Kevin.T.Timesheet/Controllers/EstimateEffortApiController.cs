@@ -51,9 +51,7 @@ namespace Kevin.T.Timesheet.Controllers
 
             var list = GetListEx(predicate, pageCondition);
 
-            var result = new List<string>();
-
-            return Json(list, JsonRequestBehavior.AllowGet);
+            return Json(list.OrderBy(a=>a.RoleId).ToList(), JsonRequestBehavior.AllowGet);
         }
 
         public JsonResult SaveCellChangedData(List<EstimateEffortView> estimateEffortViews)
@@ -127,18 +125,6 @@ namespace Kevin.T.Timesheet.Controllers
                 q = _objService.GetList<EstimateEffortView>(predicate.AndAlso(x => x.IsDeleted != true), ConPage);
             }
 
-            // 添加一个汇总
-            var summary = new EstimateEffortView()
-            {
-                Id = int.MaxValue,
-                ProjectGid = strProjectGid,
-                ProjectId = 0,
-                Effort = q.Sum(a => a.Effort),
-                RoleTitle = "汇总",
-                RateEffort = q.Sum(a => a.Effort * a.RoleRate)
-            };
-
-            q.Add(summary);
 
             return q.ToList();
         }

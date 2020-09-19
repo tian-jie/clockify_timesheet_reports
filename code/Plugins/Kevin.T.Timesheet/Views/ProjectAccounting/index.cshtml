@@ -259,10 +259,12 @@
         }
 
         function initTable(columns, data1) {
+
+
             var container = document.getElementById('table')
 
             table = jexcel(container, {
-                data: data1,
+                data: data1.sort(sortById),
                 tableOverflow: true,
                 tableWidth: "100%",
                 tableHeight: "100%",
@@ -272,6 +274,9 @@
             });
         }
 
+        function sortById(a, b) {
+            return a.id - b.id;
+        }
 
         function getQueryVariable(variable) {
             var query = window.location.search.substring(1);
@@ -303,6 +308,7 @@
             for (var j = 0; j < instance.options.data.length; j++) {
                 if (Number(instance.records[j][columnId - 1].innerHTML)) {
                     total += Number(instance.records[j][columnId - 1].innerHTML);
+                    console.debug(total);
                 }
             }
             return total;
