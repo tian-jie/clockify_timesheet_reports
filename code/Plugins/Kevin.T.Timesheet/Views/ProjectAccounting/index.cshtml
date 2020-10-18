@@ -14,7 +14,7 @@
             <label>项目花费总工时：</label><label id="SpentManHour" class="data-spentManHour"></label><br />
             <label>项目花费总费用：</label><label id="SpentManHourRate" class="data-spentManHourRate"></label><br />
             <label>项目花费百分比：</label><label id="UsedPercetange" class="data-spentManHourRate"></label><br />
-            <label>最终EAC：</label><label id="UsedPercetange" class="data-spentManHourRate"></label><br />
+            <label>最终EAC：</label><label id="FinalEAC" class="data-FinalEAC"></label><br />
         </div>
         <div class="widget-box">
             <div class="widget-content nopadding">
@@ -61,7 +61,7 @@
                     document.getElementById('SpentManHour').innerHTML = data.SpentManHour;
                     document.getElementById('SpentManHourRate').innerHTML = data.SpentManHourRate;
                     document.getElementById('UsedPercetange').innerHTML = (data.SpentManHourRate * 100 / data.EstimatedSpentManHourRate).toFixed(2) + '%';
-                    document.getElementById('UsedPercetange').innerHTML = data.EAC + '(' + (data.EAC * 100 / data.EstimatedSpentManHourRate).toFixed(2) + '%)';
+                    document.getElementById('FinalEAC').innerHTML = data.EAC + '(' + (data.EAC * 100 / data.EstimatedSpentManHourRate).toFixed(2) + '%)';
 
                     // 处理table的问题
                     var columns = [
