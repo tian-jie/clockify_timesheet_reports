@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Kevin.T.Timesheet.Common;
+
+@{
     ViewBag.Title = "员工填写Timesheet查询";
 }
 <script type="text/javascript" src="/Scripts/wechatab/lib/layer/layer.js"></script>
@@ -16,21 +18,14 @@
                             <option value="@item.Gid">@item.Name</option>
                         }
                     </select>
-                    <select id="Year" class="form-control" name="Year1" data-placeholder="Select Year">
-                        <option value="0" selected="selected">Choose Year</option>
-                        <option value="2019">2019</option>
-                        <option value="2020" selected>2020</option>
-                        <option value="2021">2021</option>
-                        <option value="2022">2022</option>
-                        <option value="2023">2023</option>
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
-                    </select>
+
                     <select id="Week" class="form-control" name="Week1" data-placeholder="Select Week">
                         <option value="0" selected="selected">Choose Week</option>
                         @{
+                            // 获取2019年第一周开始到现在往后20周
+
                             // 计算FirstWeek周期
-                            var yearFirstDay = new DateTime(DateTime.Now.Year, 1, 1);
+                            var yearFirstDay = new DateTime(2019, 1, 1);
                             var firstDayofWeek = (int)yearFirstDay.DayOfWeek;
                             DateTime weekFirstDay = DateTime.Now;
                             DateTime weekLastDay = DateTime.Now;
@@ -45,9 +40,10 @@
                             weekLastDay = weekFirstDay.AddDays(6);
                         }
 
-                        @for (var i = 1; i < 52; i++)
+                        @while ((weekFirstDay - DateTime.Now).TotalDays < 140)
                         {
-                            <option value="@i" @((DateTime.Now>weekFirstDay && DateTime.Now<(weekLastDay.AddDays(1)))?"selected":"")>@i ( @weekFirstDay.ToString("MM-dd") - @weekLastDay.ToString("MM-dd"))</option>
+                            var yearweekno = weekFirstDay.YearOfWeekOfYear() * 100 + weekFirstDay.WeekOfYear();
+                            <option value="@yearweekno" @((DateTime.Now > weekFirstDay && DateTime.Now < (weekLastDay.AddDays(1))) ? "selected" : "")>@yearweekno ( @weekFirstDay.ToString("MM-dd") - @weekLastDay.ToString("MM-dd"))</option>
                             weekFirstDay = weekFirstDay.AddDays(7);
                             weekLastDay = weekFirstDay.AddDays(6);
                         }
